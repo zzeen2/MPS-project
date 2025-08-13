@@ -40,11 +40,11 @@ function LoginForm() {
             <div className="rounded-2xl border border-white/10 bg-neutral-900/70 p-8 md:p-10 shadow-xl shadow-black/40 ring-1 ring-white/5 backdrop-blur-md">
                 <form onSubmit={onSubmit} className="space-y-5">
                 <label className="block">
-                    <span className="text-[11px] tracking-wide text-white/60">이메일</span>
+                    <span className="text-[11px] tracking-wide text-white/60">아이디</span>
                     <input
                     type="text"
                     name="adminId"
-                    placeholder="you@example.com"
+                    placeholder="adminId"
                     value={adminId}
                     onChange={(e) => setAdminId(e.target.value)}
                     required
