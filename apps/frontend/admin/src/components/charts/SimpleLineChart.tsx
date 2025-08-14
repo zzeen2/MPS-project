@@ -24,9 +24,11 @@ export default function SimpleLineChart({ labels, series }: Props) {
 
     function destroy(){ chartRef.current?.destroy(); chartRef.current = null }
     function create(width:number, height:number){
-      canvas.width = Math.max(300, Math.floor(width))
-      canvas.height = Math.floor(height)
-      const ctx = canvas.getContext('2d')!
+      const c = canvasRef.current
+      if (!c) return
+      c.width = Math.max(300, Math.floor(width))
+      c.height = Math.floor(height)
+      const ctx = c.getContext('2d')!
       chartRef.current = new Chart(ctx, {
         type: 'line',
         data: {
