@@ -1,6 +1,12 @@
 'use client'
 
+import { useState } from 'react'
+import MusicStatsModal from '@/components/modals/MusicStatsModal'
+
 export default function MusicsPage() {
+  const [statsOpen, setStatsOpen] = useState(false)
+  const [statsTitle, setStatsTitle] = useState<string>('음원 상세 통계')
+
   return (
     <div className="space-y-6">
       {/* 검색/필터 */}
@@ -49,11 +55,13 @@ export default function MusicsPage() {
             </tr>
           </thead>
           <tbody>
-            {[...Array(10)].map((_, i) => (
+            {[...Array(10)].map((_, i) => {
+              const rowTitle = `Song Title ${i+1}`
+              return (
               <tr key={i} className="border-t border-white/5 hover:bg-white/5">
                 <td className="px-4 py-3"><input type="checkbox" className="accent-teal-400" /></td>
                 <td className="px-4 py-3"><div className="h-8 w-8 rounded bg-white/10" /></td>
-                <td className="px-4 py-3 text-white">Song Title {i+1}</td>
+                <td className="px-4 py-3 text-white">{rowTitle}</td>
                 <td className="px-4 py-3 text-white/80">Artist {i+1}</td>
                 <td className="px-4 py-3 text-white/80">Pop</td>
                 <td className="px-4 py-3 text-white/60">차분한, 릴렉스</td>
@@ -66,11 +74,11 @@ export default function MusicsPage() {
                   <div className="flex gap-2">
                     <button className="rounded bg-teal-600/90 px-2 py-1 text-xs text-white hover:bg-teal-500">수정</button>
                     <button className="rounded border border-white/15 bg-white/5 px-2 py-1 text-xs text-white hover:bg-white/10">삭제</button>
-                    <button className="rounded bg-teal-600/90 px-2 py-1 text-xs text-white hover:bg-teal-500">통계</button>
+                    <button className="rounded bg-teal-600/90 px-2 py-1 text-xs text-white hover:bg-teal-500" onClick={()=>{ setStatsTitle(rowTitle); setStatsOpen(true) }}>통계</button>
                   </div>
                 </td>
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>
@@ -95,6 +103,9 @@ export default function MusicsPage() {
           <button className="rounded bg-teal-600/90 px-2 py-1 text-white hover:bg-teal-500">끝</button>
         </div>
       </div>
+
+      {/* 통계 모달 */}
+      <MusicStatsModal open={statsOpen} onClose={()=>setStatsOpen(false)} title={statsTitle} />
     </div>
   )
 } 
