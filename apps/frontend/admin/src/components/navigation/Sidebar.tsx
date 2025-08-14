@@ -15,9 +15,44 @@ const MUSIC_GROUP = {
   ],
 }
 
+const REWARD_GROUP = {
+  label: '리워드 관리',
+  items: [
+    { href: '/admin/rewards', label: '리워드 대시보드' },
+    { href: '/admin/rewards/manage', label: '리워드 일괄/개별 수정' },
+    { href: '/admin/rewards/tokens', label: '토큰/온체인' },
+  ],
+}
+
+const COMPANY_GROUP = {
+  label: '기업 관리',
+  items: [
+    { href: '/admin/companies', label: '기업 목록' },
+  ],
+}
+
+const REVENUE_GROUP = {
+  label: '매출 관리',
+  items: [
+    { href: '/admin/revenue', label: '매출 대시보드' },
+  ],
+}
+
+const SYSTEM_GROUP = {
+  label: '시스템 관리',
+  items: [
+    { href: '/admin/system/tiers', label: '구독제 등급 관리' },
+    { href: '/admin/system/api', label: 'API 관리' },
+  ],
+}
+
 export default function Sidebar() {
   const pathname = usePathname()
   const [openMusic, setOpenMusic] = useState(true)
+  const [openReward, setOpenReward] = useState(true)
+  const [openCompany, setOpenCompany] = useState(true)
+  const [openRevenue, setOpenRevenue] = useState(true)
+  const [openSystem, setOpenSystem] = useState(true)
 
   async function logout() {
     const response = await axios.post('/api/logout')
@@ -51,6 +86,102 @@ export default function Sidebar() {
           {openMusic && (
             <div className="mt-1 space-y-1 pl-3">
               {MUSIC_GROUP.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`block rounded px-3 py-2 ${isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <button
+            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/70 hover:text-white hover:bg-white/5"
+            onClick={() => setOpenReward((v) => !v)}
+            aria-expanded={openReward}
+          >
+            <span>{REWARD_GROUP.label}</span>
+            <span className="text-xs">{openReward ? '▾' : '▸'}</span>
+          </button>
+          {openReward && (
+            <div className="mt-1 space-y-1 pl-3">
+              {REWARD_GROUP.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`block rounded px-3 py-2 ${isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <button
+            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/70 hover:text-white hover:bg-white/5"
+            onClick={() => setOpenCompany((v) => !v)}
+            aria-expanded={openCompany}
+          >
+            <span>{COMPANY_GROUP.label}</span>
+            <span className="text-xs">{openCompany ? '▾' : '▸'}</span>
+          </button>
+          {openCompany && (
+            <div className="mt-1 space-y-1 pl-3">
+              {COMPANY_GROUP.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`block rounded px-3 py-2 ${isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <button
+            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/70 hover:text-white hover:bg-white/5"
+            onClick={() => setOpenRevenue((v) => !v)}
+            aria-expanded={openRevenue}
+          >
+            <span>{REVENUE_GROUP.label}</span>
+            <span className="text-xs">{openRevenue ? '▾' : '▸'}</span>
+          </button>
+          {openRevenue && (
+            <div className="mt-1 space-y-1 pl-3">
+              {REVENUE_GROUP.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`block rounded px-3 py-2 ${isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <button
+            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/70 hover:text-white hover:bg-white/5"
+            onClick={() => setOpenSystem((v) => !v)}
+            aria-expanded={openSystem}
+          >
+            <span>{SYSTEM_GROUP.label}</span>
+            <span className="text-xs">{openSystem ? '▾' : '▸'}</span>
+          </button>
+          {openSystem && (
+            <div className="mt-1 space-y-1 pl-3">
+              {SYSTEM_GROUP.items.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
