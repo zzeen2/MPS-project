@@ -5,7 +5,7 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 
-const provider = new ethers.JsonRpcProvider(INFURA_RPC_URL);
+const provider = new ethers.JsonRpcProvider(process.env.INFURA_RPC);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const entryPointAbi = require("./artifacts/contracts/AA/EntryPoint.sol/EntryPoint.json").abi;

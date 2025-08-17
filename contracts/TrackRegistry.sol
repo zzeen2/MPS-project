@@ -1,139 +1,42 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
-import "node_modules/@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "./AccessController.sol";
 
 contract TrackRegistry {
-    using EnumerableSet for EnumerableSet.UintSet;
-
     struct Track {
-        bytes32 metaHash; // 메타데이터 해시(IPFS 등)
-        uint256 priceKRW; // 1회 호출 가격(원) – 리워드 비례 산식에 사용
         bool active;
-        address supplier; // 제공사(리워드 수령 지갑, AA)
-        // 가격 예약(다음 시간대부터 적용)
-        uint256 pendingPriceKRW;
-        uint256 pendingEffectiveHourId; // YYYYMMDDHH
+        uint256 rewardPerPlay; // 18d, 예: 0.1토큰 → 0.1 * 1e18
+        uint256 monthlyPoolCap; // 18d, 월 지급 총량 상한
     }
-
     AccessController public acl;
     mapping(uint256 => Track) public tracks;
-    EnumerableSet.UintSet private _trackIds;
-
-    event TrackRegistered(
-        uint256 indexed trackId,
-        bytes32 metaHash,
-        uint256 priceKRW,
-        address supplier
-    );
-    event TrackUpdated(
-        uint256 indexed trackId,
-        bytes32 metaHash,
-        uint256 priceKRW,
-        address supplier,
-        bool active
-    );
-    event PriceScheduled(
-        uint256 indexed trackId,
-        uint256 priceKRW,
-        uint256 effectiveHourId
-    );
 
     modifier onlyAdmin() {
         if (!acl.hasRole(acl.ADMIN_ROLE(), msg.sender)) revert("NotAuthorized");
         _;
     }
-
     constructor(address _acl) {
         acl = AccessController(_acl);
     }
 
-    function registerTrack(
+    function upsertTrack(
         uint256 trackId,
-        bytes32 metaHash,
-        uint256 priceKRW,
-        address supplier
+        bool active,
+        uint256 rewardPerPlay,
+        uint256 monthlyPoolCap
     ) external onlyAdmin {
-        require(!_trackIds.contains(trackId), "exists");
-        tracks[trackId] = Track({
-            metaHash: metaHash,
-            priceKRW: priceKRW,
-            active: true,
-            supplier: supplier,
-            pendingPriceKRW: 0,
-            pendingEffectiveHourId: 0
-        });
-        _trackIds.add(trackId);
-        emit TrackRegistered(trackId, metaHash, priceKRW, supplier);
+        tracks[trackId] = Track(active, rewardPerPlay, monthlyPoolCap);
     }
 
-    function updateTrackAdmin(
-        uint256 trackId,
-        bytes32 metaHash,
-        address supplier,
-        bool active
-    ) external onlyAdmin {
-        require(_trackIds.contains(trackId), "notfound");
-        Track storage t = tracks[trackId];
-        t.metaHash = metaHash;
-        t.supplier = supplier;
-        t.active = active;
-        emit TrackUpdated(
-            trackId,
-            t.metaHash,
-            t.priceKRW,
-            t.supplier,
-            t.active
-        );
-    }
-
-    function schedulePrice(
-        uint256 trackId,
-        uint256 newPriceKRW,
-        uint256 effectiveHourId
-    ) external onlyAdmin {
-        require(_trackIds.contains(trackId), "notfound");
-        Track storage t = tracks[trackId];
-        t.pendingPriceKRW = newPriceKRW;
-        t.pendingEffectiveHourId = effectiveHourId;
-        emit PriceScheduled(trackId, newPriceKRW, effectiveHourId);
-    }
-
-    // (주의) 이 함수는 운영툴에서 시간 경계에 맞춰 호출해 주세요.
-    function rollPriceIfDue(
-        uint256 trackId,
-        uint256 currentHourId
-    ) external onlyAdmin {
-        Track storage t = tracks[trackId];
-        if (
-            t.pendingEffectiveHourId != 0 &&
-            currentHourId >= t.pendingEffectiveHourId
-        ) {
-            t.priceKRW = t.pendingPriceKRW;
-            t.pendingPriceKRW = 0;
-            t.pendingEffectiveHourId = 0;
-            emit TrackUpdated(
-                trackId,
-                t.metaHash,
-                t.priceKRW,
-                t.supplier,
-                t.active
-            );
-        }
-    }
-
-    // 읽기 헬퍼
-    function getSupplier(uint256 trackId) external view returns (address) {
-        return tracks[trackId].supplier;
-    }
-    function getPriceKRW(uint256 trackId) external view returns (uint256) {
-        return tracks[trackId].priceKRW;
-    }
-    function isActive(uint256 trackId) external view returns (bool) {
-        return tracks[trackId].active;
-    }
-    function trackIds() external view returns (uint256[] memory ids) {
-        ids = _trackIds.values();
+    function snapshot(
+        uint256 trackId
+    )
+        external
+        view
+        returns (bool active, uint256 rewardPerPlay, uint256 monthlyPoolCap)
+    {
+        Track memory t = tracks[trackId];
+        return (t.active, t.rewardPerPlay, t.monthlyPoolCap);
     }
 }

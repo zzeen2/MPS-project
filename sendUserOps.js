@@ -14,7 +14,7 @@ const entryPointAbi = [];
 const smartAccountAddress = "client의 smartAccountAddress" // userOps를 보내는 스마트 계정 CA
 const smartAccountAbi = [];
 
-const sendEntryPoint = async () => { // 프론트에서 사용
+const sendBundler = async () => { // 프론트에서 사용
     const smartAccount = new ethers.Contract(smartAccountAddress, smartAccountAbi, provider) // smartAccount 컨트랙트를 가져올 때 조회의 기능만 사용하기 때문에 공급자를 매개변수에 넣음 wallet을 넣어도 기능에는 문제가 없는건지? 
     const entryPoint = new ethers.Contract(entryPointCA, entryPointAbi, wallet) 
     const token = new ethers.Contract(tokenCA, tokenAbi, wallet)
@@ -79,9 +79,9 @@ const sendEntryPoint = async () => { // 프론트에서 사용
     }
     console.log(userOpTuple);
 
-    const transaction = await entryPoint.handleOps([userOpTuple]) //
-    const result = await transaction.wait();
-    console.log(`트랜잭션 해시: ${result.hash}`)
+    // const transaction = await entryPoint.handleOps([userOpTuple]) //
+    // const result = await transaction.wait();
+    // console.log(`트랜잭션 해시: ${result.hash}`)
 
     const userOpToJson = (userOp) => {
         const result = {};
@@ -96,4 +96,4 @@ const sendEntryPoint = async () => { // 프론트에서 사용
     console.log(`userOps bundler에 전달 완료: ${res.data.message}`)
 }
 
-sendEntryPoint()
+sendBundler()
