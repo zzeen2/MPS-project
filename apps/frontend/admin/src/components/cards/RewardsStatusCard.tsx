@@ -1,25 +1,21 @@
 import Card from '@/components/ui/Card'
+import Title from '@/components/ui/Title'
 
-type Props = {
-  achieved: number
-  totalTargets: number
-  issuedRwd: number
-  usedRwd: number
-}
-
-export default function RewardsStatusCard({ achieved, totalTargets, issuedRwd, usedRwd }: Props) {
-  const usedRate = Math.round((usedRwd / Math.max(1, issuedRwd)) * 100)
-  const achievedRate = Math.round((achieved / Math.max(1, totalTargets)) * 100)
-
+export default function RewardsStatusCard() {
   return (
     <Card>
-      <div className="mb-2 text-xs uppercase tracking-wider text-white/60">리워드 달성 현황</div>
-      <div className="text-sm text-white">달성: {achieved}곡 ({achievedRate}%) · 미달성: {Math.max(0, totalTargets - achieved)}곡</div>
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded bg-white/10">
-        <div className="h-full rounded bg-white/40" style={{ width: `${achievedRate}%` }} />
+      <div className="space-y-1">
+        <Title variant="card">리워드 한도 사용률</Title>
+        <div className="text-3xl font-bold text-white">38%</div>
+        <div className="space-y-0.5">
+          <div className="text-sm text-white">달성: 15곡 · 미달성: 25곡</div>
+          <div className="mt-3 mb-2 h-1.5 w-full overflow-hidden rounded bg-white/10">
+            <div className="h-full rounded bg-teal-300" style={{ width: '38%' }} />
+          </div>
+          <div className="text-xs text-white/60">발행: 12,000 RWD</div>
+          <div className="text-xs text-white/60">사용: 8,500 RWD (71%)</div>
+        </div>
       </div>
-      <div className="mt-3 text-sm text-white/80">발행: {issuedRwd.toLocaleString()} RWD</div>
-      <div className="text-sm text-white/80">사용: {usedRwd.toLocaleString()} RWD ({usedRate}%)</div>
     </Card>
   )
 } 
