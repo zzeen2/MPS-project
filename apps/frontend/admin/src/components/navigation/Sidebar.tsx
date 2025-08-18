@@ -60,7 +60,36 @@ export default function Sidebar() {
     location.href = '/admin'
   }
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
+  const isActive = (href: string) => {
+    if (href === '/admin/musics') {
+      return pathname === '/admin/musics'
+    }
+    if (href === '/admin/musics/new') {
+      return pathname === '/admin/musics/new'
+    }
+    if (href === '/admin/musics/categories') {
+      return pathname === '/admin/musics/categories'
+    }
+    if (href === '/admin/rewards') {
+      return pathname === '/admin/rewards'
+    }
+    if (href === '/admin/rewards/manage') {
+      return pathname === '/admin/rewards/manage'
+    }
+    if (href === '/admin/rewards/musics') {
+      return pathname === '/admin/rewards/musics'
+    }
+    if (href === '/admin/rewards/tokens') {
+      return pathname === '/admin/rewards/tokens'
+    }
+    if (href === '/admin/system/tiers') {
+      return pathname === '/admin/system/tiers'
+    }
+    if (href === '/admin/system/api') {
+      return pathname === '/admin/system/api'
+    }
+    return pathname === href
+  }
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 w-60 border-r border-white/10 bg-neutral-900/80 text-white backdrop-blur-md p-4 flex flex-col">

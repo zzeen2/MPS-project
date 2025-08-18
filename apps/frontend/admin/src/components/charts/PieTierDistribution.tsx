@@ -14,15 +14,15 @@ export default function PieTierDistribution() {
     if (!canvasRef.current) return
     const ctx = canvasRef.current.getContext('2d')!
 
-    const labels = ['Standard (+5%)', 'Business (+3%)']
-    const counts = [220, 120]
+    const labels = ['Free', 'Standard', 'Business']
+    const counts = [100, 120, 120]
 
     chartRef.current = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels,
         datasets: [
-          { data: counts, backgroundColor: ['#d1d5db', '#9ca3af'], borderColor: 'rgba(0,0,0,0.8)', borderWidth: 2 },
+          { data: counts, backgroundColor: ['#9ca3af', '#14b8a6', '#3b82f6'], borderColor: 'rgba(0,0,0,0.8)', borderWidth: 2 },
         ],
       },
       options: {
@@ -32,7 +32,8 @@ export default function PieTierDistribution() {
         onClick: (_, elements) => {
           if (!elements.length) return
           const idx = elements[0].index
-          const tier = idx === 0 ? 'standard' : 'business'
+          const tiers = ['free', 'standard', 'business']
+          const tier = tiers[idx]
           router.push(`/admin/companies?tier=${tier}`)
         },
       },
@@ -42,11 +43,8 @@ export default function PieTierDistribution() {
   }, [router])
 
   return (
-    <div className="relative h-[280px] w-full">
-      <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-sm text-white/80" aria-hidden>
-        전체 340개 기업
-      </div>
-      <canvas ref={canvasRef} className="relative z-0 h-full w-full" />
+    <div className="relative h-full w-full">
+      <canvas ref={canvasRef} className="h-full w-full" />
     </div>
   )
 } 

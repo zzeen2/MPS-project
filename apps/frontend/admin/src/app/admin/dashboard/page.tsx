@@ -1,67 +1,279 @@
 'use client'
+
+import { useEffect, useState } from 'react'
 import DashboardHeader from '@/components/layout/DashboardHeader'
-import HourlyUsageMultiLine from '@/components/charts/HourlyUsageMultiLine'
-import PieTierDistribution from '@/components/charts/PieTierDistribution'
-import BarCategoryTop5 from '@/components/charts/BarCategoryTop5'
-import ApiLiveStatus from '@/components/realtime/ApiLiveStatus'
-import TopTracksTable from '@/components/tables/TopTracksTable'
-import RecentCompaniesTable from '@/components/tables/RecentCompaniesTable'
-import TrackTotalCard from '@/components/cards/TrackTotalCard'
 import CompanyTotalCard from '@/components/cards/CompanyTotalCard'
+import TrackTotalCard from '@/components/cards/TrackTotalCard'
 import MonthlyPlaysCard from '@/components/cards/MonthlyPlaysCard'
 import MonthlyRevenueCard from '@/components/cards/MonthlyRevenueCard'
 import RewardsStatusCard from '@/components/cards/RewardsStatusCard'
 import RenewalRateCard from '@/components/cards/RenewalRateCard'
+import Card from '@/components/ui/Card'
+import Title from '@/components/ui/Title'
+import SimpleLineChart from '@/components/charts/SimpleLineChart'
+import BarCategoryTop5 from '@/components/charts/BarCategoryTop5'
+import PieTierDistribution from '@/components/charts/PieTierDistribution'
 
 export default function DashboardPage() {
-  const tracks = { total: 1245, momDeltaPct: 5, lastMonth: 1185, ctaHref: '/admin/tracks' }
-  const companies = { total: 340, newCount: 20, standard: 220, business: 120 }
-  const plays = { monthTotal: 524300, momDeltaPct: 8, dailyAvg: 17480 }
-  const revenue = { forecastKrw: 12_500_000, momDeltaPct: 12 }
-  const rewards = { achieved: 15, totalTargets: 40, issuedRwd: 12_000, usedRwd: 8_500 }
-  const renewal = { ratePct: 88, momDeltaPct: 3, churned: 5, resubscribed: 35 }
+  const [hourlyData, setHourlyData] = useState<any[]>([])
+  const [lastUpdated, setLastUpdated] = useState<string>('')
+
+  useEffect(() => {
+    // 시간별 사용량 데이터
+    const generateHourlyData = () => {
+      const now = new Date()
+      const currentHour = now.getHours()
+      const data = Array.from({ length: 24 }, (_, i) => {
+        if (i > currentHour) {
+          return {
+            hour: `${i}시`,
+            free: null,
+            standard: null,
+            business: null
+          }
+        }
+        // 실제 시간대별 패턴 (새벽 낮음, 오후 높음)
+        const baseHour = i
+        const isPeak = baseHour >= 9 && baseHour <= 18
+        const isNight = baseHour >= 22 || baseHour <= 6
+        
+        return {
+          hour: `${i}시`,
+          free: [150, 200, 180, 160, 140, 120, 100, 80, 120, 180, 220, 280, 320, 380, 420, 400, 380, 360, 340, 320, 300, 280, 260, 240][i] || 200,
+          standard: [200, 250, 230, 210, 190, 170, 150, 130, 170, 230, 270, 330, 370, 430, 470, 450, 430, 410, 390, 370, 350, 330, 310, 290][i] || 250,
+          business: [300, 350, 330, 310, 290, 270, 250, 230, 270, 330, 370, 430, 470, 530, 570, 550, 530, 510, 490, 470, 450, 430, 410, 390][i] || 350
+        }
+      })
+      setHourlyData(data)
+    }
+
+    // 마지막 업데이트 시간
+    const updateTime = () => {
+      const now = new Date()
+      const s = now.toLocaleString('ko-KR', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
+      setLastUpdated(s)
+    }
+
+    generateHourlyData()
+    updateTime()
+
+    const interval = setInterval(() => {
+      generateHourlyData()
+      updateTime()
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="w-full px-6 py-6">
-      <DashboardHeader title="B2B Music Licensing Platform" subtitle="관리자 대시보드 · 실시간 모니터링" />
+      <DashboardHeader 
+        title="B2B Music Licensing Platform" 
+        subtitle="관리자 대시보드 · 실시간 모니터링"
+        lastUpdated={lastUpdated}
+      />
 
       <section className="mb-8">
         <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
-          <TrackTotalCard {...tracks} activeApis={132} inactiveApis={8} />
-          <CompanyTotalCard {...companies} />
-          <MonthlyPlaysCard {...plays} />
-          <MonthlyRevenueCard {...revenue} />
-          <RewardsStatusCard {...rewards} />
-          <RenewalRateCard {...renewal} />
+          <TrackTotalCard />
+          <CompanyTotalCard />
+          <MonthlyPlaysCard />
+          <MonthlyRevenueCard />
+          <RewardsStatusCard />
+          <RenewalRateCard />
         </div>
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-4 text-sm font-semibold text-white">차트 분석</h2>
+        <Title variant="section" className="mb-4">차트 분석</Title>
         <div className="grid gap-5 [grid-template-columns:1.5fr_1fr_0.8fr] max-[1200px]:grid-cols-2 max-md:grid-cols-1">
-          <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 shadow-xl shadow-black/30 backdrop-blur-md min-h-[320px]">
-            <div className="mb-3 text-sm font-semibold text-white">24시간 사용량 (요금제별 + 전일 평균)</div>
-            <HourlyUsageMultiLine />
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 shadow-xl shadow-black/30 backdrop-blur-md min-h-[320px]">
-            <div className="mb-3 text-sm font-semibold text-white">등급별 기업 분포</div>
-            <PieTierDistribution />
-          </div>
-          <div className="min-w-0 rounded-2xl border border-white/10 bg-neutral-900/60 p-6 shadow-xl shadow-black/30 backdrop-blur-md min-h-[320px]">
-            <div className="mb-3 text-sm font-semibold text-white">카테고리 Top5 호출수 · 리워드 기여율</div>
-            <BarCategoryTop5 />
-          </div>
+          <Card>
+            <Title variant="card" className="mb-4">24시간 사용량 (요금제별 + 전일 평균)</Title>
+            <div className="h-80">
+              <SimpleLineChart 
+                labels={hourlyData.map(d => d.hour)}
+                series={[
+                  {
+                    label: 'Free',
+                    data: hourlyData.map(d => d.free)
+                  },
+                  {
+                    label: 'Standard',
+                    data: hourlyData.map(d => d.standard)
+                  },
+                  {
+                    label: 'Business',
+                    data: hourlyData.map(d => d.business)
+                  },
+                  {
+                    label: '전일 평균',
+                    data: hourlyData.map(d => Math.floor((d.free + d.standard + d.business) / 3))
+                  }
+                ]}
+              />
+            </div>
+          </Card>
+          <Card>
+            <Title variant="card" className="mb-4">등급별 기업 분포</Title>
+            <div className="h-80">
+              <PieTierDistribution />
+            </div>
+          </Card>
+          <Card>
+            <Title variant="card" className="mb-4">카테고리 Top5 호출수</Title>
+            <div className="h-80">
+              <BarCategoryTop5 />
+            </div>
+          </Card>
         </div>
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-4 text-sm font-semibold text-white">실시간 모니터링</h2>
+        <Title variant="section" className="mb-4">실시간 모니터링</Title>
         <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(380px,1fr))]">
-          <ApiLiveStatus />
-          <TopTracksTable />
-          <RecentCompaniesTable />
+          {/* 실시간 API 호출 */}
+          <Card>
+            <Title variant="card" className="mb-4">실시간 API 호출</Title>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">상태</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">엔드포인트</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">기업</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">시간</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-green-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">/api/rewards/claim</td>
+                    <td className="py-2 px-3 text-white/60">MelOn</td>
+                    <td className="py-2 px-3 text-white/40">오전 10:38:13</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-red-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">/api/music/play</td>
+                    <td className="py-2 px-3 text-white/60">Kakao</td>
+                    <td className="py-2 px-3 text-white/40">오전 10:38:11</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-green-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">/api/rewards/claim</td>
+                    <td className="py-2 px-3 text-white/60">MelOn</td>
+                    <td className="py-2 px-3 text-white/40">오전 10:38:09</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-green-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">/api/auth/verify</td>
+                    <td className="py-2 px-3 text-white/60">Kakao</td>
+                    <td className="py-2 px-3 text-white/40">오전 10:38:07</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-green-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">/api/music/play</td>
+                    <td className="py-2 px-3 text-white/60">MelOn</td>
+                    <td className="py-2 px-3 text-white/40">오전 10:38:05</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* 인기 음원 TOP 10 */}
+          <Card>
+            <Title variant="card" className="mb-4">인기 음원 TOP 10</Title>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">순위</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">음원명</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">24시간 재생 횟수</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rank) => (
+                    <tr key={rank} className="border-b border-white/5">
+                      <td className={`py-2 px-3 font-medium ${
+                        rank <= 3 ? 'text-teal-300' : 'text-white/60'
+                      }`}>{rank}</td>
+                      <td className="py-2 px-3 text-white/80">Track Title {rank}</td>
+                      <td className="py-2 px-3 text-white/60">
+                        {Math.floor(Math.random() * 2000 + 800).toLocaleString()} plays
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* 트랜잭션 현황 */}
+          <Card>
+            <Title variant="card" className="mb-4">트랜잭션 현황</Title>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">시간</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">상태</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">처리 건수</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">가스비</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">해시</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 px-3 text-white/40">오전 10:38:11</td>
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-green-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">20/22건</td>
+                    <td className="py-2 px-3 text-white/60">0.005 ETH</td>
+                    <td className="py-2 px-3 text-white/40">0x86d70c...b07e</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 px-3 text-white/40">오전 10:38:01</td>
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-green-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">24/33건</td>
+                    <td className="py-2 px-3 text-white/60">0.005 ETH</td>
+                    <td className="py-2 px-3 text-white/40">0x4d253c...5313</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-3 text-white/40">오전 10:37:51</td>
+                    <td className="py-2 px-3">
+                      <div className="h-2 w-2 rounded-full bg-green-400" />
+                    </td>
+                    <td className="py-2 px-3 text-white/80">19/26건</td>
+                    <td className="py-2 px-3 text-white/60">0.003 ETH</td>
+                    <td className="py-2 px-3 text-white/40">0x50fde9...20a7</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </div>
       </section>
+
     </div>
   )
 }

@@ -10,4 +10,4 @@ export async function POST() {
     maxAge: 0,
   })
   return res
-} 
+}

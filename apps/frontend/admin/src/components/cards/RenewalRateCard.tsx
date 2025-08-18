@@ -1,19 +1,19 @@
 import Card from '@/components/ui/Card'
+import Title from '@/components/ui/Title'
 
-type Props = {
-  ratePct: number
-  momDeltaPct: number
-  churned: number
-  resubscribed: number
-}
-
-export default function RenewalRateCard({ ratePct, momDeltaPct, churned, resubscribed }: Props) {
-  const sign = momDeltaPct >= 0 ? '+' : ''
+export default function RenewalRateCard() {
   return (
     <Card>
-      <div className="mb-2 text-xs uppercase tracking-wider text-white/60">구독 갱신률</div>
-      <div className="text-3xl font-semibold text-white">{ratePct}% <span className="ml-2 align-middle text-base text-teal-300">({sign}{momDeltaPct}% 전월比)</span></div>
-      <div className="mt-1 text-xs text-white/60">신규 해지: {churned}개 기업 · 재구독: {resubscribed}개 기업</div>
+      <div className="space-y-1">
+        <Title variant="card">구독 갱신률</Title>
+        <div className="text-3xl font-bold text-white">88%</div>
+        <div className="space-y-0.5">
+          <div className="text-sm text-teal-300">(전월 대비 +3%)</div>
+          <div className="mt-2">
+            <div className="text-xs text-white/60">신규 해지: 5개 기업 · 재구독: 35개 기업</div>
+          </div>
+        </div>
+      </div>
     </Card>
   )
 } 

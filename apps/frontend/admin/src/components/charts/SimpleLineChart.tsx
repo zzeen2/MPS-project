@@ -4,9 +4,13 @@ import { Chart, LineController, LineElement, PointElement, LinearScale, Category
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip)
 
-type Props = { labels?: string[]; series?: { label: string; data: number[] }[] }
+type Props = { 
+  labels?: string[]; 
+  series?: { label: string; data: number[] }[];
+  colors?: string[];
+}
 
-export default function SimpleLineChart({ labels, series }: Props) {
+export default function SimpleLineChart({ labels, series, colors }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const chartRef = useRef<Chart | null>(null)
@@ -33,21 +37,36 @@ export default function SimpleLineChart({ labels, series }: Props) {
         type: 'line',
         data: {
           labels: defaultLabels,
-          datasets: defaultSeries.map((s, i) => ({
-            label: s.label,
-            data: s.data,
-            borderColor: i === 0 ? '#34d399' : '#9ca3af',
-            backgroundColor: 'rgba(255,255,255,0.04)',
-            borderWidth: 2,
-            pointRadius: 0,
-            tension: 0.3,
-          })),
+          datasets: defaultSeries.map((s, i) => {
+            const defaultColors = ['#10b981', '#8b5cf6', '#3b82f6', '#9ca3af']
+            const chartColors = colors || defaultColors
+            const isDashed = s.label === '전일' || s.label === '지난주'
+            return {
+              label: s.label,
+              data: s.data,
+              borderColor: chartColors[i] || defaultColors[i] || '#9ca3af',
+              backgroundColor: 'rgba(255,255,255,0.04)',
+              borderWidth: 2,
+              borderDash: isDashed ? [5, 5] : [],
+              pointRadius: 0,
+              tension: 0.3,
+            }
+          }),
         },
         options: {
           responsive: false,
           animation: false,
           plugins: { legend: { position: 'top', labels: { color: '#9ca3af', usePointStyle: true, padding: 12 } }, tooltip: { enabled: true } },
-          scales: { x: { grid: { display: false }, ticks: { color: '#9ca3af' } }, y: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#9ca3af' }, beginAtZero: true } },
+          scales: { 
+            x: { grid: { display: false }, ticks: { color: '#9ca3af' } }, 
+            y: { 
+              grid: { color: 'rgba(255,255,255,0.08)' }, 
+              ticks: { color: '#9ca3af' }, 
+              beginAtZero: true,
+              max: 800,
+              min: 0
+            } 
+          },
         },
       })
     }
@@ -67,7 +86,7 @@ export default function SimpleLineChart({ labels, series }: Props) {
   }, [labels, series])
 
   return (
-    <div ref={containerRef} className="relative h-[220px] min-w-0 overflow-hidden">
+    <div ref={containerRef} className="relative h-full min-w-0 overflow-hidden">
       <canvas ref={canvasRef} className="absolute inset-0 block" />
     </div>
   )

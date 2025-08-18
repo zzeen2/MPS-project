@@ -16,8 +16,8 @@ export default function BarCategoryTop5() {
     const parent = canvas.parentElement as HTMLElement
 
     const labels = ['검색', '재생', '리워드', '기업관리', '인증']
-    const calls = [11200, 9800, 7600, 5200, 4100]
-    const rewardPct = [12, 25, 48, 5, 2]
+    const calls = [11000, 9500, 7500, 4500, 3500]
+    const rewardPct = [20, 25, 30, 15, 10]
 
     function destroy() {
       chartRef.current?.destroy()
@@ -31,7 +31,16 @@ export default function BarCategoryTop5() {
       const ctx = canvas.getContext('2d')!
       chartRef.current = new Chart(ctx, {
         type: 'bar',
-        data: { labels, datasets: [{ label: '호출 수', data: calls, backgroundColor: 'rgba(255,255,255,0.12)', borderColor: '#ffffff', borderWidth: 1 }] },
+        data: { 
+          labels, 
+          datasets: [{ 
+            label: '호출 수', 
+            data: calls, 
+            backgroundColor: ['rgba(52, 211, 153, 0.3)', 'rgba(167, 139, 250, 0.3)', 'rgba(96, 165, 250, 0.3)', 'rgba(251, 191, 36, 0.3)', 'rgba(248, 113, 113, 0.3)'],
+            borderColor: ['#34d399', '#a78bfa', '#60a5fa', '#fbbf24', '#f87171'],
+            borderWidth: 2
+          }] 
+        },
         options: {
           responsive: false,
           animation: false,
@@ -74,7 +83,7 @@ export default function BarCategoryTop5() {
   }, [router])
 
   return (
-    <div className="relative h-[280px] w-full overflow-hidden min-w-0">
+    <div className="relative h-full w-full overflow-hidden min-w-0">
       <canvas ref={canvasRef} className="block" />
     </div>
   )
