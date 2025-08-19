@@ -5,7 +5,6 @@
   --foreground: #171717;
 }
 
-/* 다크 테마 스크롤바 스타일 */
 .scrollbar-thin {
   scrollbar-width: thin;
 }
@@ -29,7 +28,6 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Firefox 스크롤바 스타일 */
 .scrollbar-thin {
   scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
 }

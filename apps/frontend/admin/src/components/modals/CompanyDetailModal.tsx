@@ -17,8 +17,8 @@ type Company = {
   joinedDate: string
   contactEmail: string
   contactPhone: string
-  contractStart: string
-  contractEnd: string
+  subscriptionStart: string
+  subscriptionEnd: string
   monthlyUsage: number[]
   monthlyRewards: number[]
   topTracks: Array<{ title: string; usage: number; category: string }>
@@ -184,14 +184,14 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                         <span className="text-white/60 text-sm">전화번호</span>
                         <span className="text-white">{company.contactPhone}</span>
                       </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">계약 시작일</span>
-                        <span className="text-white">{company.contractStart}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5">
-                        <span className="text-white/60 text-sm">계약 종료일</span>
-                        <span className="text-white">{company.contractEnd}</span>
-                      </div>
+                                              <div className="flex items-center justify-between py-2.5 border-b border-white/10">
+                          <span className="text-white/60 text-sm">구독 시작일</span>
+                          <span className="text-white">{company.subscriptionStart}</span>
+                        </div>
+                        <div className="flex items-center justify-between py-2.5">
+                          <span className="text-white/60 text-sm">구독 종료일</span>
+                          <span className="text-white">{company.subscriptionEnd}</span>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -265,7 +265,10 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
               <div className="space-y-6">
                 {/* 월별 API 사용량 차트 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">월별 API 사용량</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    월별 API 사용량
+                  </h3>
                   <div className="h-64">
                     <SimpleLineChart 
                       labels={months}
@@ -281,7 +284,10 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                 {/* 전체 음원 사용 현황 */}
                 <div className="rounded-xl border border-white/10 p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white">전체 음원 사용 현황</h3>
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-3">
+                      <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                      전체 음원 사용 현황
+                    </h3>
                     <select 
                       className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-teal-400/50 transition-colors"
                       onChange={(e) => {
@@ -366,7 +372,10 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
               <div className="space-y-6">
                 {/* 월별 리워드 적립 차트 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">월별 리워드 적립</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    월별 리워드 적립
+                  </h3>
                   <div className="h-64">
                     <SimpleLineChart 
                       labels={months}
@@ -381,7 +390,10 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
 
                 {/* 월별 리워드 상세 현황 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">월별 리워드 상세 현황</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    월별 리워드 상세 현황
+                  </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="text-left">
@@ -429,7 +441,10 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
 
                 {/* 연간 요약 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">연간 리워드 요약</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    연간 리워드 요약
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="text-center p-4 rounded-lg border border-white/10">
                       <div className="text-2xl font-bold text-teal-400 mb-1">
