@@ -79,60 +79,58 @@ export default function MusicsPage() {
   return (
     <div className="space-y-6">
       {/* 검색/필터 및 음원 현황 */}
-      <div className="rounded-xl border border-white/8 bg-gradient-to-br from-neutral-900/80 to-neutral-800/60 p-4 backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="min-w-[300px]">
-              <input 
-                className="w-full rounded-lg bg-black/30 px-3 py-2 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 border border-white/5" 
-                placeholder="음원명, 아티스트, 태그로 검색 .." 
-              />
-            </div>
-            <div className="min-w-[120px]">
-              <select className="w-full rounded-lg bg-black/30 px-3 py-2 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 border border-white/5">
-                <option>전체 카테고리</option>
-                <option>Pop</option>
-                <option>Rock</option>
-                <option>Jazz</option>
-                <option>Classical</option>
-              </select>
-            </div>
-            <div className="min-w-[120px]">
-              <select className="w-full rounded-lg bg-black/30 px-3 py-2 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 border border-white/5">
-                <option>최신순</option>
-                <option>재생순</option>
-                <option>이름순</option>
-                <option>인기순</option>
-              </select>
-            </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="min-w-[300px]">
+            <input 
+              className="w-full px-3 py-2 text-white placeholder-white/50 outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm" 
+              placeholder="음원명, 아티스트, 태그로 검색 .." 
+            />
           </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-white/60">
-              총 음원: <span className="text-teal-300 font-semibold">1,234</span>개 | 
-              선택됨: <span className="text-teal-300 font-semibold">{selectedItems.size}</span>개
-            </div>
-            <button 
-              onClick={handleBulkDelete}
-              disabled={selectedItems.size === 0}
-              className={`rounded-lg border border-white/10 px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                selectedItems.size === 0 
-                  ? 'bg-white/5 text-white/30 cursor-not-allowed' 
-                  : 'bg-white/5 text-white hover:bg-white/10'
-              }`}
-            >
-              일괄 삭제
-            </button>
+          <div className="min-w-[120px]">
+            <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
+              <option>전체 카테고리</option>
+              <option>Pop</option>
+              <option>Rock</option>
+              <option>Jazz</option>
+              <option>Classical</option>
+            </select>
           </div>
+          <div className="min-w-[120px]">
+            <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
+              <option>최신순</option>
+              <option>재생순</option>
+              <option>이름순</option>
+              <option>인기순</option>
+            </select>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-white/60">
+            총 음원: <span className="text-teal-300 font-semibold">1,234</span>개 | 
+            선택됨: <span className="text-teal-300 font-semibold">{selectedItems.size}</span>개
+          </div>
+          <button 
+            onClick={handleBulkDelete}
+            disabled={selectedItems.size === 0}
+            className={`rounded-lg border border-white/10 px-4 py-2 text-sm font-medium transition-all duration-200 ${
+              selectedItems.size === 0 
+                ? 'bg-white/5 text-white/30 cursor-not-allowed' 
+                : 'bg-white/5 text-white hover:bg-white/10'
+            }`}
+          >
+            일괄 삭제
+          </button>
         </div>
       </div>
 
       {/* 목록 테이블 */}
-      <div className="overflow-hidden rounded-xl border border-white/8 bg-gradient-to-br from-neutral-900/80 to-neutral-800/60 backdrop-blur-sm">
+      <div className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-left">
-              <tr className="border-b border-white/8 bg-gradient-to-r from-white/5 to-white/3">
+              <tr className="border-b border-white/10">
                 <th className="px-6 py-4">
                   <input 
                     type="checkbox" 
@@ -158,7 +156,9 @@ export default function MusicsPage() {
               {[...Array(10)].map((_, i) => {
                 const rowTitle = `Song Title ${i+1}`
                 return (
-                <tr key={i} className="border-b border-white/5 hover:bg-white/3 transition-all duration-200">
+                <tr key={i} className={`border-b border-white/5 transition-all duration-200 ${
+                  i % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
+                } hover:bg-white/8`}>
                   <td className="px-6 py-4">
                     <input 
                       type="checkbox" 

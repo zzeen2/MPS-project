@@ -20,11 +20,18 @@ export default function SimpleLineChart({ labels, series, colors }: Props) {
     const canvas = canvasRef.current
     if (!container || !canvas) return
 
+    console.log('SimpleLineChart - labels:', labels)
+    console.log('SimpleLineChart - series:', series)
+    console.log('SimpleLineChart - colors:', colors)
+
     const defaultLabels = labels ?? ['1','2','3','4','5','6','7']
     const defaultSeries = series ?? [
       { label: 'A', data: [12, 19, 7, 15, 12, 18, 14] },
       { label: 'B', data: [8, 11, 13, 9, 10, 12, 9] },
     ]
+
+    console.log('SimpleLineChart - defaultLabels:', defaultLabels)
+    console.log('SimpleLineChart - defaultSeries:', defaultSeries)
 
     function destroy(){ chartRef.current?.destroy(); chartRef.current = null }
     function create(width:number, height:number){
@@ -56,14 +63,27 @@ export default function SimpleLineChart({ labels, series, colors }: Props) {
         options: {
           responsive: false,
           animation: false,
-          plugins: { legend: { position: 'top', labels: { color: '#9ca3af', usePointStyle: true, padding: 12 } }, tooltip: { enabled: true } },
+          plugins: { 
+            legend: { 
+              position: 'top', 
+              labels: { 
+                color: '#9ca3af', 
+                usePointStyle: true, 
+                padding: 12 
+              } 
+            }, 
+            tooltip: { enabled: true } 
+          },
           scales: { 
-            x: { grid: { display: false }, ticks: { color: '#9ca3af' } }, 
+            x: { 
+              grid: { display: false }, 
+              ticks: { color: '#9ca3af' } 
+            }, 
             y: { 
               grid: { color: 'rgba(255,255,255,0.08)' }, 
               ticks: { color: '#9ca3af' }, 
               beginAtZero: true,
-              max: 800,
+              max: undefined,
               min: 0
             } 
           },
@@ -83,7 +103,7 @@ export default function SimpleLineChart({ labels, series, colors }: Props) {
     measure()
     const ro = new ResizeObserver(measure); ro.observe(container)
     return () => { ro.disconnect(); destroy() }
-  }, [labels, series])
+  }, [labels, series, colors])
 
   return (
     <div ref={containerRef} className="relative h-full min-w-0 overflow-hidden">
