@@ -8,11 +8,21 @@ type Company = {
   id: string
   name: string
   tier: string
-  joined: string
-  monthly: string
-  tokens: string
-  usedTracks: number
-  active: boolean
+  totalTokens: number
+  monthlyEarned: number
+  monthlyUsed: number
+  usageRate: number
+  activeTracks: number
+  status: 'active' | 'inactive' | 'suspended'
+  lastActivity: string
+  joinedDate: string
+  contactEmail: string
+  contactPhone: string
+  subscriptionStart: string
+  subscriptionEnd: string
+  monthlyUsage: number[]
+  monthlyRewards: number[]
+  topTracks: Array<{ title: string; usage: number; category: string }>
 }
 
 export default function CompaniesPage() {
@@ -27,12 +37,46 @@ export default function CompaniesPage() {
   const companies: Company[] = Array.from({ length: 12 }).map((_, i) => {
     const name = `Company ${String.fromCharCode(65 + i)}`
     const tier = i % 3 === 0 ? 'Business' : i % 3 === 1 ? 'Standard' : 'Free'
-    const joined = `2024.${String(((i*3)%12)+1).padStart(2,'0')}.${String(((i*7)%28)+1).padStart(2,'0')}`
-    const monthly = (50000 - i * 3200).toLocaleString() + '회'
-    const tokens = (1200 - i * 37).toLocaleString() + '토큰'
-    const usedTracks = 20 + (i % 6)
-    const active = i % 5 !== 2
-    return { id: String(i+1), name, tier, joined, monthly, tokens, usedTracks, active }
+    const totalTokens = 1200 - i * 37
+    const monthlyEarned = 500 - i * 25
+    const monthlyUsed = 800 - i * 45
+    const usageRate = Math.round((monthlyUsed / 1000) * 100)
+    const activeTracks = 20 + (i % 6)
+    const status = i % 5 !== 2 ? 'active' : 'inactive'
+    const lastActivity = `2024.${String(((i*3)%12)+1).padStart(2,'0')}.${String(((i*7)%28)+1).padStart(2,'0')}`
+    const joinedDate = `2024.${String(((i*3)%12)+1).padStart(2,'0')}.${String(((i*7)%28)+1).padStart(2,'0')}`
+    const contactEmail = `contact@company${String.fromCharCode(65 + i).toLowerCase()}.com`
+    const contactPhone = `010-${String(1000 + i).padStart(4,'0')}-${String(1000 + i).padStart(4,'0')}`
+    const subscriptionStart = `2024.${String(((i*3)%12)+1).padStart(2,'0')}.01`
+    const subscriptionEnd = `2025.${String(((i*3)%12)+1).padStart(2,'0')}.31`
+    const monthlyUsage = Array.from({ length: 12 }, (_, month) => 800 - i * 45 + Math.floor(Math.random() * 200))
+    const monthlyRewards = Array.from({ length: 12 }, (_, month) => 500 - i * 25 + Math.floor(Math.random() * 100))
+    const topTracks = [
+      { title: `Track ${i + 1}`, usage: 150 - i * 5, category: 'Pop' },
+      { title: `Track ${i + 2}`, usage: 120 - i * 4, category: 'Rock' },
+      { title: `Track ${i + 3}`, usage: 100 - i * 3, category: 'Jazz' }
+    ]
+    
+    return { 
+      id: String(i+1), 
+      name, 
+      tier, 
+      totalTokens, 
+      monthlyEarned, 
+      monthlyUsed, 
+      usageRate, 
+      activeTracks, 
+      status, 
+      lastActivity, 
+      joinedDate, 
+      contactEmail, 
+      contactPhone, 
+      subscriptionStart, 
+      subscriptionEnd, 
+      monthlyUsage, 
+      monthlyRewards, 
+      topTracks 
+    }
   })
 
   const filteredCompanies = companies
@@ -44,8 +88,8 @@ export default function CompaniesPage() {
     )
     .filter(company => 
       statusFilter === '' || 
-      (statusFilter === 'active' && company.active) ||
-      (statusFilter === 'inactive' && !company.active)
+      (statusFilter === 'active' && company.status === 'active') ||
+      (statusFilter === 'inactive' && company.status === 'inactive')
     )
     .sort((a, b) => {
       let aValue: any = a[sortBy as keyof Company]
@@ -59,8 +103,8 @@ export default function CompaniesPage() {
     })
 
   const total = companies.length
-  const activeCount = companies.filter(c => c.active).length
-  const inactiveCount = companies.filter(c => !c.active).length
+  const activeCount = companies.filter(c => c.status === 'active').length
+  const inactiveCount = companies.filter(c => c.status === 'inactive').length
 
   return (
     <div className="space-y-4">
@@ -159,23 +203,23 @@ export default function CompaniesPage() {
                     </span>
                   </td>
                   <td className="px-8 py-5 text-white/80">
-                    {company.joined}
+                    {company.joinedDate}
                   </td>
                   <td className="px-8 py-5 text-teal-400 font-medium">
-                    {company.monthly}
+                    {company.monthlyUsed.toLocaleString()}회
                   </td>
                   <td className="px-8 py-5 text-white/80">
-                    -
+                    {company.monthlyEarned.toLocaleString()} 토큰
                   </td>
                   <td className="px-8 py-5 text-white/80">
-                    {company.tokens}
+                    {company.totalTokens.toLocaleString()} 토큰
                   </td>
                   <td className="px-8 py-5 text-white/80">
-                    {company.usedTracks}개
+                    {company.activeTracks}개
                   </td>
                   <td className="px-8 py-5">
                     <div className={`w-3 h-3 rounded-full ${
-                      company.active ? 'bg-green-400' : 'bg-gray-400'
+                      company.status === 'active' ? 'bg-green-400' : 'bg-gray-400'
                     }`}></div>
                   </td>
                   <td className="px-8 py-5">
