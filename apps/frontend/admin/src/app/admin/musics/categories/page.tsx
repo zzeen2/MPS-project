@@ -115,7 +115,7 @@ export default function MusicCategoriesPage() {
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
             placeholder="새로운 카테고리명을 입력하세요"
-            className="flex-1 rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200"
+            className="flex-1 rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm"
             onKeyPress={(e) => e.key === 'Enter' && addCategory()}
           />
           <button

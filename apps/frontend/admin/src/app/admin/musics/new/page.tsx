@@ -112,7 +112,7 @@ export default function MusicCreatePage() {
               value={title} 
               onChange={(e)=>setTitle(e.target.value)} 
               placeholder="음원 제목을 입력하세요" 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -121,7 +121,7 @@ export default function MusicCreatePage() {
               value={artist} 
               onChange={(e)=>setArtist(e.target.value)} 
               placeholder="아티스트명" 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -129,7 +129,7 @@ export default function MusicCreatePage() {
             <select 
               value={genre} 
               onChange={(e)=>setGenre(e.target.value)} 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200"
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm"
             >
               <option>Pop</option>
               <option>Rock</option>
@@ -145,7 +145,7 @@ export default function MusicCreatePage() {
               value={tags} 
               onChange={(e)=>setTags(e.target.value)} 
               placeholder="차분한, 릴렉스, 배경음악" 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -155,7 +155,7 @@ export default function MusicCreatePage() {
               value={releaseYear} 
               onChange={(e)=>setReleaseYear(e.target.value ? Number(e.target.value) : '')} 
               placeholder="2024" 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -165,7 +165,7 @@ export default function MusicCreatePage() {
               value={durationSec} 
               onChange={(e)=>setDurationSec(e.target.value ? Number(e.target.value) : '')} 
               placeholder="180" 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -197,7 +197,7 @@ export default function MusicCreatePage() {
                   onChange={(e)=>setLyricsText(e.target.value)} 
                   placeholder="가사를 입력하세요..." 
                   rows={4}
-                  className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 resize-none" 
+                  className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 resize-none text-sm" 
                 />
               ) : (
                 <div className="space-y-2">
@@ -230,7 +230,7 @@ export default function MusicCreatePage() {
               type="number" 
               value={priceRef} 
               onChange={(e)=>setPriceRef(Number(e.target.value))} 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -240,7 +240,7 @@ export default function MusicCreatePage() {
               step="0.001"
               value={rewardPerPlay} 
               onChange={(e)=>setRewardPerPlay(Number(e.target.value))} 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -249,7 +249,7 @@ export default function MusicCreatePage() {
               type="number" 
               value={maxPlayCount} 
               onChange={(e)=>setMaxPlayCount(e.target.value ? Number(e.target.value) : '')} 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
         </div>
@@ -272,7 +272,7 @@ export default function MusicCreatePage() {
             <input 
               value="/api/music/{music_id}/play" 
               readOnly
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white/60 outline-none ring-1 ring-white/8 transition-all duration-200" 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white/60 outline-none ring-1 ring-white/8 transition-all duration-200 text-sm" 
             />
           </div>
           <div className="space-y-2">
@@ -280,7 +280,7 @@ export default function MusicCreatePage() {
             <select 
               value={accessTier} 
               onChange={(e)=>setAccessTier(e.target.value as 'all' | 'subscribed')} 
-              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200"
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm"
             >
               <option value="all">모든 기업 (무료)</option>
               <option value="subscribed">구독 기업만</option>

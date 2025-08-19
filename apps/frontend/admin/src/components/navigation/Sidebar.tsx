@@ -18,9 +18,8 @@ const MUSIC_GROUP = {
 const REWARD_GROUP = {
   label: '리워드 관리',
   items: [
-    { href: '/admin/rewards', label: '리워드 대시보드' },
-    { href: '/admin/rewards/manage', label: '리워드 일괄/개별 수정' },
-    { href: '/admin/rewards/tokens', label: '토큰/온체인' },
+    { href: '/admin/rewards/companies', label: '기업별 리워드 현황' },
+    { href: '/admin/rewards/musics', label: '음원별 리워드 현황' },
   ],
 }
 
@@ -43,6 +42,7 @@ const SYSTEM_GROUP = {
   items: [
     { href: '/admin/system/tiers', label: '구독제 등급 관리' },
     { href: '/admin/system/api', label: 'API 관리' },
+    { href: '/admin/system/tokens', label: '토큰/온체인' },
   ],
 }
 
@@ -70,23 +70,20 @@ export default function Sidebar() {
     if (href === '/admin/musics/categories') {
       return pathname === '/admin/musics/categories'
     }
-    if (href === '/admin/rewards') {
-      return pathname === '/admin/rewards'
-    }
-    if (href === '/admin/rewards/manage') {
-      return pathname === '/admin/rewards/manage'
+    if (href === '/admin/rewards/companies') {
+      return pathname === '/admin/rewards/companies'
     }
     if (href === '/admin/rewards/musics') {
       return pathname === '/admin/rewards/musics'
-    }
-    if (href === '/admin/rewards/tokens') {
-      return pathname === '/admin/rewards/tokens'
     }
     if (href === '/admin/system/tiers') {
       return pathname === '/admin/system/tiers'
     }
     if (href === '/admin/system/api') {
       return pathname === '/admin/system/api'
+    }
+    if (href === '/admin/system/tokens') {
+      return pathname === '/admin/system/tokens'
     }
     return pathname === href
   }
