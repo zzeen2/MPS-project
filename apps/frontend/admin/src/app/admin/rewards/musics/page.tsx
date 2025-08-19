@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import MusicDetailModal from '@/components/modals/MusicDetailModal'
 import RewardEditModal from '@/components/modals/RewardEditModal'
+import BulkRewardEditModal from '@/components/modals/BulkRewardEditModal'
 
 type Music = {
   id: string
@@ -61,6 +62,8 @@ export default function RewardsMusicsPage() {
   const [selectedMusic, setSelectedMusic] = useState<Music | null>(null)
   const [rewardEditModalOpen, setRewardEditModalOpen] = useState(false)
   const [selectedMusicForEdit, setSelectedMusicForEdit] = useState<Music | null>(null)
+  const [selectedMusics, setSelectedMusics] = useState<string[]>([])
+  const [bulkEditModalOpen, setBulkEditModalOpen] = useState(false)
 
   const musics: Music[] = [
     { 
@@ -161,6 +164,25 @@ export default function RewardsMusicsPage() {
       }
     })
 
+  // 체크박스 관련 함수들
+  const handleSelectAll = () => {
+    if (selectedMusics.length === filteredMusics.length) {
+      setSelectedMusics([])
+    } else {
+      setSelectedMusics(filteredMusics.map(music => music.id))
+    }
+  }
+
+  const handleSelectMusic = (musicId: string) => {
+    setSelectedMusics(prev => 
+      prev.includes(musicId) 
+        ? prev.filter(id => id !== musicId)
+        : [...prev, musicId]
+    )
+  }
+
+  const selectedMusicsData = musics.filter(music => selectedMusics.includes(music.id))
+
   return (
     <div className="space-y-4">
       {/* 검색/필터 및 음원 현황 */}
@@ -202,10 +224,23 @@ export default function RewardsMusicsPage() {
               <option value="companies-desc">사용 기업 많은순</option>
             </select>
           </div>
+          {selectedMusics.length > 0 && (
+            <button
+              onClick={() => setBulkEditModalOpen(true)}
+              className="px-3 py-2 bg-orange-500/90 text-white text-xs font-medium rounded-lg hover:bg-orange-400 transition-colors"
+            >
+              일괄 수정 ({selectedMusics.length}개)
+            </button>
+          )}
         </div>
         
         <div className="text-sm text-white/60">
-          총 <span className="text-teal-300 font-semibold">{musics.length}</span>개 음원
+          총 <span className="text-teal-300 font-semibold">{filteredMusics.length}</span>개 음원
+          {selectedMusics.length > 0 && (
+            <span className="ml-2 text-orange-300">
+              • 선택됨: <span className="text-orange-300 font-semibold">{selectedMusics.length}</span>개
+            </span>
+          )}
         </div>
       </div>
 
@@ -215,6 +250,14 @@ export default function RewardsMusicsPage() {
           <table className="w-full text-sm">
             <thead className="text-left">
               <tr className="border-b border-white/10">
+                <th className="px-8 py-5">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedMusics.length === filteredMusics.length && filteredMusics.length > 0}
+                    onChange={handleSelectAll}
+                    className="accent-teal-400 rounded" 
+                  />
+                </th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">음원명</th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">카테고리</th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">이번 달 사용</th>
@@ -234,6 +277,14 @@ export default function RewardsMusicsPage() {
                   <tr key={music.id} className={`border-b border-white/5 transition-all duration-200 ${
                     index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
                   } hover:bg-white/8`}>
+                    <td className="px-8 py-5">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedMusics.includes(music.id)}
+                        onChange={() => handleSelectMusic(music.id)}
+                        className="accent-teal-400 rounded" 
+                      />
+                    </td>
                     <td className="px-8 py-5">
                       <div className="font-semibold text-white">{music.title}</div>
                     </td>
@@ -290,7 +341,7 @@ export default function RewardsMusicsPage() {
                           상세
                         </button>
                         <button 
-                          className="rounded-md bg-orange-500/90 px-2.5 py-1.5 text-xs text-white font-medium hover:bg-orange-400 transition-all duration-200"
+                          className="rounded-md bg-white/10 px-2.5 py-1.5 text-xs text-white font-medium hover:bg-white/20 transition-all duration-200"
                           onClick={() => {
                             setSelectedMusicForEdit(music)
                             setRewardEditModalOpen(true)
@@ -331,6 +382,16 @@ export default function RewardsMusicsPage() {
           music={selectedMusicForEdit}
         />
       )}
+
+      {/* 일괄 수정 모달 */}
+      <BulkRewardEditModal
+        open={bulkEditModalOpen}
+        onClose={() => {
+          setBulkEditModalOpen(false)
+          setSelectedMusics([])
+        }}
+        selectedMusics={selectedMusicsData}
+      />
     </div>
   )
 } 
