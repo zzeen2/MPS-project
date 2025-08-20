@@ -23,7 +23,7 @@ app.post("/userop", async (req, res) => {
     }
 })
 
-app.get("mempool", (req, res) => {
+app.get("/mempool", (req, res) => {
     try {
         res.json({mempool})
     } catch (error) {
@@ -51,9 +51,9 @@ const toTuple = (userOp) => {
         userOp.callData,
         BigInt(userOp.callGasLimit),
         BigInt(userOp.verificationGasLimit),
-        BigInt(userOp.preverificationGas),
+        BigInt(userOp.preVerificationGas),
         BigInt(userOp.maxFeePerGas),
-        BigInt(userOp.maxPriorityFeePerGaS),
+        BigInt(userOp.maxPriorityFeePerGas),
         userOp.paymasterAndData,
         userOp.signature,
     ]
@@ -63,10 +63,50 @@ setTimeInterval(async () => {
     try {
         const ops = mempool.splice(0);
         if(ops.length === 0) return;
+        
+        console.log(`처리할 UserOp 개수: ${ops.length}`);
+        console.log("UserOp 데이터:", JSON.stringify(ops[0], null, 2));
+        
+        // 실제 트랜잭션 실행 전에 gas estimate 시도
+        console.log("Gas estimation 시도 중...");
+        
+
+        // try {
+        //     const gasEstimate = await entryPoint.handleOps(ops.map(toTuple)).estimateGas();
+        //     console.log("예상 가스 사용량:", gasEstimate.toString());
+        // } catch (gasError) {
+        //     console.log("Gas estimation 실패:", gasError.message);
+            
+        //     // 개별 UserOp 검증 시도
+        //     const op = ops[0];
+        //     console.log("개별 UserOp 분석:");
+        //     console.log("- Sender:", op.sender);
+        //     console.log("- Nonce:", op.nonce);
+        //     console.log("- PaymasterAndData:", op.paymasterAndData);
+        //     console.log("- Signature length:", op.signature ? op.signature.length : 0);
+            
+        //     // 스마트 계정이 배포되었는지 확인
+        //     const code = await provider.getCode(op.sender);
+        //     console.log("- 스마트 계정 배포 상태:", code === "0x" ? "배포되지 않음" : "배포됨");
+            
+        //     return; // gas estimation 실패 시 실행 중단
+        // }
+        
         const transaction = await entryPoint.handleOps(ops.map(toTuple));
         console.log(`트랜잭션 해시: ${transaction.hash}`)
+        
+        const receipt = await transaction.wait();
+        console.log(`트랜잭션 완료: ${receipt.status === 1 ? "성공" : "실패"}`);
+        
     } catch (error) {
-        console.log(error);
+        console.log("=== Bundler 에러 상세 정보 ===");
+        console.log("에러 메시지:", error.message);
+        console.log("에러 코드:", error.code);
+        if (error.reason) console.log("에러 이유:", error.reason);
+        if (error.transaction) {
+            console.log("실패한 트랜잭션:", error.transaction);
+        }
+        console.log("=== 에러 끝 ===");
     }
 }, 10000)
 
@@ -75,28 +115,3 @@ app.listen(4000, () => {
 })
 
 
-
-
-
-
-// api 호출 됐을 때
-if (music.isRewardMusic === true && music.rewardCount > 0) { // 음원이 리워드를 제공하고 있으며, 아직 카운트 횟수가 남아있는 경우
-    musicHasBeenUsed(music.id, usingCompany);
-    music.rewardCount -= 1;
-} else {
-    musicHasBeenUsed(music.id, usingCompany);
-}
-
-
-const musicHasBeenUsed = (_musicId, _usingCompany) => {
-    const music = Music.findById(_musicId);
-    if (!music) {
-        throw new Error("음원을 찾을 수 없습니다.");
-    }
-    const musicUseInfo = {musicId: _musicId, usingCompanyId: _usingCompany, usedAt: new Date(), reward: music.rewardAmount};
-
-    // musicUseInfo를 DB에 저장하는 로직 추가. postgresQL과 drizzle을 사용할 예정
-    
-    music.usingCompany.push(_usingCompany);
-    music.save();
-}

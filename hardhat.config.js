@@ -12,9 +12,9 @@ module.exports = {
       },
     },
   },
-  paths: {
-    sources: "./contracts/AA" // 단일 폴더로 제한
-  },
+  // paths: {
+  //   sources: "./contracts/AA" // 단일 폴더로 제한
+  // },
   networks: {
     sepolia: {
       url: process.env.INFURA_RPC || "",

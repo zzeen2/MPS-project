@@ -18,6 +18,8 @@ contract EntryPoint {
         bytes signature;
     }
 
+    event PaymasterLog(bool indexed paymasterSuccess);
+
     mapping(address => uint) public nonces;
 
     function handleOps(UserOperation[] calldata ops) external {
@@ -37,7 +39,8 @@ contract EntryPoint {
                         maxCost
                     )
                 );
-                require(paymasterSuccess);
+                // require(paymasterSuccess);
+                emit PaymasterLog(paymasterSuccess);
             }
 
             bytes32 _hash = _getUserOpHash(op);

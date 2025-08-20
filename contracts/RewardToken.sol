@@ -1,25 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.20;
+
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RewardToken is ERC20, AccessControl {
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+contract RewardToken is ERC20, Ownable {
+    constructor(address admin) ERC20("MPS Mileage", "MPSM") Ownable(admin) {}
 
-    constructor(address admin) ERC20("MPS Mileage", "MPSM") {
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
-        _grantRole(MINTER_ROLE, admin);
-        _grantRole(BURNER_ROLE, admin);
-    }
-
-    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 amount) external onlyOwner {
         _mint(to, amount);
     }
-    function burnFrom(
-        address from,
-        uint256 amount
-    ) external onlyRole(BURNER_ROLE) {
+
+    function burnFrom(address from, uint256 amount) external onlyOwner {
         _burn(from, amount);
     }
 
