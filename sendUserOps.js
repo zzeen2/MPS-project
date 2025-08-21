@@ -7,7 +7,7 @@ const { createPrivateKey } = require("./createAccount.js");
 const provider = new ethers.JsonRpcProvider(process.env.INFURA_RPC);
 const paymasterWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // 가스비 대납 계정
 
-const email = "dummy_company@email.com";
+const email = "dummy_company2@email.com";
 const smartAccountOwnerPrivateKey = createPrivateKey(email, "dummy_salt", "dummy_business_number");
 const smartAccountOwnerWallet = new ethers.Wallet(smartAccountOwnerPrivateKey, provider);
 
@@ -46,11 +46,7 @@ const createUserOp = async (callData, smartAccountAddress) => {
     const entryPoint = new ethers.Contract(entryPointCA, entryPointAbi, paymasterWallet);
     const nonce = await entryPoint.nonces(smartAccountAddress);
 
-    // paymasterAndData 처리: 일단 paymaster 없이 테스트
     let paymasterAndData = process.env.Paymaster;
-    // if (process.env.Paymaster && process.env.Paymaster.startsWith("0x") && process.env.Paymaster.length >= 42) {
-    //     paymasterAndData = process.env.Paymaster;
-    // }
 
     const userOp = {
         sender: smartAccountAddress,

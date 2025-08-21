@@ -37,7 +37,7 @@ contract Paymaster {
         uint amount
     ) external view onlyEntryPoint returns (bool) {
         require(whiteList[smartAccount], "You're not on whiteList");
-        // require(amount <= MAX_COST);
+        require(amount <= MAX_COST);
         return true;
     }
 }

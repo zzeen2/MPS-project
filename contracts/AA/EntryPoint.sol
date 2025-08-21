@@ -23,23 +23,21 @@ contract EntryPoint {
     mapping(address => uint) public nonces;
 
     function handleOps(UserOperation[] calldata ops) external {
-        // ops를 담아 전달해주는 부분 주시:
         for (uint i = 0; i < ops.length; i++) {
             UserOperation calldata op = ops[i];
             require(op.nonce == nonces[op.sender], "nonce error");
 
             if (op.paymasterAndData.length >= 20) {
-                // 페이마스터가 없어서, 사용자 본인이 직접 가스비를 지불하는 요청도 받을 수 있음
                 address paymaster = address(bytes20(op.paymasterAndData));
                 uint maxCost = op.callGasLimit * op.maxFeePerGas;
                 (bool paymasterSuccess, ) = paymaster.call(
                     abi.encodeWithSignature(
-                        "validatePaymasterUserOp(address,uint)",
+                        "validatePaymasterUserOp(address,uint256)",
                         op.sender,
                         maxCost
                     )
                 );
-                // require(paymasterSuccess);
+                require(paymasterSuccess, "paymaster fail");
                 emit PaymasterLog(paymasterSuccess);
             }
 

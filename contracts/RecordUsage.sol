@@ -17,7 +17,7 @@ contract RecordUsage is Ownable, Pausable, ReentrancyGuard {
         uint256 indexed track_id, // 사용한 음원 id
         uint64 client_ts, // 서버에서 기록된 시간
         uint256 block_ts, // 블록 시간
-        uint256 reward_amount // 발생한 리워드 수량 - uint256으로 변경
+        uint256 reward_amount // 발생한 리워드 수량 
     );
 
     event CompanyApproved(address indexed company, bool approved);
@@ -76,7 +76,7 @@ contract RecordUsage is Ownable, Pausable, ReentrancyGuard {
     function recordPlay(
         uint256 track_id,
         uint64 client_ts,
-        uint256 reward_amount // uint256으로 변경
+        uint256 reward_amount 
     )
         external
         onlyApprovedCompany

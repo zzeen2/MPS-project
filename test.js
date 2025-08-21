@@ -197,7 +197,10 @@ if (require.main === module) {
     const runTests = async () => {
         try {
             // 테스트 1: 더미 기업의 토큰 잔액 확인
-            await checkCompanyTokenBalance("dummy_company@email.com", "dummy_salt", "dummy_business_number");
+            await checkCompanyTokenBalance("dummy_company2@email.com", "dummy_salt", "dummy_business_number");
+
+            // const receipt = await provider.getTransactionReceipt("0x9a66f02b93d5489d6753ed05f61d3e02c8d4e8b9ef35bcdf12249fcfc0414949");
+            // console.log("트랜잭션 로그:", receipt.logs);
             
             // 테스트 2: 특정 주소의 토큰 잔액 직접 확인 (예시 주소)
             // const testAddress = "0x특정주소";

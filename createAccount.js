@@ -11,7 +11,7 @@ const createPrivateKey = (email, salt, business_number) => {
     return `0x${pk}`;
 }
 
-const email = "dummy_company@email.com";
+const email = "dummy_company2@email.com";
 const private_key = createPrivateKey(email, "dummy_salt", "dummy_business_number");
 const provider = new ethers.JsonRpcProvider(process.env.INFURA_RPC);
 const wallet = new ethers.Wallet(private_key, provider); 
