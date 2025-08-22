@@ -68,11 +68,6 @@ contract RecordUsage is Ownable, Pausable, ReentrancyGuard {
         _unpause();
     }
 
-    // function setRewardToken(address _rewardToken) external onlyOwner {
-    //     require(_rewardToken != address(0), "Invalid reward token address");
-    //     rewardToken = RewardToken(_rewardToken);
-    // }
-
     function recordPlay(
         uint256 track_id,
         uint64 client_ts,
@@ -106,41 +101,41 @@ contract RecordUsage is Ownable, Pausable, ReentrancyGuard {
         }
     }
 
-    function recordPlayByOwner(
-        address using_company,
-        uint256 track_id,
-        uint64 client_ts,
-        uint256 reward_amount // uint256으로 변경
-    )
-        external
-        onlyOwner
-        whenNotPaused
-        validTrackId(track_id)
-        validTimestamp(client_ts)
-        nonReentrant
-    {
-        require(approvedCompanies[using_company], "Company not approved");
+    // function recordPlayByOwner(
+    //     address using_company,
+    //     uint256 track_id,
+    //     uint64 client_ts,
+    //     uint256 reward_amount // uint256으로 변경
+    // )
+    //     external
+    //     onlyOwner
+    //     whenNotPaused
+    //     validTrackId(track_id)
+    //     validTimestamp(client_ts)
+    //     nonReentrant
+    // {
+    //     require(approvedCompanies[using_company], "Company not approved");
 
-        // 트랙 재생 횟수 증가
-        trackPlayCount[track_id]++;
+    //     // 트랙 재생 횟수 증가
+    //     trackPlayCount[track_id]++;
 
-        // 기업 총 리워드 누적
-        companyTotalRewards[using_company] += reward_amount;
+    //     // 기업 총 리워드 누적
+    //     companyTotalRewards[using_company] += reward_amount;
 
-        // 이벤트 발생
-        emit PlayRecorded(
-            using_company,
-            track_id,
-            client_ts,
-            block.timestamp,
-            reward_amount
-        );
+    //     // 이벤트 발생
+    //     emit PlayRecorded(
+    //         using_company,
+    //         track_id,
+    //         client_ts,
+    //         block.timestamp,
+    //         reward_amount
+    //     );
 
-        // 리워드 민팅
-        if (reward_amount > 0) {
-            _mintReward(using_company, reward_amount);
-        }
-    }
+    //     // 리워드 민팅
+    //     if (reward_amount > 0) {
+    //         _mintReward(using_company, reward_amount);
+    //     }
+    // }
 
     function _mintReward(address to, uint256 amount) internal {
         try rewardToken.mint(to, amount) {
@@ -152,15 +147,15 @@ contract RecordUsage is Ownable, Pausable, ReentrancyGuard {
     }
 
     // View functions
-    function getTrackPlayCount(
-        uint256 track_id
-    ) external view returns (uint256) {
-        return trackPlayCount[track_id];
-    }
+    // function getTrackPlayCount(
+    //     uint256 track_id
+    // ) external view returns (uint256) {
+    //     return trackPlayCount[track_id];
+    // }
 
-    function getCompanyTotalRewards(
-        address company
-    ) external view returns (uint256) {
-        return companyTotalRewards[company];
-    }
+    // function getCompanyTotalRewards(
+    //     address company
+    // ) external view returns (uint256) {
+    //     return companyTotalRewards[company];
+    // }
 }
