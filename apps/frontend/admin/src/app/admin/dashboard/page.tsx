@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<string>('')
 
   useEffect(() => {
-    // 시간별 사용량 데이터
+    // 시간별 사용량 데이터 (유효재생/총재생 구분)
     const generateHourlyData = () => {
       const now = new Date()
       const currentHour = now.getHours()
@@ -37,11 +37,30 @@ export default function DashboardPage() {
         const isPeak = baseHour >= 9 && baseHour <= 18
         const isNight = baseHour >= 22 || baseHour <= 6
         
+        // 유효재생 데이터 (60초 이상)
+        const freeValid = [150, 200, 180, 160, 140, 120, 100, 80, 120, 180, 220, 280, 320, 380, 420, 400, 380, 360, 340, 320, 300, 280, 260, 240][i] || 200
+        const standardValid = [200, 250, 230, 210, 190, 170, 150, 130, 170, 230, 270, 330, 370, 430, 470, 450, 430, 410, 390, 370, 350, 330, 310, 290][i] || 250
+        const businessValid = [300, 350, 330, 310, 290, 270, 250, 230, 270, 330, 370, 430, 470, 530, 570, 550, 530, 510, 490, 470, 450, 430, 410, 390][i] || 350
+        
+        // 총재생 데이터 (유효재생 + 60초 미만)
+        const freeTotal = Math.floor(freeValid * 1.15) // 15% 추가
+        const standardTotal = Math.floor(standardValid * 1.12) // 12% 추가
+        const businessTotal = Math.floor(businessValid * 1.08) // 8% 추가
+        
         return {
           hour: `${i}시`,
-          free: [150, 200, 180, 160, 140, 120, 100, 80, 120, 180, 220, 280, 320, 380, 420, 400, 380, 360, 340, 320, 300, 280, 260, 240][i] || 200,
-          standard: [200, 250, 230, 210, 190, 170, 150, 130, 170, 230, 270, 330, 370, 430, 470, 450, 430, 410, 390, 370, 350, 330, 310, 290][i] || 250,
-          business: [300, 350, 330, 310, 290, 270, 250, 230, 270, 330, 370, 430, 470, 530, 570, 550, 530, 510, 490, 470, 450, 430, 410, 390][i] || 350
+          free: {
+            valid: freeValid,
+            total: freeTotal
+          },
+          standard: {
+            valid: standardValid,
+            total: standardTotal
+          },
+          business: {
+            valid: businessValid,
+            total: businessTotal
+          }
         }
       })
       setHourlyData(data)
@@ -75,7 +94,7 @@ export default function DashboardPage() {
     <div className="w-full px-6 py-6">
       <DashboardHeader 
         title="B2B Music Licensing Platform" 
-        subtitle="관리자 대시보드 · 실시간 모니터링"
+        subtitle="관리자 대시보드 · 유효재생 모니터링"
         lastUpdated={lastUpdated}
       />
 
@@ -94,26 +113,29 @@ export default function DashboardPage() {
         <Title variant="section" className="mb-4">차트 분석</Title>
         <div className="grid gap-5 [grid-template-columns:1.5fr_1fr_0.8fr] max-[1200px]:grid-cols-2 max-md:grid-cols-1">
           <Card>
-            <Title variant="card" className="mb-4">24시간 사용량 (요금제별 + 전일 평균)</Title>
+            <Title variant="card" className="mb-4">24시간 유효재생 (요금제별 + 전일 평균)</Title>
             <div className="h-80">
               <SimpleLineChart 
                 labels={hourlyData.map(d => d.hour)}
                 series={[
                   {
-                    label: 'Free',
-                    data: hourlyData.map(d => d.free)
+                    label: 'Free (유효재생)',
+                    data: hourlyData.map(d => d.free?.valid || 0)
                   },
                   {
-                    label: 'Standard',
-                    data: hourlyData.map(d => d.standard)
+                    label: 'Standard (유효재생)',
+                    data: hourlyData.map(d => d.standard?.valid || 0)
                   },
                   {
-                    label: 'Business',
-                    data: hourlyData.map(d => d.business)
+                    label: 'Business (유효재생)',
+                    data: hourlyData.map(d => d.business?.valid || 0)
                   },
                   {
-                    label: '전일 평균',
-                    data: hourlyData.map(d => Math.floor((d.free + d.standard + d.business) / 3))
+                    label: '전일 평균 (유효재생)',
+                    data: hourlyData.map(d => {
+                      if (!d.free || !d.standard || !d.business) return 0
+                      return Math.floor((d.free.valid + d.standard.valid + d.business.valid) / 3)
+                    })
                   }
                 ]}
               />
@@ -126,7 +148,7 @@ export default function DashboardPage() {
             </div>
           </Card>
           <Card>
-            <Title variant="card" className="mb-4">카테고리 Top5 호출수</Title>
+            <Title variant="card" className="mb-4">카테고리 Top5 유효재생</Title>
             <div className="h-80">
               <BarCategoryTop5 />
             </div>
@@ -198,28 +220,42 @@ export default function DashboardPage() {
 
           {/* 인기 음원 TOP 10 */}
           <Card>
-            <Title variant="card" className="mb-4">인기 음원 TOP 10</Title>
+            <Title variant="card" className="mb-4">인기 음원 TOP 10 (유효재생)</Title>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left py-2 px-3 text-xs font-medium text-white/60">순위</th>
                     <th className="text-left py-2 px-3 text-xs font-medium text-white/60">음원명</th>
-                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">24시간 재생 횟수</th>
+                    <th className="text-left py-2 px-3 text-xs font-medium text-white/60">24시간 유효재생</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rank) => (
-                    <tr key={rank} className="border-b border-white/5">
-                      <td className={`py-2 px-3 font-medium ${
-                        rank <= 3 ? 'text-teal-300' : 'text-white/60'
-                      }`}>{rank}</td>
-                      <td className="py-2 px-3 text-white/80">Track Title {rank}</td>
-                      <td className="py-2 px-3 text-white/60">
-                        {Math.floor(Math.random() * 2000 + 800).toLocaleString()} plays
-                      </td>
-                    </tr>
-                  ))}
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rank) => {
+                    const validPlays = Math.floor(Math.random() * 2000 + 800)
+                    const totalPlays = Math.floor(validPlays * (1 + Math.random() * 0.3 + 0.1)) // 10-40% 추가
+                    const validRate = Math.round((validPlays / totalPlays) * 100)
+                    
+                    return (
+                      <tr key={rank} className="border-b border-white/5">
+                        <td className={`py-2 px-3 font-medium ${
+                          rank <= 3 ? 'text-teal-300' : 'text-white/60'
+                        }`}>{rank}</td>
+                        <td className="py-2 px-3 text-white/80">Track Title {rank}</td>
+                        <td className="py-2 px-3 text-white/60">
+                          <div className="flex items-center gap-2">
+                            <span>{validPlays.toLocaleString()}회</span>
+                            <span className="text-xs text-white/50">
+                              ({validRate}%)
+                            </span>
+                          </div>
+                          <div className="text-xs text-white/40">
+                            총 {totalPlays.toLocaleString()}회
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

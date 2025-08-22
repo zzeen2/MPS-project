@@ -99,7 +99,7 @@ export default function MusicsPage() {
           <div className="min-w-[120px]">
             <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
               <option>최신순</option>
-              <option>재생순</option>
+              <option>유효재생순</option>
               <option>이름순</option>
               <option>인기순</option>
             </select>
@@ -145,7 +145,8 @@ export default function MusicsPage() {
                 <th className="px-6 py-4 text-white/70 font-medium">장르</th>
                 <th className="px-6 py-4 text-white/70 font-medium">태그</th>
                 <th className="px-6 py-4 text-white/70 font-medium">참고가격</th>
-                <th className="px-6 py-4 text-white/70 font-medium">재생(1달 누적)</th>
+                <th className="px-6 py-4 text-white/70 font-medium">유효재생(1달 누적)</th>
+                <th className="px-6 py-4 text-white/70 font-medium">유효재생률</th>
                 <th className="px-6 py-4 text-white/70 font-medium">월 최대 리워드 한도</th>
                 <th className="px-6 py-4 text-white/70 font-medium">호출당 리워드</th>
                 <th className="px-6 py-4 text-white/70 font-medium">등록일</th>
@@ -155,6 +156,10 @@ export default function MusicsPage() {
             <tbody>
               {[...Array(10)].map((_, i) => {
                 const rowTitle = `Song Title ${i+1}`
+                const validPlays = 1000 + i * 3
+                const totalPlays = Math.floor(validPlays * (1 + Math.random() * 0.3 + 0.1)) // 10-40% 추가
+                const validRate = Math.round((validPlays / totalPlays) * 100)
+                
                 return (
                 <tr key={i} className={`border-b border-white/5 transition-all duration-200 ${
                   i % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
@@ -183,7 +188,15 @@ export default function MusicsPage() {
                   </td>
                   <td className="px-6 py-4 text-white/60">차분한, 릴렉스</td>
                   <td className="px-6 py-4 text-white/80 font-medium">7원</td>
-                  <td className="px-6 py-4 text-white/80">{(1000+i*3).toLocaleString()}회</td>
+                  <td className="px-6 py-4 text-white/80">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{validPlays.toLocaleString()}회</span>
+                      <span className="text-xs text-white/50">총 {totalPlays.toLocaleString()}회</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-teal-300 font-medium">{validRate}%</span>
+                  </td>
                   <td className="px-6 py-4 text-white/80">1000토큰</td>
                   <td className="px-6 py-4 text-white/80">0.007토큰</td>
                   <td className="px-6 py-4 text-white/60">2024.01.15</td>
