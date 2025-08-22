@@ -291,9 +291,13 @@ export default function CompaniesPage() {
                     {company.activeTracks}개
                   </td>
                   <td className="px-8 py-5">
-                    <div className={`w-3 h-3 rounded-full ${
-                      company.status === 'active' ? 'bg-green-400' : 'bg-gray-400'
-                    }`}></div>
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                      company.status === 'active' 
+                        ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25'
+                        : 'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
+                    }`}>
+                      {company.status === 'active' ? '●' : '○'} {company.status === 'active' ? '활성' : '비활성'}
+                    </span>
                   </td>
                   <td className="px-8 py-5 text-white/60 text-xs">
                     {new Date(company.lastActivity).toLocaleDateString('ko-KR')}

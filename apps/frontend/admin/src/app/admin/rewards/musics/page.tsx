@@ -325,9 +325,13 @@ export default function RewardsMusicsPage() {
                       {music.rewardPerPlay.toFixed(3)} 토큰
                     </td>
                     <td className="px-8 py-5">
-                      <div className={`w-3 h-3 rounded-full ${
-                        music.status === 'active' ? 'bg-green-400' : 'bg-gray-400'
-                      }`}></div>
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                        music.status === 'active' 
+                          ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25'
+                          : 'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
+                      }`}>
+                        {music.status === 'active' ? '●' : '○'} {music.status === 'active' ? '활성' : '비활성'}
+                      </span>
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex gap-1.5">
