@@ -2,78 +2,123 @@
 
 import { useState } from 'react'
 import Card from '@/components/ui/Card'
+import Title from '@/components/ui/Title'
 
 export default function TierManagementPage() {
-  const [standardLimit, setStandardLimit] = useState(100000)
-  const [businessLimit, setBusinessLimit] = useState(1000000)
+  // Standard 등급 설정
+  const [standardPrice, setStandardPrice] = useState(150000)
+  const [standardApiLimit, setStandardApiLimit] = useState(50000)
 
-  const [selectedCompany, setSelectedCompany] = useState('Company A')
-  const [currentTier] = useState<'Standard'|'Business'>('Standard')
-  const [newTier, setNewTier] = useState<'Standard'|'Business'>('Business')
-  const [reason, setReason] = useState('')
-  const [applyWhen, setApplyWhen] = useState<'now'|'next'>('now')
+  // Business 등급 설정
+  const [businessPrice, setBusinessPrice] = useState(450000)
+  const [businessApiLimit, setBusinessApiLimit] = useState(500000)
+
+  // 리워드 할인 적용 비율 설정
+  const [rewardDiscountRate, setRewardDiscountRate] = useState(30)
 
   return (
     <div className="space-y-6">
+      {/* 등급별 정책 설정 */}
       <Card>
-        <div className="mb-3 text-sm font-semibold">등급별 정책 설정</div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-sm font-medium text-white">Standard 등급</div>
-            <div className="mt-2 text-xs text-white/70">월 최대 리워드 카운팅 한도</div>
-            <div className="mt-2 flex items-center gap-2">
-              <input type="number" value={standardLimit} onChange={(e)=>setStandardLimit(Number(e.target.value))} className="w-40 rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" />
-              <span className="text-sm text-white/70">회</span>
+        <Title variant="card" className="mb-4">등급별 정책 설정</Title>
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Standard 등급 설정 */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded-full bg-blue-400"></div>
+              <h3 className="text-lg font-semibold text-white">Standard 등급</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-white/70">월 구독료</label>
+                <div className="mt-1 flex items-center gap-2">
+                  <input 
+                    type="number" 
+                    value={standardPrice} 
+                    onChange={(e)=>setStandardPrice(Number(e.target.value))} 
+                    className="w-32 rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" 
+                  />
+                  <span className="text-sm text-white/60">원</span>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm text-white/70">월 API 호출 한도</label>
+                <div className="mt-1 flex items-center gap-2">
+                  <input 
+                    type="number" 
+                    value={standardApiLimit} 
+                    onChange={(e)=>setStandardApiLimit(Number(e.target.value))} 
+                    className="w-32 rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" 
+                  />
+                  <span className="text-sm text-white/60">회</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-sm font-medium text-white">Business 등급</div>
-            <div className="mt-2 text-xs text-white/70">월 최대 리워드 카운팅 한도</div>
-            <div className="mt-2 flex items-center gap-2">
-              <input type="number" value={businessLimit} onChange={(e)=>setBusinessLimit(Number(e.target.value))} className="w-48 rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" />
-              <span className="text-sm text-white/70">회</span>
+
+          {/* Business 등급 설정 */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded-full bg-teal-400"></div>
+              <h3 className="text-lg font-semibold text-white">Business 등급</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-white/70">월 구독료</label>
+                <div className="mt-1 flex items-center gap-2">
+                  <input 
+                    type="number" 
+                    value={businessPrice} 
+                    onChange={(e)=>setBusinessPrice(Number(e.target.value))} 
+                    className="w-32 rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" 
+                  />
+                  <span className="text-sm text-white/60">원</span>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm text-white/70">월 API 호출 한도</label>
+                <div className="mt-1 flex items-center gap-2">
+                  <input 
+                    type="number" 
+                    value={businessApiLimit} 
+                    onChange={(e)=>setBusinessApiLimit(Number(e.target.value))} 
+                    className="w-32 rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" 
+                  />
+                  <span className="text-sm text-white/60">회</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div className="mt-4 text-right">
-          <button className="rounded bg-teal-600/90 px-3 py-2 text-sm text-white hover:bg-teal-500">저장</button>
+        <div className="mt-6 text-right">
+          <button className="rounded bg-teal-600/90 px-6 py-2 text-sm text-white hover:bg-teal-500">수정</button>
         </div>
       </Card>
 
+      {/* 리워드 할인 적용 비율 설정 */}
       <Card>
-        <div className="mb-3 text-sm font-semibold">등급 수동 조정</div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-3">
-            <div className="text-sm text-white/80">대상 기업 선택</div>
-            <div className="flex gap-2">
-              <select value={selectedCompany} onChange={(e)=>setSelectedCompany(e.target.value)} className="min-w-[200px] rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60">
-                {['Company A','Company B','Company C','Company D'].map((c)=>(<option key={c} value={c}>{c}</option>))}
-              </select>
-              <input placeholder="검색" className="flex-1 rounded bg-black/40 px-3 py-2 text-sm text-white placeholder-white/40 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" />
+        <Title variant="card" className="mb-4">리워드 할인 적용 비율</Title>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm text-white/70">리워드 할인 적용 비율</label>
+            <div className="mt-1 flex items-center gap-2">
+              <input 
+                type="number" 
+                min="0"
+                max="100"
+                value={rewardDiscountRate} 
+                onChange={(e)=>setRewardDiscountRate(Number(e.target.value))} 
+                className="w-32 rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" 
+              />
+              <span className="text-sm text-white/60">%</span>
             </div>
-            <div className="text-sm text-white/80">현재 등급: <span className="text-white">{currentTier}</span></div>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="text-white/80">변경할 등급</div>
-              <select value={newTier} onChange={(e)=>setNewTier(e.target.value as any)} className="rounded bg-black/40 px-3 py-2 text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60">
-                <option value="Standard">Standard</option>
-                <option value="Business">Business</option>
-              </select>
-            </div>
-            <div>
-              <div className="text-sm text-white/80">변경 사유</div>
-              <textarea value={reason} onChange={(e)=>setReason(e.target.value)} rows={3} className="mt-1 w-full rounded bg-black/40 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-teal-400/60" />
-            </div>
-            <div className="flex items-center gap-4 text-sm text-white/80">
-              <label className="flex items-center gap-2"><input type="radio" name="applyWhen" checked={applyWhen==='now'} onChange={()=>setApplyWhen('now')} /> 즉시 적용</label>
-              <label className="flex items-center gap-2"><input type="radio" name="applyWhen" checked={applyWhen==='next'} onChange={()=>setApplyWhen('next')} /> 다음 결제주기</label>
-            </div>
+            <p className="mt-2 text-xs text-white/50">
+              적립된 리워드의 {rewardDiscountRate}%를 구독료 할인에 적용합니다.
+            </p>
           </div>
-          <div className="flex items-end justify-end">
-            <div className="space-x-2">
-              <button className="rounded border border-white/15 bg-white/5 px-3 py-2 text-sm text-white hover:bg-white/10">취소</button>
-              <button className="rounded bg-teal-600/90 px-3 py-2 text-sm text-white hover:bg-teal-500">변경 실행</button>
-            </div>
-          </div>
+        </div>
+        <div className="mt-6 text-right">
+          <button className="rounded bg-teal-600/90 px-6 py-2 text-sm text-white hover:bg-teal-500">수정</button>
         </div>
       </Card>
     </div>

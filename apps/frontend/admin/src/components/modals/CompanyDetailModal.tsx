@@ -17,6 +17,7 @@ type Company = {
   joinedDate: string
   contactEmail: string
   contactPhone: string
+  businessNumber: string
   subscriptionStart: string
   subscriptionEnd: string
   monthlyUsage: number[]
@@ -64,15 +65,6 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
       case 'Standard': return 'from-blue-400/15 to-blue-500/15 text-blue-300 border-blue-400/25'
       case 'Free': return 'from-gray-400/15 to-gray-500/15 text-gray-300 border-gray-400/25'
       default: return 'from-teal-400/15 to-blue-400/15 text-teal-300 border-teal-400/25'
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-400'
-      case 'inactive': return 'bg-gray-400'
-      case 'suspended': return 'bg-red-400'
-      default: return 'bg-gray-400'
     }
   }
 
@@ -165,13 +157,8 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                         <span className="text-white">{company.joinedDate}</span>
                       </div>
                       <div className="flex items-center justify-between py-2.5">
-                        <span className="text-white/60 text-sm">상태</span>
-                        <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${getStatusColor(company.status)}`}></div>
-                          <span className="text-white">
-                            {company.status === 'active' ? '활성' : company.status === 'inactive' ? '비활성' : '정지'}
-                          </span>
-                        </div>
+                        <span className="text-white/60 text-sm">사업자 번호</span>
+                        <span className="text-white">{company.businessNumber}</span>
                       </div>
                     </div>
 
@@ -184,7 +171,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                         <span className="text-white/60 text-sm">전화번호</span>
                         <span className="text-white">{company.contactPhone}</span>
                       </div>
-                                              <div className="flex items-center justify-between py-2.5 border-b border-white/10">
+                        <div className="flex items-center justify-between py-2.5">
                           <span className="text-white/60 text-sm">구독 시작일</span>
                           <span className="text-white">{company.subscriptionStart}</span>
                         </div>
