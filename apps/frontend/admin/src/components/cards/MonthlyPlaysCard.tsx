@@ -1,18 +1,19 @@
 import Card from '@/components/ui/Card'
+import Title from '@/components/ui/Title'
 
-type Props = {
-  monthTotal: number
-  momDeltaPct: number
-  dailyAvg: number
-}
-
-export default function MonthlyPlaysCard({ monthTotal, momDeltaPct, dailyAvg }: Props) {
-  const sign = momDeltaPct >= 0 ? '+' : ''
+export default function MonthlyPlaysCard() {
   return (
     <Card>
-      <div className="mb-2 text-xs uppercase tracking-wider text-white/60">이번 달 총 재생 횟수</div>
-      <div className="text-3xl font-semibold text-white">{monthTotal.toLocaleString()}회 <span className="ml-2 align-middle text-base text-teal-300">({sign}{momDeltaPct}% 전월比)</span></div>
-      <div className="mt-1 text-xs text-white/60">일평균: {dailyAvg.toLocaleString()}회</div>
+      <div className="space-y-1">
+        <Title variant="card">이번 달 총 재생 횟수</Title>
+        <div className="text-3xl font-bold text-white">524,300회</div>
+        <div className="space-y-0.5">
+          <div className="text-sm text-teal-300">(전월 대비 +8%)</div>
+          <div className="mt-2">
+            <div className="text-xs text-white/60">일평균: 17,480회</div>
+          </div>
+        </div>
+      </div>
     </Card>
   )
 } 
