@@ -1,6 +1,6 @@
 const {ethers, AbiCoder} = require("ethers");
 const axios = require("axios");
-require("dotenv").config();
+require("dotenv").config({ path: '.env.local' });
 
 const { createPrivateKey } = require("./createAccount.js");
 
