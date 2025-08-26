@@ -1,6 +1,6 @@
 const express = require("express");
 const {ethers} = require("ethers");
-require("dotenv").config();
+require("dotenv").config({ path: '.env.local' });
 
 const app = express();
 app.use(express.json());

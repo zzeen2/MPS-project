@@ -1,5 +1,5 @@
 const { ethers } = require("ethers");
-require("dotenv").config();
+require("dotenv").config({ path: '.env.local' });
 
 // Sepolia 네트워크 설정
 const provider = new ethers.JsonRpcProvider(process.env.INFURA_RPC);
@@ -31,16 +31,21 @@ class RecordUsageMonitor {
         this.isMonitoring = true;
         this.lastBlock = await provider.getBlockNumber();
 
-        // 주기적으로 새로운 이벤트 확인 (5초마다)
+        // 주기적으로 새로운 이벤트 확인 (10초마다로 변경)
         this.monitoringInterval = setInterval(async () => {
             try {
                 await this.checkNewEvents();
             } catch (error) {
-                console.error("❌ 이벤트 모니터링 중 오류:", error.message);
+                if (error.message.includes("Too Many Requests")) {
+                    console.warn("⚠️ API 요청 한도 초과, 30초 대기 중...");
+                    await this.sleep(30000); // 30초 대기
+                } else {
+                    console.error("❌ 이벤트 모니터링 중 오류:", error.message);
+                }
             }
-        }, 5000);
+        }, 10000); // 5초에서 10초로 변경
 
-        console.log("✅ 이벤트 모니터링 시작! (5초마다 확인)");
+        console.log("✅ 이벤트 모니터링 시작! (10초마다 확인)");
         console.log("   - PlayRecorded 이벤트");
         console.log("   - CompanyApproved 이벤트");
         console.log("   - RewardPoolReplenished 이벤트");
@@ -49,12 +54,14 @@ class RecordUsageMonitor {
 
     // 새로운 이벤트 확인
     async checkNewEvents() {
-        const currentBlock = await provider.getBlockNumber();
+        const currentBlock = await this.retryRequest(() => provider.getBlockNumber());
         
         if (currentBlock > this.lastBlock) {
             // PlayRecorded 이벤트 확인
             const playRecordedFilter = recordUsage.filters.PlayRecorded();
-            const playRecordedEvents = await recordUsage.queryFilter(playRecordedFilter, this.lastBlock + 1, currentBlock);
+            const playRecordedEvents = await this.retryRequest(() => 
+                recordUsage.queryFilter(playRecordedFilter, this.lastBlock + 1, currentBlock)
+            );
             
             for (const event of playRecordedEvents) {
                 const [using_company, track_id, client_ts, block_ts, reward_amount, usecase] = event.args;
@@ -63,7 +70,9 @@ class RecordUsageMonitor {
 
             // CompanyApproved 이벤트 확인
             const companyApprovedFilter = recordUsage.filters.CompanyApproved();
-            const companyApprovedEvents = await recordUsage.queryFilter(companyApprovedFilter, this.lastBlock + 1, currentBlock);
+            const companyApprovedEvents = await this.retryRequest(() => 
+                recordUsage.queryFilter(companyApprovedFilter, this.lastBlock + 1, currentBlock)
+            );
             
             for (const event of companyApprovedEvents) {
                 const [company, approved] = event.args;
@@ -72,7 +81,9 @@ class RecordUsageMonitor {
 
             // RewardPoolReplenished 이벤트 확인
             const rewardPoolReplenishedFilter = recordUsage.filters.RewardPoolReplenished();
-            const rewardPoolReplenishedEvents = await recordUsage.queryFilter(rewardPoolReplenishedFilter, this.lastBlock + 1, currentBlock);
+            const rewardPoolReplenishedEvents = await this.retryRequest(() => 
+                recordUsage.queryFilter(rewardPoolReplenishedFilter, this.lastBlock + 1, currentBlock)
+            );
             
             for (const event of rewardPoolReplenishedEvents) {
                 const [amount] = event.args;
@@ -81,6 +92,28 @@ class RecordUsageMonitor {
 
             this.lastBlock = currentBlock;
         }
+    }
+
+    // 지연 함수
+    async sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // 재시도 로직
+    async retryRequest(requestFunc, maxRetries = 3) {
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                return await requestFunc();
+            } catch (error) {
+                if (error.message.includes("Too Many Requests")) {
+                    console.warn(`⚠️ API 요청 한도 초과 (시도 ${i + 1}/${maxRetries}), 대기 중...`);
+                    await this.sleep(5000 * (i + 1)); // 지수적 백오프: 5초, 10초, 15초
+                } else {
+                    throw error;
+                }
+            }
+        }
+        throw new Error("최대 재시도 횟수 초과");
     }
 
     // 이벤트 구독 중지
@@ -149,7 +182,7 @@ class RecordUsageMonitor {
             
             // 리워드 풀 잔액 조회
             try {
-                const rewardPoolBalance = await recordUsage.rewardPool();
+                const rewardPoolBalance = await this.retryRequest(() => recordUsage.rewardPool());
                 console.log(`   - 리워드 풀 잔액: ${ethers.formatEther(rewardPoolBalance)} MPSM`);
             } catch (error) {
                 console.log(`   - 리워드 풀 잔액 조회 실패: ${error.message}`);
@@ -200,7 +233,7 @@ class RecordUsageMonitor {
     // 리워드 풀 잔액 조회
     async rewardPool() {
         try {
-            const balance = await recordUsage.rewardPool();
+            const balance = await this.retryRequest(() => recordUsage.rewardPool());
             console.log(`\n💰 리워드 풀 잔액: ${ethers.formatEther(balance)} MPSM`);
             return balance;
         } catch (error) {
