@@ -13,5 +13,8 @@ module.exports = buildModule("RewardsModule", (m) => {
   // RewardToken 주소를 사용하여 RecordUsage 컨트랙트를 배포합니다
   const recordUsage = m.contract("RecordUsage", [admin, rewardToken]);
 
+  // RewardToken에 RecordUsage 컨트랙트 주소를 설정합니다
+  m.call(rewardToken, "setRecordUsageContract", [recordUsage]);
+
   return { rewardToken, recordUsage };
 });
