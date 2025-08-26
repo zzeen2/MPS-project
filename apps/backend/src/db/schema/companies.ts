@@ -1,4 +1,5 @@
 import { pgTable, bigint, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 
 export const companyGradeEnum = pgEnum('company_grade', ['free', 'standard', 'business'])
 
@@ -18,3 +19,12 @@ export const companies = pgTable('companies', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 })
+
+export const companiesRelations = relations(companies, ({ many }) => ({
+  subscriptions: many(company_subscriptions),
+  playlists: many(playlists),
+  music_plays: many(music_plays),
+  rewards: many(rewards),
+  api_calls: many(api_calls),
+  business_numbers: many(business_numbers),
+}))
