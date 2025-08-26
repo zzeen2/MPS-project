@@ -220,7 +220,7 @@ export default function RewardsMusicsPage() {
             >
               <option value="title-asc">제목순 (오름차순)</option>
               <option value="title-desc">제목순 (내림차순)</option>
-              <option value="monthlyUsed-desc">사용량 높은순</option>
+              <option value="monthlyUsed-desc">유효재생 높은순</option>
               <option value="companies-desc">사용 기업 많은순</option>
             </select>
           </div>
@@ -260,7 +260,8 @@ export default function RewardsMusicsPage() {
                 </th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">음원명</th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">카테고리</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">이번 달 사용</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">이번 달 유효재생</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">유효재생률</th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">월 한도</th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">사용률</th>
                 <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">사용 기업</th>
@@ -273,6 +274,11 @@ export default function RewardsMusicsPage() {
               {filteredMusics.map((music, index) => {
                 const usageRate = music.monthlyLimit ? Math.round((music.monthlyUsed / music.monthlyLimit) * 100) : null
                 const categoryColor = getCategoryColor(music.category)
+                
+                // 유효재생률 계산 (예시 데이터)
+                const totalPlays = Math.floor(music.monthlyUsed * (1 + Math.random() * 0.3 + 0.1)) // 10-40% 추가
+                const validRate = Math.round((music.monthlyUsed / totalPlays) * 100)
+                
                 return (
                   <tr key={music.id} className={`border-b border-white/5 transition-all duration-200 ${
                     index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
@@ -294,7 +300,13 @@ export default function RewardsMusicsPage() {
                       </span>
                     </td>
                     <td className="px-8 py-5 text-teal-400 font-medium">
-                      {music.monthlyUsed.toLocaleString()}
+                      <div className="flex flex-col">
+                        <span>{music.monthlyUsed.toLocaleString()}회</span>
+                        <span className="text-xs text-white/50">총 {totalPlays.toLocaleString()}회</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-5">
+                      <span className="text-teal-300 font-medium">{validRate}%</span>
                     </td>
                     <td className="px-8 py-5 text-white/80">
                       {music.monthlyLimit ? music.monthlyLimit.toLocaleString() : (
@@ -325,9 +337,13 @@ export default function RewardsMusicsPage() {
                       {music.rewardPerPlay.toFixed(3)} 토큰
                     </td>
                     <td className="px-8 py-5">
-                      <div className={`w-3 h-3 rounded-full ${
-                        music.status === 'active' ? 'bg-green-400' : 'bg-gray-400'
-                      }`}></div>
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                        music.status === 'active' 
+                          ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25'
+                          : 'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
+                      }`}>
+                        {music.status === 'active' ? '●' : '○'} {music.status === 'active' ? '활성' : '비활성'}
+                      </span>
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex gap-1.5">
