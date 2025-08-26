@@ -37,29 +37,29 @@ contract SmartAccountFactory {
         accounts[owner] = smartAccount;
     }
 
-    function getAccountAddress(address owner) external view returns (address) {
-        bytes32 salt = keccak256(abi.encodePacked(owner));
-        bytes memory bytecode = abi.encodePacked(
-            type(SmartAccount).creationCode,
-            abi.encode(owner, entryPoint)
-        );
+    // function getAccountAddress(address owner) external view returns (address) {
+    //     bytes32 salt = keccak256(abi.encodePacked(owner));
+    //     bytes memory bytecode = abi.encodePacked(
+    //         type(SmartAccount).creationCode,
+    //         abi.encode(owner, entryPoint)
+    //     );
 
-        return
-            address(
-                uint160(
-                    uint256(
-                        keccak256(
-                            abi.encodePacked(
-                                hex"ff",
-                                address(this),
-                                salt,
-                                keccak256(bytecode)
-                            )
-                        )
-                    )
-                )
-            );
-    }
+    //     return
+    //         address(
+    //             uint160(
+    //                 uint256(
+    //                     keccak256(
+    //                         abi.encodePacked(
+    //                             hex"ff",
+    //                             address(this),
+    //                             salt,
+    //                             keccak256(bytecode)
+    //                         )
+    //                     )
+    //                 )
+    //             )
+    //         );
+    // }
 
     function getAccount(address owner) external view returns (address) {
         return accounts[owner];

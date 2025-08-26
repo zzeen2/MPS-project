@@ -16,7 +16,7 @@ class RecordUsageMonitor {
         this.eventListeners = {};
     }
 
-    // 이벤트 구독 시작
+    // 이벤트 구독 시작 (폴링 방식)
     async startMonitoring() {
         if (this.isMonitoring) {
             console.log("⚠️  이미 모니터링 중입니다.");
@@ -29,33 +29,58 @@ class RecordUsageMonitor {
         console.log("=" .repeat(50));
 
         this.isMonitoring = true;
+        this.lastBlock = await provider.getBlockNumber();
 
-        // PlayRecorded 이벤트 구독
-        this.eventListeners.playRecorded = recordUsage.on("PlayRecorded", 
-            (using_company, track_id, client_ts, block_ts, reward_amount, event) => {
-                this.handlePlayRecordedEvent(using_company, track_id, client_ts, block_ts, reward_amount, event);
+        // 주기적으로 새로운 이벤트 확인 (5초마다)
+        this.monitoringInterval = setInterval(async () => {
+            try {
+                await this.checkNewEvents();
+            } catch (error) {
+                console.error("❌ 이벤트 모니터링 중 오류:", error.message);
             }
-        );
+        }, 5000);
 
-        // CompanyApproved 이벤트 구독
-        this.eventListeners.companyApproved = recordUsage.on("CompanyApproved", 
-            (company, approved, event) => {
-                this.handleCompanyApprovedEvent(company, approved, event);
-            }
-        );
-
-        // RewardMinted 이벤트 구독
-        this.eventListeners.rewardMinted = recordUsage.on("RewardMinted", 
-            (company, amount, event) => {
-                this.handleRewardMintedEvent(company, amount, event);
-            }
-        );
-
-        console.log("✅ 모든 이벤트 구독 완료!");
+        console.log("✅ 이벤트 모니터링 시작! (5초마다 확인)");
         console.log("   - PlayRecorded 이벤트");
         console.log("   - CompanyApproved 이벤트");
-        console.log("   - RewardMinted 이벤트");
+        console.log("   - RewardPoolReplenished 이벤트");
         console.log("\n⏳ 이벤트 대기 중... (Ctrl+C로 종료)\n");
+    }
+
+    // 새로운 이벤트 확인
+    async checkNewEvents() {
+        const currentBlock = await provider.getBlockNumber();
+        
+        if (currentBlock > this.lastBlock) {
+            // PlayRecorded 이벤트 확인
+            const playRecordedFilter = recordUsage.filters.PlayRecorded();
+            const playRecordedEvents = await recordUsage.queryFilter(playRecordedFilter, this.lastBlock + 1, currentBlock);
+            
+            for (const event of playRecordedEvents) {
+                const [using_company, track_id, client_ts, block_ts, reward_amount, usecase] = event.args;
+                await this.handlePlayRecordedEvent(using_company, track_id, client_ts, block_ts, reward_amount, usecase, event);
+            }
+
+            // CompanyApproved 이벤트 확인
+            const companyApprovedFilter = recordUsage.filters.CompanyApproved();
+            const companyApprovedEvents = await recordUsage.queryFilter(companyApprovedFilter, this.lastBlock + 1, currentBlock);
+            
+            for (const event of companyApprovedEvents) {
+                const [company, approved] = event.args;
+                this.handleCompanyApprovedEvent(company, approved, event);
+            }
+
+            // RewardPoolReplenished 이벤트 확인
+            const rewardPoolReplenishedFilter = recordUsage.filters.RewardPoolReplenished();
+            const rewardPoolReplenishedEvents = await recordUsage.queryFilter(rewardPoolReplenishedFilter, this.lastBlock + 1, currentBlock);
+            
+            for (const event of rewardPoolReplenishedEvents) {
+                const [amount] = event.args;
+                this.handleRewardPoolReplenishedEvent(amount, event);
+            }
+
+            this.lastBlock = currentBlock;
+        }
     }
 
     // 이벤트 구독 중지
@@ -67,13 +92,13 @@ class RecordUsageMonitor {
 
         console.log("\n🛑 이벤트 모니터링 중지...");
         
-        // 모든 이벤트 리스너 제거
-        Object.values(this.eventListeners).forEach(listener => {
-            if (listener && typeof listener.removeAllListeners === 'function') {
-                listener.removeAllListeners();
-            }
-        });
+        // 인터벌 정리
+        if (this.monitoringInterval) {
+            clearInterval(this.monitoringInterval);
+            this.monitoringInterval = null;
+        }
 
+        // 이벤트 리스너 제거
         recordUsage.removeAllListeners();
         this.isMonitoring = false;
         this.eventListeners = {};
@@ -82,7 +107,7 @@ class RecordUsageMonitor {
     }
 
     // PlayRecorded 이벤트 처리
-    async handlePlayRecordedEvent(using_company, track_id, client_ts, block_ts, reward_amount, event) {
+    async handlePlayRecordedEvent(using_company, track_id, client_ts, block_ts, reward_amount, usecase, event) {
         console.log("\n🎵 PlayRecorded 이벤트 발생!");
         console.log("📊 이벤트 정보:");
         console.log(`   - 블록 번호: ${event.blockNumber}`);
@@ -91,7 +116,8 @@ class RecordUsageMonitor {
         console.log(`   - 트랙 ID: ${track_id.toString()}`);
         console.log(`   - 클라이언트 타임스탬프: ${client_ts.toString()}`);
         console.log(`   - 블록 타임스탬프: ${block_ts.toString()}`);
-        console.log(`   - 리워드 수량: ${ethers.formatEther(reward_amount)} RWT`);
+        console.log(`   - 리워드 수량: ${ethers.formatEther(reward_amount)} MPSM`);
+        console.log(`   - 사용 형태: ${usecase === 0n ? "음악 사용" : "가사 사용"} (${usecase.toString()})`);
         
         // 이벤트 발생 후 상태 조회
         await this.queryContractState(using_company, track_id);
@@ -107,14 +133,13 @@ class RecordUsageMonitor {
         console.log(`   - 승인 상태: ${approved ? '승인됨' : '승인 취소됨'}`);
     }
 
-    // RewardMinted 이벤트 처리
-    handleRewardMintedEvent(company, amount, event) {
-        console.log("\n💰 RewardMinted 이벤트 발생!");
+    // RewardPoolReplenished 이벤트 처리
+    handleRewardPoolReplenishedEvent(amount, event) {
+        console.log("\n💰 RewardPoolReplenished 이벤트 발생!");
         console.log("📊 이벤트 정보:");
         console.log(`   - 블록 번호: ${event.blockNumber}`);
         console.log(`   - 트랜잭션 해시: ${event.transactionHash}`);
-        console.log(`   - 수신 기업: ${company}`);
-        console.log(`   - 민팅 수량: ${ethers.formatEther(amount)} RWT`);
+        console.log(`   - 보충된 수량: ${ethers.formatEther(amount)} MPSM`);
     }
 
     // 컨트랙트 상태 조회
@@ -122,14 +147,22 @@ class RecordUsageMonitor {
         try {
             console.log("\n📋 컨트랙트 상태 조회:");
             
+            // 리워드 풀 잔액 조회
+            try {
+                const rewardPoolBalance = await recordUsage.rewardPool();
+                console.log(`   - 리워드 풀 잔액: ${ethers.formatEther(rewardPoolBalance)} MPSM`);
+            } catch (error) {
+                console.log(`   - 리워드 풀 잔액 조회 실패: ${error.message}`);
+            }
+            
             if (trackId) {
-                const playCount = await recordUsage.getTrackPlayCount(trackId);
+                const playCount = await recordUsage.trackPlayCount(trackId);
                 console.log(`   - 트랙 ${trackId} 재생 횟수: ${playCount.toString()}회`);
             }
             
             if (company) {
-                const totalRewards = await recordUsage.getCompanyTotalRewards(company);
-                console.log(`   - 기업 ${company} 총 리워드: ${ethers.formatEther(totalRewards)} RWT`);
+                const totalRewards = await recordUsage.companyTotalRewards(company);
+                console.log(`   - 기업 ${company} 총 리워드: ${ethers.formatEther(totalRewards)} MPSM`);
                 
                 const isApproved = await recordUsage.approvedCompanies(company);
                 console.log(`   - 기업 승인 상태: ${isApproved ? '승인됨' : '미승인'}`);
@@ -143,7 +176,7 @@ class RecordUsageMonitor {
     // 특정 트랙의 재생 횟수 조회
     async getTrackPlayCount(trackId) {
         try {
-            const playCount = await recordUsage.getTrackPlayCount(trackId);
+            const playCount = await recordUsage.trackPlayCount(trackId);
             console.log(`\n📈 트랙 ${trackId} 재생 횟수: ${playCount.toString()}회`);
             return playCount;
         } catch (error) {
@@ -155,11 +188,23 @@ class RecordUsageMonitor {
     // 특정 기업의 총 리워드 조회
     async getCompanyTotalRewards(company) {
         try {
-            const totalRewards = await recordUsage.getCompanyTotalRewards(company);
-            console.log(`\n💎 기업 ${company} 총 리워드: ${ethers.formatEther(totalRewards)} RWT`);
+            const totalRewards = await recordUsage.companyTotalRewards(company);
+            console.log(`\n💎 기업 ${company} 총 리워드: ${ethers.formatEther(totalRewards)} MPSM`);
             return totalRewards;
         } catch (error) {
             console.error("❌ 기업 총 리워드 조회 실패:", error.message);
+            return null;
+        }
+    }
+
+    // 리워드 풀 잔액 조회
+    async rewardPool() {
+        try {
+            const balance = await recordUsage.rewardPool();
+            console.log(`\n💰 리워드 풀 잔액: ${ethers.formatEther(balance)} MPSM`);
+            return balance;
+        } catch (error) {
+            console.error("❌ 리워드 풀 잔액 조회 실패:", error.message);
             return null;
         }
     }
@@ -199,13 +244,13 @@ class RecordUsageMonitor {
                 console.log(`   ${index + 1}. 블록 ${event.blockNumber} - 기업: ${event.args.company}, 승인: ${event.args.approved}`);
             });
 
-            // RewardMinted 이벤트 조회
-            const rewardMintedFilter = recordUsage.filters.RewardMinted();
-            const rewardMintedEvents = await recordUsage.queryFilter(rewardMintedFilter, fromBlock, toBlock);
+            // RewardPoolReplenished 이벤트 조회
+            const rewardPoolReplenishedFilter = recordUsage.filters.RewardPoolReplenished();
+            const rewardPoolReplenishedEvents = await recordUsage.queryFilter(rewardPoolReplenishedFilter, fromBlock, toBlock);
             
-            console.log(`\n💰 RewardMinted 이벤트 ${rewardMintedEvents.length}개 발견:`);
-            rewardMintedEvents.forEach((event, index) => {
-                console.log(`   ${index + 1}. 블록 ${event.blockNumber} - 기업: ${event.args.company}, 수량: ${ethers.formatEther(event.args.amount)} RWT`);
+            console.log(`\n💰 RewardPoolReplenished 이벤트 ${rewardPoolReplenishedEvents.length}개 발견:`);
+            rewardPoolReplenishedEvents.forEach((event, index) => {
+                console.log(`   ${index + 1}. 블록 ${event.blockNumber} - 수량: ${ethers.formatEther(event.args.amount)} MPSM`);
             });
 
         } catch (error) {
@@ -223,8 +268,9 @@ class RecordUsageMonitor {
         console.log("3. 트랙 재생 횟수 조회");
         console.log("4. 기업 총 리워드 조회");
         console.log("5. 기업 승인 상태 조회");
-        console.log("6. 과거 이벤트 조회");
-        console.log("7. 컨트랙트 상태 전체 조회");
+        console.log("6. 리워드 풀 잔액 조회");
+        console.log("7. 과거 이벤트 조회");
+        console.log("8. 컨트랙트 상태 전체 조회");
         console.log("0. 종료");
         console.log("=".repeat(50));
     }
@@ -249,7 +295,7 @@ async function interactiveMode() {
 
     while (running) {
         monitor.showMenu();
-        const choice = await question("\n선택하세요 (0-7): ");
+        const choice = await question("\n선택하세요 (0-8): ");
 
         switch (choice.trim()) {
             case '1':
@@ -282,6 +328,10 @@ async function interactiveMode() {
                 break;
                 
             case '6':
+                await monitor.rewardPool();
+                break;
+                
+            case '7':
                 console.log("과거 이벤트 조회 범위 설정:");
                 const fromBlock = await question("시작 블록 (엔터키: 처음부터): ");
                 const toBlock = await question("끝 블록 (엔터키: 최신까지): ");
@@ -291,7 +341,7 @@ async function interactiveMode() {
                 );
                 break;
                 
-            case '7':
+            case '8':
                 console.log("전체 상태 조회를 위한 정보 입력:");
                 const testCompany = await question("조회할 기업 주소 (선택사항): ");
                 const testTrack = await question("조회할 트랙 ID (선택사항): ");

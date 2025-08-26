@@ -145,28 +145,102 @@ const sendToBundler = async (userOp) => {
     }
 };
 
-// 1. 리워드 토큰 민팅 테스트
-const testRewardTokenMint = async () => {
-    console.log("=== 리워드 토큰 민팅 테스트 ===");
+// 1-1. RewardToken ownership을 RecordUsage로 이전
+const transferRewardTokenOwnership = async () => {
+    console.log("=== RewardToken Ownership 이전 ===");
     
-    const smartAccountAddress = await getSmartAccountAddress();
-    const smartAccount = new ethers.Contract(smartAccountAddress, smartAccountAbi, provider);
-    const token = new ethers.Contract(tokenCA, tokenAbi, provider);
+    const rewardToken = new ethers.Contract(tokenCA, tokenAbi, paymasterWallet);
+    
+    try {
+        const currentOwner = await rewardToken.owner();
+        console.log(`현재 RewardToken Owner: ${currentOwner}`);
+        console.log(`RecordUsage 컨트랙트 주소: ${recordUsageCA}`);
+        
+        if (currentOwner.toLowerCase() === recordUsageCA.toLowerCase()) {
+            console.log("✅ 이미 RecordUsage가 RewardToken의 owner입니다.");
+            return;
+        }
+        
+        console.log("RewardToken ownership을 RecordUsage로 이전합니다...");
+        const tx = await rewardToken.transferOwnership(recordUsageCA);
+        console.log(`트랜잭션 전송 완료: ${tx.hash}`);
+        
+        const receipt = await tx.wait();
+        console.log(`✅ Ownership 이전 완료 (블록: ${receipt.blockNumber})`);
+        
+        // 확인
+        const newOwner = await rewardToken.owner();
+        console.log(`새로운 RewardToken Owner: ${newOwner}`);
+        
+        return receipt;
+    } catch (error) {
+        console.error("❌ Ownership 이전 실패:", error.message);
+        throw error;
+    }
+};
 
-    const amount = ethers.parseEther("1000");
-    const mintCallData = token.interface.encodeFunctionData("mint", [smartAccountAddress, amount]);
+// 1. 리워드 풀 보충 테스트 (관리자가 직접 트랜잭션 전송)
+const testReplenishRewardPool = async (amount) => {
+    console.log("=== 리워드 풀 보충 테스트 (관리자) ===");
     
-    const value = ethers.parseEther("0");
-    const callData = smartAccount.interface.encodeFunctionData("execute", [tokenCA, value, mintCallData]);
+    const recordUsage = new ethers.Contract(recordUsageCA, recordUsageAbi, paymasterWallet);
+    const rewardToken = new ethers.Contract(tokenCA, tokenAbi, paymasterWallet);
+    const replenishAmount = ethers.parseEther(amount.toString());
     
-    const userOp = await createUserOp(callData, smartAccountAddress);
-    const signedUserOp = await signUserOp(userOp);
+    try {
+        // 먼저 owner들 확인
+        const recordUsageOwner = await recordUsage.owner();
+        const rewardTokenOwner = await rewardToken.owner();
+        
+        console.log(`RecordUsage Owner: ${recordUsageOwner}`);
+        console.log(`RewardToken Owner: ${rewardTokenOwner}`);
+        console.log(`현재 호출자: ${paymasterWallet.address}`);
+        
+        if (recordUsageOwner.toLowerCase() !== paymasterWallet.address.toLowerCase()) {
+            throw new Error(`권한 없음: RecordUsage owner는 ${recordUsageOwner}이지만 현재 계정은 ${paymasterWallet.address}입니다.`);
+        }
+        
+        // RewardToken의 owner가 RecordUsage가 아니면 이전 필요
+        if (rewardTokenOwner.toLowerCase() !== recordUsageCA.toLowerCase()) {
+            console.log("⚠️ RewardToken의 owner가 RecordUsage가 아닙니다. Ownership 이전이 필요합니다.");
+            console.log("먼저 transferRewardTokenOwnership() 함수를 실행하세요.");
+            throw new Error("RewardToken ownership 이전이 필요합니다.");
+        }
+        
+        console.log(`보충할 리워드 양: ${amount} MPSM`);
+        
+        // 관리자가 직접 트랜잭션 전송
+        const tx = await recordUsage.replenishRewardPool(replenishAmount);
+        console.log(`트랜잭션 전송 완료: ${tx.hash}`);
+        
+        const receipt = await tx.wait();
+        console.log(`✅ 리워드 풀 보충 완료 (블록: ${receipt.blockNumber})`);
+        
+        return receipt;
+    } catch (error) {
+        console.error("❌ 리워드 풀 보충 실패:", error.message);
+        throw error;
+    }
+};
+
+// 2. 리워드 풀 잔액 조회 테스트
+const testGetRewardPoolBalance = async () => {
+    console.log("=== 리워드 풀 잔액 조회 테스트 ===");
     
-    return await sendToBundler(signedUserOp);
+    const recordUsage = new ethers.Contract(recordUsageCA, recordUsageAbi, provider);
+    
+    try {
+        const balance = await recordUsage.rewardPool();
+        console.log(`현재 리워드 풀 잔액: ${ethers.formatEther(balance)} MPSM`);
+        return balance;
+    } catch (error) {
+        console.error("리워드 풀 잔액 조회 실패:", error.message);
+        throw error;
+    }
 };
 
 // 2. 음원 재생 기록 테스트 (기업이 직접 호출)
-const testRecordPlay = async (trackId, rewardAmount) => {
+const testRecordPlay = async (trackId, rewardAmount, useCase = 0) => {
     console.log("=== 음원 재생 기록 테스트 (기업 직접 호출) ===");
     
     const smartAccountAddress = await getSmartAccountAddress();
@@ -197,13 +271,26 @@ const testRecordPlay = async (trackId, rewardAmount) => {
         console.warn("⚠️ 기업이 승인되지 않았습니다. 트랜잭션이 실패할 수 있습니다.");
     }
     
+    // 리워드 풀 잔액 확인
+    try {
+        const rewardPoolBalance = await recordUsage.rewardPool();
+        console.log(`리워드 풀 잔액: ${ethers.formatEther(rewardPoolBalance)} MPSM`);
+        if (rewardPoolBalance < ethers.parseEther(rewardAmount.toString())) {
+            console.warn("⚠️ 리워드 풀 잔액이 부족할 수 있습니다.");
+        }
+    } catch (error) {
+        console.warn("⚠️ 리워드 풀 잔액 확인 실패:", error.message);
+    }
+    
     const clientTs = Math.floor(Date.now() / 1000); // 현재 시간 (초)
-    console.log(`트랙 ID: ${trackId}, 리워드: ${rewardAmount}, 시간: ${clientTs}`);
+    const useCaseText = useCase === 0 ? "음악 사용" : "가사 사용";
+    console.log(`트랙 ID: ${trackId}, 리워드: ${rewardAmount}, 사용 형태: ${useCaseText} (${useCase}), 시간: ${clientTs}`);
     
     const recordPlayCallData = recordUsage.interface.encodeFunctionData("recordPlay", [
         trackId,
         clientTs,
-        rewardAmount
+        ethers.parseEther(rewardAmount.toString()),
+        useCase
     ]);
     
     const value = ethers.parseEther("0");
@@ -242,31 +329,6 @@ const testSetCompanyApproval = async (companyAddress, approved) => {
     return await sendToBundler(signedUserOp);
 };
 
-// 4. 관리자를 통한 음원 재생 기록 테스트
-const testRecordPlayByOwner = async (usingCompany, trackId, rewardAmount) => {
-    console.log("=== 음원 재생 기록 테스트 (관리자 호출) ===");
-    
-    const smartAccountAddress = await getSmartAccountAddress();
-    const smartAccount = new ethers.Contract(smartAccountAddress, smartAccountAbi, provider);
-    const recordUsage = new ethers.Contract(recordUsageCA, recordUsageAbi, provider);
-
-    const clientTs = Math.floor(Date.now() / 1000);
-    const recordPlayByOwnerCallData = recordUsage.interface.encodeFunctionData("recordPlayByOwner", [
-        usingCompany,
-        trackId,
-        clientTs,
-        rewardAmount
-    ]);
-    
-    const value = ethers.parseEther("0");
-    const callData = smartAccount.interface.encodeFunctionData("execute", [recordUsageCA, value, recordPlayByOwnerCallData]);
-    
-    const userOp = await createUserOp(callData, smartAccountAddress);
-    const signedUserOp = await signUserOp(userOp);
-    
-    return await sendToBundler(signedUserOp);
-};
-
 // 5. 컨트랙트 일시정지 테스트
 const testPauseContract = async () => {
     console.log("=== 컨트랙트 일시정지 테스트 ===");
@@ -294,21 +356,34 @@ const runAllTests = async () => {
         const smartAccountAddress = await getSmartAccountAddress();
         console.log(`테스트 대상 스마트 계정: ${smartAccountAddress}\n`);
 
-        // 1. 기업 승인 설정
-        // await testSetCompanyApproval(smartAccountAddress, true);
-        // await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 대기
+        // 1. 리워드 풀 보충 (관리자가)
+        console.log("1️⃣ 리워드 풀 보충 테스트");
+        await testReplenishRewardPool(10000); // 10,000 MPSM 보충
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3초 대기
 
-        // 2. 음원 재생 기록 (기업 직접 호출)
-        await testRecordPlay(12345, 100);
+        // 2. 리워드 풀 잔액 확인
+        console.log("\n2️⃣ 리워드 풀 잔액 확인");
+        await testGetRewardPoolBalance();
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // 3. 음원 재생 기록 (관리자 호출)
-        // await testRecordPlayByOwner(smartAccountAddress, 67890, 200);
-        // await new Promise(resolve => setTimeout(resolve, 2000));
+        // 3. 기업 승인 설정
+        console.log("\n3️⃣ 기업 승인 설정");
+        await testSetCompanyApproval(smartAccountAddress, true);
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
-        // 4. 리워드 토큰 민팅
-        // await testRewardTokenMint();
-        // await new Promise(resolve => setTimeout(resolve, 2000));
+        // 4. 음원 재생 기록 (음악 사용)
+        console.log("\n4️⃣ 음원 재생 기록 테스트 - 음악 사용");
+        await testRecordPlay(12345, 100, 0); // UseCase.Music_use = 0
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        // 5. 음원 재생 기록 (가사 사용)
+        console.log("\n5️⃣ 음원 재생 기록 테스트 - 가사 사용");
+        await testRecordPlay(12346, 50, 1); // UseCase.Lyric_use = 1
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        // 6. 리워드 풀 잔액 재확인
+        console.log("\n6️⃣ 리워드 풀 잔액 재확인");
+        await testGetRewardPoolBalance();
 
         console.log("\n✅ 모든 테스트 완료");
     } catch (error) {
@@ -319,19 +394,23 @@ const runAllTests = async () => {
 // 사용 예시
 if (require.main === module) {
     // 개별 테스트 실행
-    testRecordPlay(12345, 100); // 트랙 ID 12345, 리워드 100
+    // transferRewardTokenOwnership()
+    //testReplenishRewardPool(10000); // 10,000 MPSM 풀 보충
+    // testGetRewardPoolBalance(); // 풀 잔액 확인
+    testRecordPlay(12345, 100, 0); // 트랙 ID 12345, 리워드 100, 음악 사용
+    // testRecordPlay(12346, 50, 1); // 트랙 ID 12346, 리워드 50, 가사 사용
     // getSmartAccountAddress().then(addr => testSetCompanyApproval(addr, true)); // 현재 스마트 계정을 승인된 기업으로 설정
     
     // 전체 테스트 실행
-    // runAllTests();
+    //runAllTests();
 }
 
-// 함수들을 모듈로 내보내기 (다른 파일에서 사용 가능)
 module.exports = {
-    testRewardTokenMint,
+    transferRewardTokenOwnership,
+    testReplenishRewardPool,
+    testGetRewardPoolBalance,
     testRecordPlay,
     testSetCompanyApproval,
-    testRecordPlayByOwner,
     testPauseContract,
     runAllTests,
     getSmartAccountAddress
