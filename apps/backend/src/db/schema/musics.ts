@@ -1,44 +1,41 @@
-import { pgTable, bigserial, text, integer, bigint, timestamp, numeric, uniqueIndex, primaryKey } from 'drizzle-orm/pg-core';
-import { companies } from './companies';
+import { pgTable, bigserial, text, timestamp, integer, numeric, boolean, date, varchar, decimal, bigint } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+import { music_categories } from './music_categories'
+import { music_tags } from './music_tags'
+import { music_plays } from './music_plays'
+import { rewards } from './rewards'
 
-// 음원 정보
-export const musics = pgTable(
-  'musics',
-  {
-    id: bigserial('id', { mode: 'number' }).primaryKey(),
-    title: text('title').notNull(),
-    artist: text('artist'),
-    lyrics: text('lyrics'),
-    ownerCompanyId: bigint('owner_company_id', { mode: 'number' }).references(() => companies.id, { onDelete: 'restrict', onUpdate: 'cascade' }).notNull(),
-    durationSec: integer('duration_sec'),
-    coverImageUrl: text('cover_image_url'),
-    streamEndpoint: text('stream_endpoint'),
-    pricePerPlay: numeric('price_per_play'),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-  },
-);
+export const musics = pgTable('musics', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  title: text('title').notNull(),
+  artist: text('artist').notNull(),
+  lyrics_text: text('lyrics_text'),
+  lyrics_file: text('lyrics_file'),
+  duration_sec: integer('duration_sec'),
+  release_date: date('release_date'),
+  cover_image_url: text('cover_image_url'),
+  stream_endpoint: text('stream_endpoint'),
+  price_per_play: numeric('price_per_play'),
+  lyrics_price: numeric('lyrics_price'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  reward_amount: integer('reward_amount'),
+  reward_count: integer('reward_count'),
+  category_id: integer('category_id'),
+  genre: varchar('genre', { length: 100 }),
+  grade: integer('grade').notNull().default(0),
+  is_active: boolean('is_active').default(true),
+  play_count: bigint('play_count', { mode: 'number' }).default(0),
+  total_revenue: decimal('total_revenue', { precision: 10, scale: 2 }).default('0'),
+  last_played_at: timestamp('last_played_at', { withTimezone: true }),
+})
 
-// 음원 카테고리
-export const musicCategories = pgTable(
-  'music_categories',
-  {
-    id: bigserial('id', { mode: 'number' }).primaryKey(),
-    name: text('name').notNull(),
-  },
-  (table) => ({
-    uqName: uniqueIndex('music_categories_name_uq').on(table.name),
+export const musicsRelations = relations(musics, ({ many, one }) => ({
+  category: one(music_categories, {
+    fields: [musics.category_id],
+    references: [music_categories.id],
   }),
-);
-
-// 음원 카테고리 매핑
-export const musicCategoryMap = pgTable(
-  'music_category_map',
-  {
-    musicId: bigint('music_id', { mode: 'number' }).references(() => musics.id, { onDelete: 'cascade' }).notNull(),
-    categoryId: bigint('category_id', { mode: 'number' }).references(() => musicCategories.id, { onDelete: 'cascade' }).notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.musicId, table.categoryId], name: 'music_category_map_pk' }),
-  }),
-); 
+  tags: many(music_tags),
+  plays: many(music_plays),
+  rewards: many(rewards),
+}))

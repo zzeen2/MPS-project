@@ -1,29 +1,34 @@
-import { pgTable, bigserial, text, timestamp, pgEnum, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, bigserial, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+import { company_subscriptions } from './company_subscriptions'
+import { playlists } from './playlists'
+import { music_plays } from './music_plays'
+import { rewards } from './rewards'
+import { business_numbers } from './business_numbers'
 
-export const companyGrade = pgEnum('company_grade', ['free', 'standard', 'business']);
+export const companyGradeEnum = pgEnum('company_grade', ['free', 'standard', 'business'])
 
-export const companies = pgTable(
-  'companies',
-  {
-    id: bigserial('id', { mode: 'number' }).primaryKey(),
-    name: text('name').notNull(),
-    businessNumber: text('business_number').notNull(),
-    email: text('email').notNull(),
-    passwordHash: text('password_hash').notNull(),
-    phone: text('phone'),
-    grade: companyGrade('grade').notNull().default('free'),
-    ceoName: text('ceo_name'),
-    profileImageUrl: text('profile_image_url'),
-    homepageUrl: text('homepage_url'),
-    smartAccountAddress: text('smart_account_address'),
-    apiKeyHash: text('api_key_hash'),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => ({
-    uqName: uniqueIndex('companies_name_uq').on(table.name),
-    uqBizNum: uniqueIndex('companies_business_number_uq').on(table.businessNumber),
-    uqEmail: uniqueIndex('companies_email_uq').on(table.email),
-    uqSmartAccount: uniqueIndex('companies_smart_account_address_uq').on(table.smartAccountAddress),
-  }),
-); 
+export const companies = pgTable('companies', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  name: text('name').notNull().unique(),
+  business_number: text('business_number').notNull().unique(),
+  email: text('email').notNull().unique(),
+  password_hash: text('password_hash').notNull(),
+  phone: text('phone'),
+  grade: companyGradeEnum('grade').notNull().default('free'),
+  ceo_name: text('ceo_name'),
+  profile_image_url: text('profile_image_url'),
+  homepage_url: text('homepage_url'),
+  smart_account_address: text('smart_account_address').unique(),
+  api_key_hash: text('api_key_hash'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+})
+
+export const companiesRelations = relations(companies, ({ many }) => ({
+  subscriptions: many(company_subscriptions),
+  playlists: many(playlists),
+  music_plays: many(music_plays),
+  rewards: many(rewards),
+  business_numbers: many(business_numbers),
+}))
