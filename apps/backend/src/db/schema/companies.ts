@@ -1,10 +1,15 @@
-import { pgTable, bigint, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, bigserial, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
+import { company_subscriptions } from './company_subscriptions'
+import { playlists } from './playlists'
+import { music_plays } from './music_plays'
+import { rewards } from './rewards'
+import { business_numbers } from './business_numbers'
 
 export const companyGradeEnum = pgEnum('company_grade', ['free', 'standard', 'business'])
 
 export const companies = pgTable('companies', {
-  id: bigint('id', { mode: 'number' }).primaryKey(),
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
   name: text('name').notNull().unique(),
   business_number: text('business_number').notNull().unique(),
   email: text('email').notNull().unique(),
@@ -25,6 +30,5 @@ export const companiesRelations = relations(companies, ({ many }) => ({
   playlists: many(playlists),
   music_plays: many(music_plays),
   rewards: many(rewards),
-  api_calls: many(api_calls),
   business_numbers: many(business_numbers),
 }))
