@@ -4,6 +4,7 @@ import { music_categories } from './music_categories'
 import { music_tags } from './music_tags'
 import { music_plays } from './music_plays'
 import { rewards } from './rewards'
+import { music_embeddings } from './music_embeddings'
 
 export const musics = pgTable('musics', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),
@@ -38,4 +39,5 @@ export const musicsRelations = relations(musics, ({ many, one }) => ({
   tags: many(music_tags),
   plays: many(music_plays),
   rewards: many(rewards),
+  embeddings: many(music_embeddings),
 }))
