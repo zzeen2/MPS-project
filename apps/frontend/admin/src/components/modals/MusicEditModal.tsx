@@ -30,6 +30,7 @@ export default function MusicEditModal({ open, onClose, musicData }: Props) {
   const [tags, setTags] = useState(musicData?.tags || '')
   const [releaseYear, setReleaseYear] = useState<number | ''>(musicData?.releaseYear || '')
   const [durationSec, setDurationSec] = useState<number | ''>(musicData?.durationSec || '')
+  const [musicType, setMusicType] = useState<'일반' | 'Inst'>('일반')
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [thumbFile, setThumbFile] = useState<File | null>(null)
   const [lyricsFile, setLyricsFile] = useState<File | null>(null)
@@ -38,6 +39,9 @@ export default function MusicEditModal({ open, onClose, musicData }: Props) {
 
   // 가격/리워드
   const [priceRef, setPriceRef] = useState(musicData?.priceRef || 7)
+  const [priceMusicOnly, setPriceMusicOnly] = useState(5)
+  const [priceLyricsOnly, setPriceLyricsOnly] = useState(3)
+  const [priceBoth, setPriceBoth] = useState(7)
   const [rewardPerPlay, setRewardPerPlay] = useState(musicData?.rewardPerPlay || 0.007)
   const [maxPlayCount, setMaxPlayCount] = useState<number | ''>(musicData?.maxPlayCount || '')
 
@@ -177,6 +181,17 @@ export default function MusicEditModal({ open, onClose, musicData }: Props) {
                   </select>
                 </div>
                 <div className="space-y-2">
+                  <label className="block text-sm font-medium text-white/80">음원 유형 <span className="text-red-400">*</span></label>
+                  <select 
+                    value={musicType} 
+                    onChange={(e)=>setMusicType(e.target.value as '일반' | 'Inst')} 
+                    className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200"
+                  >
+                    <option value="일반">일반</option>
+                    <option value="Inst">Inst</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
                   <label className="block text-sm font-medium text-white/80">발매년도</label>
                   <input 
                     value={releaseYear} 
@@ -261,12 +276,32 @@ export default function MusicEditModal({ open, onClose, musicData }: Props) {
             {/* 가격 및 리워드 설정 */}
             <Card>
               <Title>가격 및 리워드 설정</Title>
-              <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-white/80">참고 가격 (원)</label>
+                  <label className="block text-sm font-medium text-white/80">음원만 이용시 (원)</label>
                   <input 
-                    value={priceRef} 
-                    onChange={(e)=>setPriceRef(Number(e.target.value)||0)} 
+                    value={priceMusicOnly} 
+                    onChange={(e)=>setPriceMusicOnly(Number(e.target.value)||0)} 
+                    type="number" 
+                    placeholder="5"
+                    className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-white/80">가사만 이용시 (원)</label>
+                  <input 
+                    value={priceLyricsOnly} 
+                    onChange={(e)=>setPriceLyricsOnly(Number(e.target.value)||0)} 
+                    type="number" 
+                    placeholder="3"
+                    className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-white/80">둘다 이용시 (원)</label>
+                  <input 
+                    value={priceBoth} 
+                    onChange={(e)=>setPriceBoth(Number(e.target.value)||0)} 
                     type="number" 
                     placeholder="7"
                     className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white placeholder-white/50 outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200" 
