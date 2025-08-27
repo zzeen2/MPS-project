@@ -17,6 +17,7 @@ export default function MusicCreatePage() {
   const [tags, setTags] = useState('차분한, 릴렉스, 배경음악')
   const [releaseYear, setReleaseYear] = useState<number | ''>(2024)
   const [durationSec, setDurationSec] = useState<number | ''>(180)
+  const [musicType, setMusicType] = useState<'일반' | 'Inst'>('일반')
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [thumbFile, setThumbFile] = useState<File | null>(null)
   const [lyricsFile, setLyricsFile] = useState<File | null>(null)
@@ -25,6 +26,9 @@ export default function MusicCreatePage() {
 
   // 가격/리워드
   const [priceRef, setPriceRef] = useState(7)
+  const [priceMusicOnly, setPriceMusicOnly] = useState(5)
+  const [priceLyricsOnly, setPriceLyricsOnly] = useState(3)
+  const [priceBoth, setPriceBoth] = useState(7)
   const [rewardPerPlay, setRewardPerPlay] = useState(0.007)
   const [maxPlayCount, setMaxPlayCount] = useState<number | ''>(1000)
 
@@ -140,6 +144,17 @@ export default function MusicCreatePage() {
             </select>
           </div>
           <div className="space-y-2">
+            <label className="block text-sm font-medium text-white/80">음원 유형 <span className="text-red-400">*</span></label>
+            <select 
+              value={musicType} 
+              onChange={(e)=>setMusicType(e.target.value as '일반' | 'Inst')} 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm"
+            >
+              <option value="일반">일반</option>
+              <option value="Inst">Inst</option>
+            </select>
+          </div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-white/80">태그 (쉼표로 구분)</label>
             <input 
               value={tags} 
@@ -225,11 +240,29 @@ export default function MusicCreatePage() {
         <Title variant="section">가격 및 리워드 설정</Title>
         <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-3">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-white/80">참고 가격 (원)</label>
+            <label className="block text-sm font-medium text-white/80">음원만 이용시 (원)</label>
             <input 
               type="number" 
-              value={priceRef} 
-              onChange={(e)=>setPriceRef(Number(e.target.value))} 
+              value={priceMusicOnly} 
+              onChange={(e)=>setPriceMusicOnly(Number(e.target.value))} 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-white/80">가사만 이용시 (원)</label>
+            <input 
+              type="number" 
+              value={priceLyricsOnly} 
+              onChange={(e)=>setPriceLyricsOnly(Number(e.target.value))} 
+              className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-white/80">둘다 이용시 (원)</label>
+            <input 
+              type="number" 
+              value={priceBoth} 
+              onChange={(e)=>setPriceBoth(Number(e.target.value))} 
               className="w-full rounded-lg bg-black/30 px-3 py-2.5 text-white outline-none ring-1 ring-white/8 focus:ring-2 focus:ring-teal-400/40 transition-all duration-200 text-sm" 
             />
           </div>
@@ -311,7 +344,10 @@ export default function MusicCreatePage() {
           tags,
           releaseYear: releaseYear || 2024,
           durationSec: durationSec || 180,
-          priceRef,
+          musicType,
+          priceMusicOnly,
+          priceLyricsOnly,
+          priceBoth,
           rewardPerPlay,
           maxPlayCount: maxPlayCount || 1000,
           accessTier,

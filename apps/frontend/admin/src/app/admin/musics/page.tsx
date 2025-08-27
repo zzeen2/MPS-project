@@ -98,6 +98,13 @@ export default function MusicsPage() {
           </div>
           <div className="min-w-[120px]">
             <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
+              <option>전체 유형</option>
+              <option>일반</option>
+              <option>Inst</option>
+            </select>
+          </div>
+          <div className="min-w-[120px]">
+            <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
               <option>최신순</option>
               <option>유효재생순</option>
               <option>이름순</option>
@@ -141,10 +148,9 @@ export default function MusicsPage() {
                 </th>
                 <th className="px-6 py-4 text-white/70 font-medium">썸네일</th>
                 <th className="px-6 py-4 text-white/70 font-medium">음원명</th>
-                <th className="px-6 py-4 text-white/70 font-medium">아티스트</th>
                 <th className="px-6 py-4 text-white/70 font-medium">장르</th>
                 <th className="px-6 py-4 text-white/70 font-medium">태그</th>
-                <th className="px-6 py-4 text-white/70 font-medium">참고가격</th>
+                <th className="px-6 py-4 text-white/70 font-medium">음원 유형</th>
                 <th className="px-6 py-4 text-white/70 font-medium">유효재생(1달 누적)</th>
                 <th className="px-6 py-4 text-white/70 font-medium">유효재생률</th>
                 <th className="px-6 py-4 text-white/70 font-medium">월 최대 리워드 한도</th>
@@ -180,19 +186,19 @@ export default function MusicsPage() {
                   <td className="px-6 py-4">
                     <div className="font-semibold text-white">{rowTitle}</div>
                   </td>
-                  <td className="px-6 py-4 text-white/80">Artist {i+1}</td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25">
                       Pop
                     </span>
                   </td>
                   <td className="px-6 py-4 text-white/60">차분한, 릴렉스</td>
-                  <td className="px-6 py-4 text-white/80 font-medium">7원</td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-purple-400/15 to-purple-400/15 text-purple-300 border border-purple-400/25">
+                      {i % 2 === 0 ? '일반' : 'Inst'}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-white/80">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{validPlays.toLocaleString()}회</span>
-                      <span className="text-xs text-white/50">총 {totalPlays.toLocaleString()}회</span>
-                    </div>
+                    <span className="font-medium">{validPlays.toLocaleString()}회</span>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-teal-300 font-medium">{validRate}%</span>

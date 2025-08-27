@@ -27,12 +27,6 @@ export default function RewardsStatusCard() {
           <div className="text-xs text-white/40">
             총재생: {totalPlays.toLocaleString()}회
           </div>
-          <div className="text-xs text-white/60 mt-2">
-            리워드 발행: {totalRewardsIssued.toFixed(1)} RWD
-          </div>
-          <div className="text-xs text-white/60">
-            한도 사용률: {rewardUsageRate}%
-          </div>
         </div>
       </div>
     </Card>
