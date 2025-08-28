@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import MusicStatsModal from '@/components/modals/MusicStatsModal'
 import MusicEditModal from '@/components/modals/MusicEditModal'
 
@@ -13,10 +13,68 @@ export default function MusicsPage() {
   const [selectAll, setSelectAll] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editMusicData, setEditMusicData] = useState<any>(null)
+  const [isCreateMode, setIsCreateMode] = useState(false)
+  
+  // 필터링 상태
+  const [genreFilter, setGenreFilter] = useState('전체')
+  const [validPlaysFilter, setValidPlaysFilter] = useState('전체')
+  const [validRateFilter, setValidRateFilter] = useState('전체')
+  const [rewardFilter, setRewardFilter] = useState('전체')
+  const [musicTypeFilter, setMusicTypeFilter] = useState('전체')
+  const [dateFilter, setDateFilter] = useState('전체')
+  
+  // 정렬 상태 추가
+  const [sortBy, setSortBy] = useState<string>('')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  
+  // 드롭다운 열림/닫힘 상태
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  
+
+  
+
+  
+  // 페이지 외부 클릭 시 드롭다운 닫기
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenDropdown(null)
+    }
+    
+    document.addEventListener('click', handleClickOutside)
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [])
 
   const handleDelete = (title: string) => {
     setDeleteTarget(title)
     setDeleteModalOpen(true)
+  }
+  
+  // 드롭다운 토글 함수
+  const toggleDropdown = (dropdownName: string, e: React.MouseEvent) => {
+    e.stopPropagation() // 이벤트 전파 방지
+    const newState = openDropdown === dropdownName ? null : dropdownName
+    
+    // 상태 변경을 지연시켜서 즉시 변경되는 것 방지
+    setTimeout(() => {
+      setOpenDropdown(newState)
+    }, 0)
+  }
+  
+  // 드롭다운 닫기 함수
+  const closeDropdown = () => {
+    setOpenDropdown(null)
+  }
+  
+  // 정렬 함수
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(field)
+      setSortOrder('desc')
+    }
   }
 
   const confirmDelete = () => {
@@ -72,6 +130,7 @@ export default function MusicsPage() {
       maxPlayCount: 1000,
       accessTier: 'all' as const
     }
+    setIsCreateMode(false)
     setEditMusicData(mockMusicData)
     setEditModalOpen(true)
   }
@@ -87,30 +146,27 @@ export default function MusicsPage() {
               placeholder="음원명, 아티스트, 태그로 검색 .." 
             />
           </div>
-          <div className="min-w-[120px]">
-            <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
-              <option>전체 카테고리</option>
-              <option>Pop</option>
-              <option>Rock</option>
-              <option>Jazz</option>
-              <option>Classical</option>
-            </select>
-          </div>
-          <div className="min-w-[120px]">
-            <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
-              <option>전체 유형</option>
-              <option>일반</option>
-              <option>Inst</option>
-            </select>
-          </div>
-          <div className="min-w-[120px]">
-            <select className="w-full px-3 py-2 text-white outline-none border border-white/10 rounded-lg focus:border-teal-400/50 transition-colors text-sm">
-              <option>최신순</option>
-              <option>유효재생순</option>
-              <option>이름순</option>
-              <option>인기순</option>
-            </select>
-          </div>
+          <button 
+            onClick={() => {
+              // 검색 기능 구현
+              console.log('검색 실행')
+            }}
+            className="rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-200"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+          <button 
+            onClick={() => {
+              setIsCreateMode(true)
+              setEditMusicData(null)
+              setEditModalOpen(true)
+            }}
+            className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-4 py-2 text-sm font-medium text-white hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
+          >
+            음원 등록
+          </button>
         </div>
         
         <div className="flex items-center gap-4">
@@ -133,8 +189,8 @@ export default function MusicsPage() {
       </div>
 
       {/* 목록 테이블 */}
-      <div className="overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="overflow-visible">
+        <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-sm">
             <thead className="text-left">
               <tr className="border-b border-white/10">
@@ -148,33 +204,383 @@ export default function MusicsPage() {
                 </th>
                 <th className="px-6 py-4 text-white/70 font-medium">썸네일</th>
                 <th className="px-6 py-4 text-white/70 font-medium">음원명</th>
-                <th className="px-6 py-4 text-white/70 font-medium">장르</th>
+                <th className="px-6 py-4 text-white/70 font-medium">
+                  <div className="relative">
+                    <div className="flex items-center gap-1">
+                      <span>장르</span>
+                      <button 
+                        onClick={(e) => toggleDropdown('genre', e)}
+                        className="text-white/50 hover:text-white/70 transition-colors cursor-pointer"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    
+                    {/* 장르 드롭다운 메뉴 */}
+                    {openDropdown === 'genre' && (
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-xl z-[9999] min-w-[120px]">
+                        <div className="py-1">
+                          <button 
+                            onClick={() => { setGenreFilter('전체'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              genreFilter === '전체' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            전체
+                          </button>
+                          <button 
+                            onClick={() => { setGenreFilter('Pop'); setSortBy('genre'); setSortOrder('asc'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              genreFilter === 'Pop' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            Pop
+                          </button>
+                          <button 
+                            onClick={() => { setGenreFilter('Rock'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              genreFilter === 'Rock' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            Rock
+                          </button>
+                          <button 
+                            onClick={() => { setGenreFilter('Jazz'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              genreFilter === 'Jazz' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            Jazz
+                          </button>
+                          <button 
+                            onClick={() => { setGenreFilter('Classical'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              genreFilter === 'Classical' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            Classical
+                          </button>
+                          <button 
+                            onClick={() => { setGenreFilter('Electronic'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              genreFilter === 'Electronic' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            Electronic
+                          </button>
+                          <button 
+                            onClick={() => { setGenreFilter('Hip-hop'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              genreFilter === 'Hip-hop' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            Hip-hop
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th className="px-6 py-4 text-white/70 font-medium">태그</th>
-                <th className="px-6 py-4 text-white/70 font-medium">음원 유형</th>
-                <th className="px-6 py-4 text-white/70 font-medium">유효재생(1달 누적)</th>
-                <th className="px-6 py-4 text-white/70 font-medium">유효재생률</th>
+                <th className="px-6 py-4 text-white/70 font-medium">
+                  <div className="relative">
+                    <div className="flex items-center gap-1">
+                      <span>음원 유형</span>
+                      <button 
+                        onClick={(e) => toggleDropdown('musicType', e)}
+                        className="text-white/50 hover:text-white/70 transition-colors cursor-pointer"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    
+                    {/* 음원 유형 드롭다운 메뉴 */}
+                    {openDropdown === 'musicType' && (
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                        <div className="py-1">
+                          <button 
+                            onClick={() => { setMusicTypeFilter('전체'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              musicTypeFilter === '전체' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            전체
+                          </button>
+                          <button 
+                            onClick={() => { setMusicTypeFilter('일반'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              musicTypeFilter === '일반' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            일반
+                          </button>
+                          <button 
+                            onClick={() => { setMusicTypeFilter('Inst'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              musicTypeFilter === 'Inst' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            Inst
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-white/70 font-medium">
+                  <div className="relative">
+                    <button 
+                      onClick={(e) => toggleDropdown('validPlays', e)}
+                      className="flex items-center gap-1 w-full text-left hover:text-white/90 transition-colors"
+                    >
+                      <span>유효재생</span>
+                      <span className="text-white/50">▼</span>
+                    </button>
+                    
+                    {/* 유효재생 드롭다운 메뉴 */}
+                    {openDropdown === 'validPlays' && (
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                        <div className="py-1">
+                          <button 
+                            onClick={() => { setValidPlaysFilter('전체'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              validPlaysFilter === '전체' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            전체
+                          </button>
+                          <button 
+                            onClick={() => { setValidPlaysFilter('많은순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              validPlaysFilter === '많은순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            많은순
+                          </button>
+                          <button 
+                            onClick={() => { setValidPlaysFilter('적은순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              validPlaysFilter === '적은순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            적은순
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-white/70 font-medium">
+                  <div className="relative">
+                    <button 
+                      onClick={(e) => toggleDropdown('validRate', e)}
+                      className="flex items-center gap-1 w-full text-left hover:text-white/90 transition-colors"
+                    >
+                      <span>유효재생률</span>
+                      <span className="text-white/50">▼</span>
+                    </button>
+                    
+                    {/* 유효재생률 드롭다운 메뉴 */}
+                    {openDropdown === 'validRate' && (
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                        <div className="py-1">
+                          <button 
+                            onClick={() => { setValidRateFilter('전체'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              validRateFilter === '전체' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            전체
+                          </button>
+                          <button 
+                            onClick={() => { setValidRateFilter('높은순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              validRateFilter === '높은순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            높은순
+                          </button>
+                          <button 
+                            onClick={() => { setValidRateFilter('낮은순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              validRateFilter === '낮은순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            낮은순
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th className="px-6 py-4 text-white/70 font-medium">월 최대 리워드 한도</th>
-                <th className="px-6 py-4 text-white/70 font-medium">호출당 리워드</th>
-                <th className="px-6 py-4 text-white/70 font-medium">등록일</th>
+                <th className="px-6 py-4 text-white/70 font-medium">
+                  <div className="relative">
+                    <button 
+                      onClick={(e) => toggleDropdown('reward', e)}
+                      className="flex items-center gap-1 w-full text-left hover:text-white/90 transition-colors"
+                    >
+                      <span>호출당 리워드</span>
+                      <span className="text-white/50">▼</span>
+                    </button>
+                    
+                    {/* 호출당 리워드 드롭다운 메뉴 */}
+                    {openDropdown === 'reward' && (
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[120px]">
+                        <div className="py-1">
+                          <button 
+                            onClick={() => { setRewardFilter('전체'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              rewardFilter === '전체' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            전체
+                          </button>
+                          <button 
+                            onClick={() => { setRewardFilter('높은순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              rewardFilter === '높은순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            높은순
+                          </button>
+                          <button 
+                            onClick={() => { setRewardFilter('낮은순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              rewardFilter === '낮은순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            낮은순
+                          </button>
+                          <button 
+                            onClick={() => { setRewardFilter('리워드 있음'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              rewardFilter === '리워드 있음' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            리워드 있음
+                          </button>
+                          <button 
+                            onClick={() => { setRewardFilter('리워드 없음'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              rewardFilter === '리워드 없음' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            리워드 없음
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-white/70 font-medium">
+                  <div className="relative">
+                    <button 
+                      onClick={(e) => toggleDropdown('date', e)}
+                      className="flex items-center gap-1 w-full text-left hover:text-white/90 transition-colors"
+                    >
+                      <span>등록일</span>
+                      <span className="text-white/50">▼</span>
+                    </button>
+                    
+                    {/* 등록일 드롭다운 메뉴 */}
+                    {openDropdown === 'date' && (
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                        <div className="py-1">
+                          <button 
+                            onClick={() => { setDateFilter('전체'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              dateFilter === '전체' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            전체
+                          </button>
+                          <button 
+                            onClick={() => { setDateFilter('최신순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              dateFilter === '최신순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            최신순
+                          </button>
+                          <button 
+                            onClick={() => { setDateFilter('오래된순'); closeDropdown(); }}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                              dateFilter === '오래된순' ? 'text-teal-300 bg-white/5' : 'text-white/80'
+                            }`}
+                          >
+                            오래된순
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th className="px-6 py-4 text-white/70 font-medium">액션</th>
               </tr>
             </thead>
             <tbody>
-              {[...Array(10)].map((_, i) => {
-                const rowTitle = `Song Title ${i+1}`
-                const validPlays = 1000 + i * 3
-                const totalPlays = Math.floor(validPlays * (1 + Math.random() * 0.3 + 0.1)) // 10-40% 추가
-                const validRate = Math.round((validPlays / totalPlays) * 100)
+              {React.useMemo(() => {
+                // 필터링 + 정렬된 데이터 생성
+                let filteredData = [...Array(10)].map((_, i) => ({
+                  index: i,
+                  title: `Song Title ${i+1}`,
+                  genre: 'Pop',
+                  tags: '차분한, 릴렉스',
+                  musicType: i % 2 === 0 ? '일반' : 'Inst',
+                  validPlays: 1000 + i * 3,
+                  validRate: Math.round(((1000 + i * 3) / (1000 + i * 3 + 100)) * 100),
+                  reward: i % 3 === 0 ? '-' : '1000토큰',
+                  rewardPerPlay: i % 3 === 0 ? '-' : '0.007토큰',
+                  date: '2024.01.15'
+                }))
                 
+                // 필터링
+                filteredData = filteredData.filter(item => {
+                  if (genreFilter !== '전체' && item.genre !== genreFilter) return false
+                  if (musicTypeFilter !== '전체' && item.musicType !== musicTypeFilter) return false
+                  if (validPlaysFilter !== '전체') {
+                    if (validPlaysFilter === '많은순' && item.validPlays < 1015) return false
+                    if (validPlaysFilter === '적은순' && item.validPlays > 1015) return false
+                  }
+                  if (validRateFilter !== '전체') {
+                    if (validRateFilter === '높은순' && item.validRate < 90) return false
+                    if (validRateFilter === '낮은순' && item.validRate > 90) return false
+                  }
+                  if (rewardFilter !== '전체') {
+                    if (rewardFilter === '리워드 있음' && item.reward === '-') return false
+                    if (rewardFilter === '리워드 없음' && item.reward !== '-') return false
+                  }
+                  return true
+                })
+                
+                // 정렬
+                if (sortBy && sortOrder) {
+                  filteredData.sort((a, b) => {
+                    let aVal = a[sortBy as keyof typeof a]
+                    let bVal = b[sortBy as keyof typeof b]
+                    
+                    if (typeof aVal === 'string' && typeof bVal === 'string') {
+                      return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
+                    }
+                    if (typeof aVal === 'number' && typeof bVal === 'number') {
+                      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal
+                    }
+                    return 0
+                  })
+                }
+                
+                return filteredData
+              }, [genreFilter, musicTypeFilter, validPlaysFilter, validRateFilter, rewardFilter, sortBy, sortOrder]).map((item) => {
                 return (
-                <tr key={i} className={`border-b border-white/5 transition-all duration-200 ${
-                  i % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
+                                  <tr key={item.index} className={`border-b border-white/5 transition-all duration-200 ${
+                    item.index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
                 } hover:bg-white/8`}>
                   <td className="px-6 py-4">
                     <input 
                       type="checkbox" 
-                      checked={selectedItems.has(i)}
-                      onChange={() => handleItemSelect(i)}
+                        checked={selectedItems.has(item.index)}
+                        onChange={() => handleItemSelect(item.index)}
                       className="accent-teal-400 rounded" 
                     />
                   </td>
@@ -184,47 +590,45 @@ export default function MusicsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-semibold text-white">{rowTitle}</div>
+                      <div className="font-semibold text-white">{item.title}</div>
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25">
-                      Pop
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-white/60">차분한, 릴렉스</td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-purple-400/15 to-purple-400/15 text-purple-300 border border-purple-400/25">
-                      {i % 2 === 0 ? '일반' : 'Inst'}
+                        {item.genre}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-white/60">{item.tags}</td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-purple-400/15 to-purple-400/15 text-purple-300 border border-purple-400/25">
+                        {item.musicType}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-white/80">
-                    <span className="font-medium">{validPlays.toLocaleString()}회</span>
+                      <span className="font-medium">{item.validPlays.toLocaleString()}회</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-teal-300 font-medium">{validRate}%</span>
+                      <span className="text-teal-300 font-medium">{item.validRate}%</span>
+                    </td>
+                    <td className="px-6 py-4 text-white/80">
+                      {item.reward}
+                    </td>
+                    <td className="px-6 py-4 text-white/80">
+                      {item.rewardPerPlay}
                   </td>
-                  <td className="px-6 py-4 text-white/80">1000토큰</td>
-                  <td className="px-6 py-4 text-white/80">0.007토큰</td>
-                  <td className="px-6 py-4 text-white/60">2024.01.15</td>
+                    <td className="px-6 py-4 text-white/60">{item.date}</td>
                   <td className="px-6 py-4">
-                    <div className="flex gap-2">
+                                        <div className="flex gap-2">
                       <button 
                         className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-3 py-1.5 text-xs text-white font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
-                        onClick={() => handleEdit(i)}
+                        onClick={() => handleEdit(item.index)}
                       >
                         수정
                       </button>
                       <button 
-                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white font-medium hover:bg-white/10 transition-all duration-200"
-                        onClick={() => handleDelete(rowTitle)}
-                      >
-                        삭제
-                      </button>
-                      <button 
                         className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-3 py-1.5 text-xs text-white font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-200" 
-                        onClick={()=>{ setStatsTitle(rowTitle); setStatsOpen(true) }}
+                        onClick={()=>{ setStatsTitle(item.title); setStatsOpen(true) }}
                       >
-                        통계
+                        상세
                       </button>
                     </div>
                   </td>
@@ -236,7 +640,7 @@ export default function MusicsPage() {
       </div>
 
       {/* 페이지네이션 */}
-      <div className="flex items-center justify-center text-sm text-white/70">
+      <div className="sticky bottom-0 flex items-center justify-center text-sm text-white/70 mt-8 bg-neutral-950 py-4 border-t border-white/10">
         <div className="flex items-center gap-3">
           <button className="rounded-lg border border-white/10 bg-white/5 p-2.5 hover:bg-white/10 transition-all duration-200 hover:border-white/20">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,11 +669,15 @@ export default function MusicsPage() {
       {/* 통계 모달 */}
       <MusicStatsModal open={statsOpen} onClose={()=>setStatsOpen(false)} title={statsTitle} />
 
-      {/* 수정 모달 */}
+      {/* 수정/등록 모달 */}
       <MusicEditModal 
         open={editModalOpen} 
-        onClose={() => setEditModalOpen(false)} 
+        onClose={() => {
+          setEditModalOpen(false)
+          setIsCreateMode(false)
+        }} 
         musicData={editMusicData}
+        isCreateMode={isCreateMode}
       />
 
       {/* 삭제 확인 모달 */}
