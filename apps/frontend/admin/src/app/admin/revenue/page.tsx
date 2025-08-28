@@ -11,34 +11,49 @@ export default function RevenueDashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<string>('')
   const [company, setCompany] = useState<'전체'|'Company A'|'Company B'|'Company C'|'Company D'>('전체')
   const [lifecycleFilter, setLifecycleFilter] = useState<'전체'|'1월'|'2월'|'3월'|'4월'|'5월'|'6월'|'7월'|'8월'|'9월'|'10월'|'11월'|'12월'>('전체')
+  const [currentMonth, setCurrentMonth] = useState(new Date())
 
-  // KPI 데이터
-  const kpis = [
-    { 
-      title: '이번 달 총 매출', 
-      value: '₩12,345,678', 
-      change: '+15.3%', 
-      detail: '전월: ₩10,714,286'
-    },
-    { 
-      title: '구독료', 
-      value: '₩8,234,567', 
-      change: '+12.8%', 
-      detail: 'Standard: ₩4.6M, Business: ₩3.7M'
-    },
-    { 
-      title: '사용료', 
-      value: '₩4,111,111', 
-      change: '+22.5%', 
-      detail: '일반음원: ₩2.3M, 가사만: ₩1.0M, Inst: ₩0.8M'
-    },
-    { 
-      title: '리워드 할인', 
-      value: '₩1,234,567', 
-      change: '+15.3%', 
-      detail: '총 할인 금액'
-    },
-  ]
+  // 달력 데이터 생성
+  const generateCalendarData = (date: Date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
+    const startDate = new Date(firstDay)
+    startDate.setDate(startDate.getDate() - firstDay.getDay())
+    
+    const calendar = []
+    const currentDate = new Date(startDate)
+    
+    for (let week = 0; week < 6; week++) {
+      const weekData = []
+      for (let day = 0; day < 7; day++) {
+        const isCurrentMonth = currentDate.getMonth() === month
+        const isToday = currentDate.toDateString() === new Date().toDateString()
+        
+        // 고정 매출 데이터 (실제로는 API에서 가져올 데이터)
+        const subscriptionRevenue = isCurrentMonth ? 250000 : 0
+        const usageRevenue = isCurrentMonth ? 120000 : 0
+        const totalRevenue = subscriptionRevenue + usageRevenue
+        
+        weekData.push({
+          date: new Date(currentDate),
+          isCurrentMonth,
+          isToday,
+          subscriptionRevenue,
+          usageRevenue,
+          totalRevenue
+        })
+        
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+      calendar.push(weekData)
+    }
+    
+    return calendar
+  }
+
+  const calendarData = generateCalendarData(currentMonth)
 
   // TOP 기업 데이터
   const standardTop = [
@@ -85,6 +100,24 @@ export default function RevenueDashboardPage() {
     }
   ]
 
+
+
+  const formatRevenue = (amount: number) => {
+    if (amount >= 1000000) return `${(amount / 1000000).toFixed(1)}M`
+    if (amount >= 1000) return `${(amount / 1000).toFixed(0)}K`
+    return amount.toString()
+  }
+
+  const changeMonth = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentMonth)
+    if (direction === 'prev') {
+      newDate.setMonth(newDate.getMonth() - 1)
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1)
+    }
+    setCurrentMonth(newDate)
+  }
+
   useEffect(() => {
     // 마지막 업데이트 시간
     const updateTime = () => {
@@ -106,24 +139,91 @@ export default function RevenueDashboardPage() {
 
   return (
     <div className="w-full px-6 py-6">
-      {/* KPI Cards */}
+      {/* 달력 섹션 */}
       <section className="mb-8">
-        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
-          {kpis.map((kpi, i) => (
-            <Card key={i}>
-              <div className="space-y-1">
-                <Title variant="card">{kpi.title}</Title>
-                <div className="text-3xl font-bold text-white">{kpi.value}</div>
-                <div className="space-y-0.5">
-                  <div className="text-sm text-teal-300">({kpi.change})</div>
-                  <div className="mt-2 space-y-0.5">
-                    <div className="text-xs text-white/60">{kpi.detail}</div>
-                  </div>
-                </div>
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <Title variant="section">월별 매출 달력</Title>
+            
+            {/* 월별 요약 정보 */}
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <div className="text-xs text-white/60">이번 달 구독료</div>
+                <div className="text-base font-bold text-teal-400">₩7,750,000</div>
               </div>
-            </Card>
-          ))}
-        </div>
+              <div className="text-center">
+                <div className="text-xs text-white/60">이번 달 사용료</div>
+                <div className="text-base font-bold text-blue-400">₩3,720,000</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs text-white/60">이번 달 총 매출</div>
+                <div className="text-lg font-bold text-white">₩11,470,000</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => changeMonth('prev')}
+                className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-sm"
+              >
+                ◀
+              </button>
+              <span className="text-base font-medium text-white">
+                {currentMonth.getFullYear()}년 {currentMonth.getMonth() + 1}월
+              </span>
+              <button
+                onClick={() => changeMonth('next')}
+                className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-sm"
+              >
+                ▶
+              </button>
+            </div>
+          </div>
+          
+                    <div className="grid grid-cols-7">
+            {/* 요일 헤더 */}
+            <div className="p-2 text-center text-xs font-medium text-white/60">일</div>
+            <div className="p-2 text-center text-xs font-medium text-white/60">월</div>
+            <div className="p-2 text-center text-xs font-medium text-white/60">화</div>
+            <div className="p-2 text-center text-xs font-medium text-white/60">수</div>
+            <div className="p-2 text-center text-xs font-medium text-white/60">목</div>
+            <div className="p-2 text-center text-xs font-medium text-white/60">금</div>
+            <div className="p-2 text-center text-xs font-medium text-white/60">토</div>
+            
+            {/* 날짜 그리드 */}
+            {calendarData.flat().map((day, index) => (
+              <div
+                key={index}
+                className={`
+                  min-h-[60px] p-2 border-b border-r border-white/10
+                  ${!day.isCurrentMonth ? 'opacity-40' : ''}
+                  ${day.isToday ? 'bg-teal-500/20 border-teal-400' : ''}
+                  ${index % 7 === 6 ? 'border-r-0' : ''}
+                  ${index >= calendarData.flat().length - 7 ? 'border-b-0' : ''}
+                `}
+              >
+                <div className="text-xs text-white/60 mb-1">
+                  {day.date.getDate()}
+                </div>
+                {day.isCurrentMonth && day.totalRevenue > 0 && (
+                  <div className="space-y-0.5">
+                    <div className="text-sm font-bold text-white">
+                      ₩{formatRevenue(day.totalRevenue)}
+                    </div>
+                    <div className="text-xs text-teal-400">
+                      구독: ₩{formatRevenue(day.subscriptionRevenue)}
+                    </div>
+                    <div className="text-xs text-blue-400">
+                      사용: ₩{formatRevenue(day.usageRevenue)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          
+          
+        </Card>
       </section>
 
       {/* Charts Section */}
