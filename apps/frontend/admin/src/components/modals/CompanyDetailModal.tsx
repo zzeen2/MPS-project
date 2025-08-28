@@ -2,28 +2,7 @@
 
 import { useState } from 'react'
 import SimpleLineChart from '@/components/charts/SimpleLineChart'
-
-type Company = {
-  id: string
-  name: string
-  tier: string
-  totalTokens: number
-  monthlyEarned: number
-  monthlyUsed: number
-  usageRate: number
-  activeTracks: number
-  status: 'active' | 'inactive' | 'suspended'
-  lastActivity: string
-  joinedDate: string
-  contactEmail: string
-  contactPhone: string
-  businessNumber: string
-  subscriptionStart: string
-  subscriptionEnd: string
-  monthlyUsage: number[]
-  monthlyRewards: number[]
-  topTracks: Array<{ title: string; usage: number; category: string }>
-}
+import { Company } from '@/lib/types'
 
 type Props = {
   open: boolean
@@ -37,7 +16,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
   if (!open || !company) return null
 
   const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
-  
+
   const usageData = {
     labels: months,
     series: [
@@ -118,11 +97,10 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 ${
-                  activeTab === tab.id
+                className={`px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 ${activeTab === tab.id
                     ? 'text-teal-400 border-teal-400'
                     : 'text-white/60 border-transparent hover:text-white/80 hover:border-white/20'
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -171,14 +149,14 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                         <span className="text-white/60 text-sm">전화번호</span>
                         <span className="text-white">{company.contactPhone}</span>
                       </div>
-                        <div className="flex items-center justify-between py-2.5">
-                          <span className="text-white/60 text-sm">구독 시작일</span>
-                          <span className="text-white">{company.subscriptionStart}</span>
-                        </div>
-                        <div className="flex items-center justify-between py-2.5">
-                          <span className="text-white/60 text-sm">구독 종료일</span>
-                          <span className="text-white">{company.subscriptionEnd}</span>
-                        </div>
+                      <div className="flex items-center justify-between py-2.5">
+                        <span className="text-white/60 text-sm">구독 시작일</span>
+                        <span className="text-white">{company.subscriptionStart}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-2.5">
+                        <span className="text-white/60 text-sm">구독 종료일</span>
+                        <span className="text-white">{company.subscriptionEnd}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -226,7 +204,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                         <span className="text-white font-medium">{company.usageRate}%</span>
                       </div>
                       <div className="w-full bg-white/10 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-teal-400 to-blue-400 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${company.usageRate}%` }}
                         />
@@ -235,7 +213,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                         월 한도 대비 {company.usageRate}% 사용 중
                       </div>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white/60 text-sm">최근 활동</span>
@@ -257,7 +235,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                     월별 API 사용량
                   </h3>
                   <div className="h-64">
-                    <SimpleLineChart 
+                    <SimpleLineChart
                       labels={months}
                       series={[
                         { label: '현재 기업', data: company.monthlyUsage },
@@ -275,7 +253,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                       <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
                       전체 음원 사용 현황
                     </h3>
-                    <select 
+                    <select
                       className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-teal-400/50 transition-colors"
                       onChange={(e) => {
                         // 월별 필터링 로직 구현 예정
@@ -314,12 +292,11 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                           return (
                             <tr key={track.title} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                               <td className="px-4 py-3">
-                                <span className={`text-sm font-bold ${
-                                  index === 0 ? 'text-teal-400' :
-                                  index === 1 ? 'text-teal-400' :
-                                  index === 2 ? 'text-teal-400' :
-                                  'text-white'
-                                }`}>
+                                <span className={`text-sm font-bold ${index === 0 ? 'text-teal-400' :
+                                    index === 1 ? 'text-teal-400' :
+                                      index === 2 ? 'text-teal-400' :
+                                        'text-white'
+                                  }`}>
                                   {index + 1}
                                 </span>
                               </td>
@@ -333,7 +310,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2">
                                   <div className="w-20 bg-white/10 rounded-full h-2">
-                                    <div 
+                                    <div
                                       className="bg-gradient-to-r from-teal-400 to-blue-400 h-2 rounded-full transition-all duration-300"
                                       style={{ width: `${usagePercentage}%` }}
                                     />
@@ -364,7 +341,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                     월별 리워드 적립
                   </h3>
                   <div className="h-64">
-                    <SimpleLineChart 
+                    <SimpleLineChart
                       labels={months}
                       series={[
                         { label: '현재 기업', data: company.monthlyRewards },
@@ -399,7 +376,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                           const subscriptionDiscount = Math.floor(monthlyReward * 0.3) // 30% 할인 사용 가정
                           const remainingReward = monthlyReward - subscriptionDiscount
                           const cumulativeBalance = company.monthlyRewards.slice(0, index + 1).reduce((sum, reward) => sum + reward, 0)
-                          
+
                           return (
                             <tr key={month} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                               <td className="px-4 py-3 font-medium text-white">{month}</td>

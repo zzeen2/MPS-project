@@ -3,27 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import CompanyDetailModal from '@/components/modals/CompanyDetailModal'
-
-type Company = {
-  id: string
-  name: string
-  tier: string
-  totalTokens: number
-  monthlyEarned: number
-  monthlyUsed: number
-  usageRate: number
-  activeTracks: number
-  status: 'active' | 'inactive' | 'suspended'
-  lastActivity: string
-  joinedDate: string
-  contactEmail: string
-  contactPhone: string
-  subscriptionStart: string
-  subscriptionEnd: string
-  monthlyUsage: number[]
-  monthlyRewards: number[]
-  topTracks: Array<{ title: string; usage: number; category: string }>
-}
+import { Company } from '@/lib/types'
 
 export default function CompaniesPage() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -43,12 +23,13 @@ export default function CompaniesPage() {
     const usageRate = Math.round((monthlyUsed / 1000) * 100)
     const activeTracks = 20 + (i % 6)
     const status = i % 5 !== 2 ? 'active' : 'inactive'
-    const lastActivity = `2024.${String(((i*3)%12)+1).padStart(2,'0')}.${String(((i*7)%28)+1).padStart(2,'0')}`
-    const joinedDate = `2024.${String(((i*3)%12)+1).padStart(2,'0')}.${String(((i*7)%28)+1).padStart(2,'0')}`
+    const lastActivity = `2024.${String(((i * 3) % 12) + 1).padStart(2, '0')}.${String(((i * 7) % 28) + 1).padStart(2, '0')}`
+    const joinedDate = `2024.${String(((i * 3) % 12) + 1).padStart(2, '0')}.${String(((i * 7) % 28) + 1).padStart(2, '0')}`
     const contactEmail = `contact@company${String.fromCharCode(65 + i).toLowerCase()}.com`
-    const contactPhone = `010-${String(1000 + i).padStart(4,'0')}-${String(1000 + i).padStart(4,'0')}`
-    const subscriptionStart = `2024.${String(((i*3)%12)+1).padStart(2,'0')}.01`
-    const subscriptionEnd = `2025.${String(((i*3)%12)+1).padStart(2,'0')}.31`
+    const contactPhone = `010-${String(1000 + i).padStart(4, '0')}-${String(1000 + i).padStart(4, '0')}`
+    const businessNumber = `${String(100 + i).padStart(3, '0')}-${String(10 + i).padStart(2, '0')}-${String(10000 + i).padStart(5, '0')}`
+    const subscriptionStart = `2024.${String(((i * 3) % 12) + 1).padStart(2, '0')}.01`
+    const subscriptionEnd = `2025.${String(((i * 3) % 12) + 1).padStart(2, '0')}.31`
     const monthlyUsage = Array.from({ length: 12 }, (_, month) => 800 - i * 45 + Math.floor(Math.random() * 200))
     const monthlyRewards = Array.from({ length: 12 }, (_, month) => 500 - i * 25 + Math.floor(Math.random() * 100))
     const topTracks = [
@@ -56,45 +37,46 @@ export default function CompaniesPage() {
       { title: `Track ${i + 2}`, usage: 120 - i * 4, category: 'Rock' },
       { title: `Track ${i + 3}`, usage: 100 - i * 3, category: 'Jazz' }
     ]
-    
-    return { 
-      id: String(i+1), 
-      name, 
-      tier, 
-      totalTokens, 
-      monthlyEarned, 
-      monthlyUsed, 
-      usageRate, 
-      activeTracks, 
-      status, 
-      lastActivity, 
-      joinedDate, 
-      contactEmail, 
-      contactPhone, 
-      subscriptionStart, 
-      subscriptionEnd, 
-      monthlyUsage, 
-      monthlyRewards, 
-      topTracks 
+
+    return {
+      id: String(i + 1),
+      name,
+      tier,
+      totalTokens,
+      monthlyEarned,
+      monthlyUsed,
+      usageRate,
+      activeTracks,
+      status,
+      lastActivity,
+      joinedDate,
+      contactEmail,
+      contactPhone,
+      businessNumber,
+      subscriptionStart,
+      subscriptionEnd,
+      monthlyUsage,
+      monthlyRewards,
+      topTracks
     }
   })
 
   const filteredCompanies = companies
-    .filter(company => 
+    .filter(company =>
       company.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .filter(company => 
+    .filter(company =>
       tierFilter === '' || company.tier === tierFilter
     )
-    .filter(company => 
-      statusFilter === '' || 
+    .filter(company =>
+      statusFilter === '' ||
       (statusFilter === 'active' && company.status === 'active') ||
       (statusFilter === 'inactive' && company.status === 'inactive')
     )
     .sort((a, b) => {
       let aValue: any = a[sortBy as keyof Company]
       let bValue: any = b[sortBy as keyof Company]
-      
+
       if (sortOrder === 'asc') {
         return aValue > bValue ? 1 : -1
       } else {
@@ -160,7 +142,7 @@ export default function CompaniesPage() {
             </select>
           </div>
         </div>
-        
+
         <div className="text-sm text-white/60">
           총 <span className="text-teal-300 font-semibold">{total}</span>개 기업
         </div>
@@ -185,20 +167,18 @@ export default function CompaniesPage() {
             </thead>
             <tbody>
               {filteredCompanies.map((company, index) => (
-                <tr key={company.id} className={`border-b border-white/5 transition-all duration-200 ${
-                  index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
-                } hover:bg-white/8`}>
+                <tr key={company.id} className={`border-b border-white/5 transition-all duration-200 ${index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
+                  } hover:bg-white/8`}>
                   <td className="px-8 py-5">
                     <Link href={`/admin/companies/${company.id}`} className="font-semibold text-white hover:underline">
                       {company.name}
                     </Link>
                   </td>
                   <td className="px-8 py-5">
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                      company.tier === 'Business' ? 'bg-gradient-to-r from-purple-400/15 to-purple-500/15 text-purple-300 border border-purple-400/25' :
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${company.tier === 'Business' ? 'bg-gradient-to-r from-purple-400/15 to-purple-500/15 text-purple-300 border border-purple-400/25' :
                       company.tier === 'Standard' ? 'bg-gradient-to-r from-blue-400/15 to-blue-500/15 text-blue-300 border border-blue-400/25' :
-                      'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
-                    }`}>
+                        'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
+                      }`}>
                       {company.tier}
                     </span>
                   </td>
@@ -218,11 +198,10 @@ export default function CompaniesPage() {
                     {company.activeTracks}개
                   </td>
                   <td className="px-8 py-5">
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                      company.status === 'active' 
-                        ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25'
-                        : 'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
-                    }`}>
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${company.status === 'active'
+                      ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25'
+                      : 'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
+                      }`}>
                       {company.status === 'active' ? '●' : '○'} {company.status === 'active' ? '활성' : '비활성'}
                     </span>
                   </td>

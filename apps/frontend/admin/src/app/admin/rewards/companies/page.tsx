@@ -2,27 +2,7 @@
 
 import { useState } from 'react'
 import CompanyDetailModal from '@/components/modals/CompanyDetailModal'
-
-type Company = {
-  id: string
-  name: string
-  tier: string
-  totalTokens: number
-  monthlyEarned: number
-  monthlyUsed: number
-  usageRate: number
-  activeTracks: number
-  status: 'active' | 'inactive' | 'suspended'
-  lastActivity: string
-  joinedDate: string
-  contactEmail: string
-  contactPhone: string
-  contractStart: string
-  contractEnd: string
-  monthlyUsage: number[]
-  monthlyRewards: number[]
-  topTracks: Array<{ title: string; usage: number; category: string }>
-}
+import { Company } from '@/lib/types'
 
 export default function CompaniesPage() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -48,8 +28,9 @@ export default function CompaniesPage() {
       joinedDate: '2023-01-15',
       contactEmail: 'admin@techcorp.com',
       contactPhone: '02-1234-5678',
-      contractStart: '2023-01-15',
-      contractEnd: '2024-12-31',
+      businessNumber: '123-45-67890',
+      subscriptionStart: '2023-01-15',
+      subscriptionEnd: '2024-12-31',
       monthlyUsage: [1200, 1350, 1100, 1400, 1600, 1800, 2000, 1900, 2100, 1950, 2200, 2400],
       monthlyRewards: [15000, 16800, 13750, 17500, 20000, 22500, 25000, 23750, 26250, 24375, 27500, 30000],
       topTracks: [
@@ -74,8 +55,9 @@ export default function CompaniesPage() {
       joinedDate: '2023-03-20',
       contactEmail: 'info@digitalmedia.com',
       contactPhone: '02-2345-6789',
-      contractStart: '2023-03-20',
-      contractEnd: '2024-12-31',
+      businessNumber: '234-56-78901',
+      subscriptionStart: '2023-03-20',
+      subscriptionEnd: '2024-12-31',
       monthlyUsage: [800, 950, 1100, 1200, 1350, 1500, 1600, 1550, 1700, 1650, 1800, 2000],
       monthlyRewards: [10000, 11875, 13750, 15000, 16875, 18750, 20000, 19375, 21250, 20625, 22500, 25000],
       topTracks: [
@@ -100,8 +82,9 @@ export default function CompaniesPage() {
       joinedDate: '2023-06-10',
       contactEmail: 'hello@startup.com',
       contactPhone: '02-3456-7890',
-      contractStart: '2023-06-10',
-      contractEnd: '2024-06-09',
+      businessNumber: '345-67-89012',
+      subscriptionStart: '2023-06-10',
+      subscriptionEnd: '2024-06-09',
       monthlyUsage: [400, 500, 600, 700, 800, 900, 1000, 950, 1100, 1050, 1200, 1300],
       monthlyRewards: [5000, 6250, 7500, 8750, 10000, 11250, 12500, 11875, 13750, 13125, 15000, 16250],
       topTracks: [
@@ -115,14 +98,14 @@ export default function CompaniesPage() {
   ]
 
   const filteredCompanies = companies
-    .filter(company => 
+    .filter(company =>
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (selectedTier === 'all' || company.tier === selectedTier) &&
       (selectedStatus === 'all' || company.status === selectedStatus)
     )
     .sort((a, b) => {
       let aValue: any, bValue: any
-      
+
       switch (sortBy) {
         case 'name':
           aValue = a.name
@@ -226,7 +209,7 @@ export default function CompaniesPage() {
             </select>
           </div>
         </div>
-        
+
         <div className="text-sm text-white/60">
           총 <span className="text-teal-300 font-semibold">{companies.length}</span>개 기업
         </div>
@@ -252,18 +235,16 @@ export default function CompaniesPage() {
             </thead>
             <tbody>
               {filteredCompanies.map((company, index) => (
-                <tr key={company.id} className={`border-b border-white/5 transition-all duration-200 ${
-                  index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
-                } hover:bg-white/8`}>
+                <tr key={company.id} className={`border-b border-white/5 transition-all duration-200 ${index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
+                  } hover:bg-white/8`}>
                   <td className="px-8 py-5">
                     <div className="font-semibold text-white">{company.name}</div>
                   </td>
                   <td className="px-8 py-5">
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                      company.tier === 'Business' ? 'bg-gradient-to-r from-purple-400/15 to-purple-500/15 text-purple-300 border border-purple-400/25' :
-                      company.tier === 'Standard' ? 'bg-gradient-to-r from-blue-400/15 to-blue-500/15 text-blue-300 border border-blue-400/25' :
-                      'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
-                    }`}>
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${company.tier === 'Business' ? 'bg-gradient-to-r from-purple-400/15 to-purple-500/15 text-purple-300 border border-purple-400/25' :
+                        company.tier === 'Standard' ? 'bg-gradient-to-r from-blue-400/15 to-blue-500/15 text-blue-300 border border-blue-400/25' :
+                          'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
+                      }`}>
                       {company.tier}
                     </span>
                   </td>
@@ -279,7 +260,7 @@ export default function CompaniesPage() {
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-3">
                       <div className="w-20 bg-white/10 rounded-full h-1.5">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-teal-400 to-blue-400 h-1.5 rounded-full transition-all duration-300"
                           style={{ width: `${company.usageRate}%` }}
                         />
@@ -291,11 +272,10 @@ export default function CompaniesPage() {
                     {company.activeTracks}개
                   </td>
                   <td className="px-8 py-5">
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                      company.status === 'active' 
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${company.status === 'active'
                         ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25'
                         : 'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
-                    }`}>
+                      }`}>
                       {company.status === 'active' ? '●' : '○'} {company.status === 'active' ? '활성' : '비활성'}
                     </span>
                   </td>
@@ -303,7 +283,7 @@ export default function CompaniesPage() {
                     {new Date(company.lastActivity).toLocaleDateString('ko-KR')}
                   </td>
                   <td className="px-8 py-5">
-                    <button 
+                    <button
                       className="rounded-md bg-teal-500/90 px-2.5 py-1.5 text-xs text-white font-medium hover:bg-teal-400 transition-all duration-200"
                       onClick={() => {
                         setSelectedCompany(company)

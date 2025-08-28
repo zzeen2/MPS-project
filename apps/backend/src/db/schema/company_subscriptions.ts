@@ -1,4 +1,4 @@
-import { pgTable, bigserial, bigint, varchar, date, decimal, integer, boolean, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, bigserial, bigint, varchar, date, decimal, integer, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { companies } from './companies'
 
@@ -8,10 +8,6 @@ export const company_subscriptions = pgTable('company_subscriptions', {
   tier: varchar('tier', { length: 20 }).notNull(),
   start_date: date('start_date').notNull(),
   end_date: date('end_date').notNull(),
-  monthly_fee: decimal('monthly_fee', { precision: 10, scale: 2 }).notNull(),
-  status: varchar('status', { length: 20 }).notNull(),
-  auto_renew: boolean('auto_renew').notNull().default(true),
-  payment_status: varchar('payment_status', { length: 20 }),
   total_paid_amount: decimal('total_paid_amount', { precision: 10, scale: 2 }),
   payment_count: integer('payment_count'),
   discount_amount: decimal('discount_amount', { precision: 10, scale: 2 }),
