@@ -22,12 +22,7 @@ const REWARD_GROUP = {
   ],
 }
 
-const COMPANY_GROUP = {
-  label: '기업 관리',
-  items: [
-    { href: '/admin/companies', label: '기업 목록' },
-  ],
-}
+
 
 const REVENUE_GROUP = {
   label: '매출 관리',
@@ -49,7 +44,6 @@ export default function Sidebar() {
   const pathname = usePathname()
   const [openMusic, setOpenMusic] = useState(true)
   const [openReward, setOpenReward] = useState(true)
-  const [openCompany, setOpenCompany] = useState(true)
   const [openRevenue, setOpenRevenue] = useState(true)
   const [openSystem, setOpenSystem] = useState(true)
 
@@ -144,29 +138,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        <div>
-          <button
-            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/70 hover:text-white hover:bg-white/5"
-            onClick={() => setOpenCompany((v) => !v)}
-            aria-expanded={openCompany}
-          >
-            <span>{COMPANY_GROUP.label}</span>
-            <span className="text-xs">{openCompany ? '▾' : '▸'}</span>
-          </button>
-          {openCompany && (
-            <div className="mt-1 space-y-1 pl-3">
-              {COMPANY_GROUP.items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`block rounded px-3 py-2 ${isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+
 
         <div>
           <button

@@ -127,10 +127,10 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
 
           {/* 탭 네비게이션 */}
           <div className="flex border-b border-white/10 flex-shrink-0">
-            {[
-              { id: 'usage', label: '사용 현황' },
-              { id: 'rewards', label: '리워드 현황' }
-            ].map((tab) => (
+                          {[
+                { id: 'usage', label: '리워드 발생 현황' },
+                { id: 'rewards', label: '사용 기업 현황' }
+              ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
@@ -154,7 +154,7 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
                 <div className="rounded-xl border border-white/10 p-6">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    월별 API 사용량
+                    월별 리워드 발생 API호출 추이
                   </h3>
                   <div className="h-64">
                     <SimpleLineChart 
@@ -169,16 +169,16 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
                 <div className="rounded-xl border border-white/10 p-6">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    월별 사용 상세 현황
+                    월별 리워드 발생 현황
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="text-center">
                         <tr className="border-b border-white/10">
                           <th className="px-4 py-3 text-white/80 font-medium">월</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">유효재생횟수</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">리워드 발생 횟수(유효재생)</th>
                           <th className="px-4 py-3 text-white/80 font-medium">사용 기업</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용률</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">리워드 발생률</th>
                           <th className="px-4 py-3 text-white/80 font-medium">월별 리워드 지급액</th>
                         </tr>
                       </thead>
@@ -221,7 +221,7 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
               </div>
             )}
 
-            {/* 리워드 현황 탭 */}
+            {/* 기업별 리워드 적립 현황 탭 */}
             {activeTab === 'rewards' && (
               <div className="space-y-6">
                 {/* 사용 기업 현황 */}

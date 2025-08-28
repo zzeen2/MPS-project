@@ -121,7 +121,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
             {[
               { id: 'info', label: '기업 기본 정보' },
               { id: 'usage', label: '음원 사용 현황' },
-              { id: 'rewards', label: '리워드 현황' }
+              { id: 'rewards', label: '사용 기업 현황' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -296,7 +296,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                 <div className="rounded-xl border border-white/10 p-6">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    월별 API 사용량
+                    월별 리워드 발생 API호출 추이
                   </h3>
                   <div className="h-64">
                     <SimpleLineChart 
@@ -345,7 +345,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                           <th className="px-4 py-3 text-white/80 font-medium">순위</th>
                           <th className="px-4 py-3 text-white/80 font-medium">음원명</th>
                           <th className="px-4 py-3 text-white/80 font-medium">카테고리</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">유효재생횟수</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">리워드 발생 횟수(유효재생)</th>
                           <th className="px-4 py-3 text-white/80 font-medium">적립 리워드</th>
                           <th className="px-4 py-3 text-white/80 font-medium">최근 사용</th>
                         </tr>
