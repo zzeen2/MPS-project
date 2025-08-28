@@ -548,9 +548,17 @@ export default function MusicEditModal({ open, onClose, isCreateMode = false, mu
               <Title>API 설정 <span className="text-red-400 text-sm">*</span></Title>
               <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-white/80">엔드포인트 URL</label>
+                  <label className="block text-sm font-medium text-white/80">음원 재생 엔드포인트</label>
                   <input 
                     value="/api/music/{music_id}/play" 
+                    readOnly 
+                    className="w-full cursor-not-allowed rounded-lg bg-black/20 px-3 py-2.5 text-sm text-white/60 outline-none ring-1 ring-white/8" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-white/80">가사 다운로드 엔드포인트</label>
+                  <input 
+                    value="/api/music/{music_id}/lyrics" 
                     readOnly 
                     className="w-full cursor-not-allowed rounded-lg bg-black/20 px-3 py-2.5 text-sm text-white/60 outline-none ring-1 ring-white/8" 
                   />

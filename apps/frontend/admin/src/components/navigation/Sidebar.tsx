@@ -10,7 +10,6 @@ const MUSIC_GROUP = {
   label: '음원 관리',
   items: [
     { href: '/admin/musics', label: '음원 목록' },
-    { href: '/admin/musics/new', label: '음원 등록' },
     { href: '/admin/musics/categories', label: '카테고리 관리' },
   ],
 }
@@ -63,9 +62,6 @@ export default function Sidebar() {
   const isActive = (href: string) => {
     if (href === '/admin/musics') {
       return pathname === '/admin/musics'
-    }
-    if (href === '/admin/musics/new') {
-      return pathname === '/admin/musics/new'
     }
     if (href === '/admin/musics/categories') {
       return pathname === '/admin/musics/categories'

@@ -9,7 +9,6 @@ export default function MusicsLayout({ children }: { children: ReactNode }) {
 
   const isActive = (href: string) => {
     if (href === '/admin/musics' && pathname === '/admin/musics') return true
-    if (href === '/admin/musics/new' && pathname === '/admin/musics/new') return true
     if (href === '/admin/musics/categories' && pathname === '/admin/musics/categories') return true
     return false
   }
@@ -28,17 +27,6 @@ export default function MusicsLayout({ children }: { children: ReactNode }) {
             }`}
           >
             음원 목록
-          </Link>
-          <span className="text-white/30">·</span>
-          <Link
-            href="/admin/musics/new"
-            className={`transition-colors duration-200 ${
-              isActive('/admin/musics/new') 
-                ? 'text-teal-400 font-medium' 
-                : 'text-white/60 hover:text-white'
-            }`}
-          >
-            등록/수정
           </Link>
           <span className="text-white/30">·</span>
           <Link
