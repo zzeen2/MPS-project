@@ -192,7 +192,7 @@ export default function MusicsPage() {
       <div className="overflow-visible">
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-sm">
-            <thead className="text-left">
+            <thead className="text-center">
               <tr className="border-b border-white/10">
                 <th className="px-6 py-4">
                   <input 
@@ -202,11 +202,11 @@ export default function MusicsPage() {
                     className="accent-teal-400 rounded" 
                   />
                 </th>
-                <th className="px-6 py-4 text-white/70 font-medium">썸네일</th>
-                <th className="px-6 py-4 text-white/70 font-medium">음원명</th>
-                <th className="px-6 py-4 text-white/70 font-medium">
+
+                <th className="px-6 py-4 text-white/70 font-medium text-center">음원명</th>
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <span>장르</span>
                       <button 
                         onClick={(e) => toggleDropdown('genre', e)}
@@ -281,10 +281,10 @@ export default function MusicsPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-white/70 font-medium">태그</th>
-                <th className="px-6 py-4 text-white/70 font-medium">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">태그</th>
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <span>음원 유형</span>
                       <button 
                         onClick={(e) => toggleDropdown('musicType', e)}
@@ -370,11 +370,11 @@ export default function MusicsPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-white/70 font-medium">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('validRate', e)}
-                      className="flex items-center gap-1 w-full text-left hover:text-white/90 transition-colors"
+                      className="flex items-center justify-center gap-1 w-full text-center hover:text-white/90 transition-colors"
                     >
                       <span>유효재생률</span>
                       <span className="text-white/50">▼</span>
@@ -413,12 +413,12 @@ export default function MusicsPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-white/70 font-medium">월 최대 리워드 한도</th>
-                <th className="px-6 py-4 text-white/70 font-medium">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">월 최대 리워드 한도</th>
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('reward', e)}
-                      className="flex items-center gap-1 w-full text-left hover:text-white/90 transition-colors"
+                      className="flex items-center justify-center gap-1 w-full text-center hover:text-white/90 transition-colors"
                     >
                       <span>호출당 리워드</span>
                       <span className="text-white/50">▼</span>
@@ -473,11 +473,11 @@ export default function MusicsPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-white/70 font-medium">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('date', e)}
-                      className="flex items-center gap-1 w-full text-left hover:text-white/90 transition-colors"
+                      className="flex items-center justify-center gap-1 w-full text-center hover:text-white/90 transition-colors"
                     >
                       <span>등록일</span>
                       <span className="text-white/50">▼</span>
@@ -516,7 +516,7 @@ export default function MusicsPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-white/70 font-medium">액션</th>
+                <th className="px-6 py-4 text-white/70 font-medium text-center">액션</th>
               </tr>
             </thead>
             <tbody>
@@ -573,60 +573,73 @@ export default function MusicsPage() {
                 return filteredData
               }, [genreFilter, musicTypeFilter, validPlaysFilter, validRateFilter, rewardFilter, sortBy, sortOrder]).map((item) => {
                 return (
-                                  <tr key={item.index} className={`border-b border-white/5 transition-all duration-200 ${
-                    item.index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
-                } hover:bg-white/8`}>
-                  <td className="px-6 py-4">
+                  <tr 
+                    key={item.index} 
+                    className={`border-b border-white/5 transition-all duration-200 cursor-pointer ${
+                      item.index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
+                    } hover:bg-white/8`}
+                    onClick={() => {
+                      setStatsTitle(item.title)
+                      setStatsOpen(true)
+                    }}
+                  >
+                  <td className="px-6 py-4 text-center">
                     <input 
                       type="checkbox" 
                         checked={selectedItems.has(item.index)}
-                        onChange={() => handleItemSelect(item.index)}
+                        onChange={(e) => {
+                          e.stopPropagation()
+                          handleItemSelect(item.index)
+                        }}
                       className="accent-teal-400 rounded" 
                     />
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-400/20 via-blue-400/15 to-purple-400/20 border border-white/10 flex items-center justify-center shadow-inner">
-                      <span className="text-teal-300 text-xl">🎵</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
+
+                  <td className="px-6 py-4 text-center">
                       <div className="font-semibold text-white">{item.title}</div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25">
                         {item.genre}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-white/60">{item.tags}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-white/60 text-center">{item.tags}</td>
+                    <td className="px-6 py-4 text-center">
                       <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-purple-400/15 to-purple-400/15 text-purple-300 border border-purple-400/25">
                         {item.musicType}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-white/80">
+                  <td className="px-6 py-4 text-white/80 text-center">
                       <span className="font-medium">{item.validPlays.toLocaleString()}회</span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                       <span className="text-teal-300 font-medium">{item.validRate}%</span>
                     </td>
-                    <td className="px-6 py-4 text-white/80">
+                  <td className="px-6 py-4 text-white/80 text-center">
                       {item.reward}
                     </td>
-                    <td className="px-6 py-4 text-white/80">
+                  <td className="px-6 py-4 text-white/80 text-center">
                       {item.rewardPerPlay}
                   </td>
-                    <td className="px-6 py-4 text-white/60">{item.date}</td>
-                  <td className="px-6 py-4">
-                                        <div className="flex gap-2">
+                    <td className="px-6 py-4 text-white/60 text-center">{item.date}</td>
+                  <td className="px-6 py-4 text-center">
+                                        <div className="flex gap-2 justify-center">
                       <button 
                         className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-3 py-1.5 text-xs text-white font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
-                        onClick={() => handleEdit(item.index)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEdit(item.index)
+                        }}
                       >
                         수정
                       </button>
                       <button 
                         className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-3 py-1.5 text-xs text-white font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-200" 
-                        onClick={()=>{ setStatsTitle(item.title); setStatsOpen(true) }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setStatsTitle(item.title)
+                          setStatsOpen(true)
+                        }}
                       >
                         상세
                       </button>

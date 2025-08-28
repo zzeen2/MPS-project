@@ -227,7 +227,7 @@ export default function RewardsMusicsPage() {
           {selectedMusics.length > 0 && (
             <button
               onClick={() => setBulkEditModalOpen(true)}
-              className="px-3 py-2 bg-orange-500/90 text-white text-xs font-medium rounded-lg hover:bg-orange-400 transition-colors"
+              className="px-3 py-2 bg-teal-500/90 text-white text-xs font-medium rounded-lg hover:bg-teal-400 transition-colors"
             >
               일괄 수정 ({selectedMusics.length}개)
             </button>
@@ -237,8 +237,8 @@ export default function RewardsMusicsPage() {
         <div className="text-sm text-white/60">
           총 <span className="text-teal-300 font-semibold">{filteredMusics.length}</span>개 음원
           {selectedMusics.length > 0 && (
-            <span className="ml-2 text-orange-300">
-              • 선택됨: <span className="text-orange-300 font-semibold">{selectedMusics.length}</span>개
+            <span className="ml-2 text-teal-300">
+              • 선택됨: <span className="text-teal-300 font-semibold">{selectedMusics.length}</span>개
             </span>
           )}
         </div>
@@ -248,9 +248,9 @@ export default function RewardsMusicsPage() {
       <div className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-left">
+            <thead className="text-center">
               <tr className="border-b border-white/10">
-                <th className="px-8 py-5">
+                <th className="px-8 py-5 text-center">
                   <input 
                     type="checkbox" 
                     checked={selectedMusics.length === filteredMusics.length && filteredMusics.length > 0}
@@ -258,16 +258,15 @@ export default function RewardsMusicsPage() {
                     className="accent-teal-400 rounded" 
                   />
                 </th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">음원명</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">카테고리</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">이번 달 유효재생</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">유효재생률</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">월 한도</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">사용률</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">사용 기업</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">호출당 리워드</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">상태</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider">액션</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">음원명</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">카테고리</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">이번 달 유효재생</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">유효재생률</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">월 한도</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">사용률</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">사용 기업</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">호출당 리워드</th>
+                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">액션</th>
               </tr>
             </thead>
             <tbody>
@@ -283,7 +282,7 @@ export default function RewardsMusicsPage() {
                   <tr key={music.id} className={`border-b border-white/5 transition-all duration-200 ${
                     index % 2 === 0 ? 'bg-white/2' : 'bg-white/1'
                   } hover:bg-white/8`}>
-                    <td className="px-8 py-5">
+                    <td className="px-8 py-5 text-center">
                       <input 
                         type="checkbox" 
                         checked={selectedMusics.includes(music.id)}
@@ -291,33 +290,33 @@ export default function RewardsMusicsPage() {
                         className="accent-teal-400 rounded" 
                       />
                     </td>
-                    <td className="px-8 py-5">
+                    <td className="px-8 py-5 text-center">
                       <div className="font-semibold text-white">{music.title}</div>
                     </td>
-                    <td className="px-8 py-5 text-white/80">
+                    <td className="px-8 py-5 text-white/80 text-center">
                       <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r ${categoryColor.bg} ${categoryColor.text} border ${categoryColor.border}`}>
                         {music.category}
                       </span>
                     </td>
-                    <td className="px-8 py-5 text-teal-400 font-medium">
+                    <td className="px-8 py-5 text-teal-400 font-medium text-center">
                       <div className="flex flex-col">
                         <span>{music.monthlyUsed.toLocaleString()}회</span>
                         <span className="text-xs text-white/50">총 {totalPlays.toLocaleString()}회</span>
                       </div>
                     </td>
-                    <td className="px-8 py-5">
+                    <td className="px-8 py-5 text-center">
                       <span className="text-teal-300 font-medium">{validRate}%</span>
                     </td>
-                    <td className="px-8 py-5 text-white/80">
+                    <td className="px-8 py-5 text-white/80 text-center">
                       {music.monthlyLimit ? music.monthlyLimit.toLocaleString() : (
                         <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25">
                           무제한
                         </span>
                       )}
                     </td>
-                    <td className="px-8 py-5">
+                    <td className="px-8 py-5 text-center">
                       {usageRate !== null ? (
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center gap-3">
                           <div className="w-20 bg-white/10 rounded-full h-1.5">
                             <div
                               className="bg-gradient-to-r from-teal-400 to-blue-400 h-1.5 rounded-full transition-all duration-300"
@@ -330,23 +329,14 @@ export default function RewardsMusicsPage() {
                         <span className="text-white/50 text-xs">-</span>
                       )}
                     </td>
-                    <td className="px-8 py-5 text-white/80">
+                    <td className="px-8 py-5 text-white/80 text-center">
                       {music.companies}개
                     </td>
-                    <td className="px-8 py-5 text-white/80">
+                    <td className="px-8 py-5 text-white/80 text-center">
                       {music.rewardPerPlay.toFixed(3)} 토큰
                     </td>
-                    <td className="px-8 py-5">
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                        music.status === 'active' 
-                          ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25'
-                          : 'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
-                      }`}>
-                        {music.status === 'active' ? '●' : '○'} {music.status === 'active' ? '활성' : '비활성'}
-                      </span>
-                    </td>
-                    <td className="px-8 py-5">
-                      <div className="flex gap-1.5">
+                    <td className="px-8 py-5 text-center">
+                      <div className="flex gap-1.5 justify-center">
                         <button 
                           className="rounded-md bg-teal-500/90 px-2.5 py-1.5 text-xs text-white font-medium hover:bg-teal-400 transition-all duration-200"
                           onClick={() => {
