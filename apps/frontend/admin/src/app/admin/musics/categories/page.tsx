@@ -130,6 +130,12 @@ export default function MusicCategoriesPage() {
       {/* 카테고리 목록 */}
       <Card>
         <Title variant="section">카테고리 목록</Title>
+        <div className="mb-4 flex items-center gap-2 text-sm text-teal-300">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>음원을 드래그하여 다른 카테고리로 이동할 수 있습니다</span>
+        </div>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => (
                          <div
@@ -157,7 +163,6 @@ export default function MusicCategoriesPage() {
                      onDragStart={(e) => handleDragStart(e, song, category.id)}
                      className="flex items-center gap-2 p-2 rounded bg-white/5 hover:bg-white/10 transition-all duration-200 cursor-move"
                    >
-                     <div className={`w-2 h-2 rounded-full ${song.isApiActive ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                      <div className="flex-1 min-w-0">
                        <div className="text-sm text-white truncate">{song.title}</div>
                        <div className="text-xs text-white/60">{song.artist} • {song.duration}</div>
@@ -206,7 +211,7 @@ export default function MusicCategoriesPage() {
               </svg>
             </button>
           </div>
-          <div className="space-y-1">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
             {selectedCategoryData.songs.map((song) => (
               <div
                 key={song.id}
@@ -214,7 +219,6 @@ export default function MusicCategoriesPage() {
                 onDragStart={(e) => handleDragStart(e, song, selectedCategoryData.id)}
                 className="flex items-center gap-2 p-2 rounded bg-white/5 hover:bg-white/10 transition-all duration-200 cursor-move"
               >
-                <div className={`w-2 h-2 rounded-full ${song.isApiActive ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm text-white truncate">{song.title}</div>
                   <div className="text-xs text-white/60">{song.artist} • {song.duration}</div>
