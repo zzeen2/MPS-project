@@ -8,6 +8,7 @@ type Props = {
   onClose: () => void; 
   isCreateMode?: boolean;
   musicData?: {
+    id?: string;
     title: string;
     artist: string;
     album?: string;
@@ -549,19 +550,15 @@ export default function MusicEditModal({ open, onClose, isCreateMode = false, mu
               <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-white/80">음원 재생 엔드포인트</label>
-                  <input 
-                    value="/api/music/{music_id}/play" 
-                    readOnly 
-                    className="w-full cursor-not-allowed rounded-lg bg-black/20 px-3 py-2.5 text-sm text-white/60 outline-none ring-1 ring-white/8" 
-                  />
+                  <div className="w-full rounded-lg bg-black/20 px-3 py-2.5 text-sm text-white/60 outline-none ring-1 ring-white/8 font-mono">
+                    /api/music/{isCreateMode ? '{music_id}' : (musicData?.id || 'N/A')}/play
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-white/80">가사 다운로드 엔드포인트</label>
-                  <input 
-                    value="/api/music/{music_id}/lyrics" 
-                    readOnly 
-                    className="w-full cursor-not-allowed rounded-lg bg-black/20 px-3 py-2.5 text-sm text-white/60 outline-none ring-1 ring-white/8" 
-                  />
+                  <div className="w-full rounded-lg bg-black/20 px-3 py-2.5 text-sm text-white/60 outline-none ring-1 ring-white/8 font-mono">
+                    /api/lyric/{isCreateMode ? '{music_id}' : (musicData?.id || 'N/A')}/download
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-white/80">API 키 권한</label>

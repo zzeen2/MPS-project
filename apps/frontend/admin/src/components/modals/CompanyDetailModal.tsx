@@ -23,6 +23,14 @@ type Company = {
   monthlyUsage: number[]
   monthlyRewards: number[]
   topTracks: Array<{ title: string; usage: number; category: string }>
+  // 추가 필드들
+  ceoName: string
+  profileImageUrl: string
+  homepageUrl: string
+  smartAccountAddress: string
+  apiKeyHash: string
+  createdAt: string
+  updatedAt: string
 }
 
 type Props = {
@@ -134,112 +142,146 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
             {/* 기업 기본 정보 탭 */}
             {activeTab === 'info' && (
               <div className="space-y-6">
-                {/* 기업 개요 카드 */}
+                {/* 기업 기본 정보 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    기업 개요
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">기업명</span>
-                        <span className="text-white font-medium">{company.name}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">등급</span>
-                        <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r ${getTierColor(company.tier)}`}>
-                          {company.tier}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">가입일</span>
-                        <span className="text-white">{company.joinedDate}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5">
-                        <span className="text-white/60 text-sm">사업자 번호</span>
-                        <span className="text-white">{company.businessNumber}</span>
-                      </div>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="h-4 w-1.5 rounded bg-teal-300" />
+                      <div className="text-lg font-semibold">기업 기본 정보</div>
                     </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">이메일</span>
-                        <span className="text-white">{company.contactEmail}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">전화번호</span>
-                        <span className="text-white">{company.contactPhone}</span>
-                      </div>
-                        <div className="flex items-center justify-between py-2.5">
-                          <span className="text-white/60 text-sm">구독 시작일</span>
-                          <span className="text-white">{company.subscriptionStart}</span>
+                    <div className="flex gap-8 items-start">
+                      {/* 회사 이미지 */}
+                      <div className="flex-shrink-0">
+                        <div className="w-64 h-64 rounded-lg border border-white/10 overflow-hidden bg-white/5">
+                          {company.profileImageUrl ? (
+                            <img 
+                              src={company.profileImageUrl} 
+                              alt={`${company.name} 로고`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                if (target.nextElementSibling) {
+                                  target.nextElementSibling.classList.remove('hidden');
+                                }
+                              }}
+                            />
+                          ) : null}
+                          <div className={`w-full h-full flex items-center justify-center ${company.profileImageUrl ? 'hidden' : ''}`}>
+                            <div className="text-center">
+                              <svg className="w-20 h-20 mx-auto text-white/30 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                              </svg>
+                              <div className="text-xs text-white/40">회사 이미지</div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between py-2.5">
-                          <span className="text-white/60 text-sm">구독 종료일</span>
-                          <span className="text-white">{company.subscriptionEnd}</span>
+                      </div>
+                      
+                      {/* 기업 정보 */}
+                      <div className="flex-1 min-w-0 pt-1">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+                          <div>
+                            <div className="text-white/60 mb-1">기업명</div>
+                            <div className="text-white font-medium">{company.name}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">등급</div>
+                            <div className="text-white font-medium">
+                              <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                                company.tier === 'Business' ? 'bg-gradient-to-r from-purple-400/15 to-purple-500/15 text-purple-300 border border-purple-400/25' :
+                                company.tier === 'Standard' ? 'bg-gradient-to-r from-blue-400/15 to-blue-500/15 text-blue-300 border border-blue-400/25' :
+                                'bg-gradient-to-r from-gray-400/15 to-gray-500/15 text-gray-300 border border-gray-400/25'
+                              }`}>
+                                {company.tier}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">대표자명</div>
+                            <div className="text-white font-medium">{company.ceoName}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">사업자 번호</div>
+                            <div className="text-white font-medium">{company.businessNumber}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">이메일</div>
+                            <div className="text-white font-medium">{company.contactEmail}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">전화번호</div>
+                            <div className="text-white font-medium">{company.contactPhone}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">홈페이지</div>
+                            <div className="text-white font-medium">
+                              {company.homepageUrl ? (
+                                <a href={company.homepageUrl} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-300 underline">
+                                  {company.homepageUrl}
+                                </a>
+                              ) : (
+                                <span className="text-white/40">-</span>
+                              )}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">스마트어카운트</div>
+                            <div className="text-white font-medium font-mono text-xs">
+                              {company.smartAccountAddress ? (
+                                <span className="text-teal-400">
+                                  {company.smartAccountAddress.slice(0, 8)}...{company.smartAccountAddress.slice(-6)}
+                                </span>
+                              ) : (
+                                <span className="text-white/40">-</span>
+                              )}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">가입일</div>
+                            <div className="text-white font-medium">{company.createdAt}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">수정일</div>
+                            <div className="text-white font-medium">{company.updatedAt}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">구독 시작일</div>
+                            <div className="text-white font-medium">{company.subscriptionStart}</div>
+                          </div>
+                          <div>
+                            <div className="text-white/60 mb-1">구독 종료일</div>
+                            <div className="text-white font-medium">{company.subscriptionEnd}</div>
+                          </div>
                         </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 핵심 지표 카드 */}
+                {/* 핵심 지표 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    핵심 지표
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">{company.totalTokens.toLocaleString()}</div>
-                      <div className="text-sm text-white/80">보유 토큰</div>
-                      <div className="text-xs text-white/50 mt-1">현재 잔액</div>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="h-4 w-1.5 rounded bg-teal-300" />
+                      <div className="text-lg font-semibold">핵심 지표</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">+{company.monthlyEarned.toLocaleString()}</div>
-                      <div className="text-sm text-white/80">이번 달 적립</div>
-                      <div className="text-xs text-white/50 mt-1">신규 적립</div>
-                    </div>
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">{company.monthlyUsed.toLocaleString()}</div>
-                      <div className="text-sm text-white/80">이번 달 사용</div>
-                      <div className="text-xs text-white/50 mt-1">소모량</div>
-                    </div>
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">{company.activeTracks}</div>
-                      <div className="text-sm text-white/80">활성 음원</div>
-                      <div className="text-xs text-white/50 mt-1">사용 중</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 사용률 및 활동 현황 */}
-                <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    사용률 및 활동 현황
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white/60 text-sm">토큰 사용률</span>
-                        <span className="text-white font-medium">{company.usageRate}%</span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <div className="text-white/60 mb-1">보유 토큰</div>
+                        <div className="text-teal-400 font-medium">{company.totalTokens.toLocaleString()}</div>
                       </div>
-                      <div className="w-full bg-white/10 rounded-full h-2">
-                        <div 
-                          className="bg-gradient-to-r from-teal-400 to-blue-400 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${company.usageRate}%` }}
-                        />
+                      <div>
+                        <div className="text-white/60 mb-1">이번 달 적립</div>
+                        <div className="text-teal-400 font-medium">+{company.monthlyEarned.toLocaleString()}</div>
                       </div>
-                      <div className="text-xs text-white/50">
-                        월 한도 대비 {company.usageRate}% 사용 중
+                      <div>
+                        <div className="text-white/60 mb-1">이번 달 사용</div>
+                        <div className="text-white font-medium">{company.monthlyUsed.toLocaleString()}</div>
                       </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white/60 text-sm">최근 활동</span>
-                        <span className="text-white">{company.lastActivity}</span>
+                      <div>
+                        <div className="text-white/60 mb-1">활성 음원</div>
+                        <div className="text-white font-medium">{company.activeTracks}개</div>
                       </div>
                     </div>
                   </div>
@@ -303,8 +345,8 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                           <th className="px-4 py-3 text-white/80 font-medium">순위</th>
                           <th className="px-4 py-3 text-white/80 font-medium">음원명</th>
                           <th className="px-4 py-3 text-white/80 font-medium">카테고리</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용 횟수</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용률</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">유효재생횟수</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">적립 리워드</th>
                           <th className="px-4 py-3 text-white/80 font-medium">최근 사용</th>
                         </tr>
                       </thead>
@@ -330,16 +372,8 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                                 </span>
                               </td>
                               <td className="px-4 py-3 text-teal-400 font-medium">{track.usage.toLocaleString()}</td>
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-2">
-                                  <div className="w-20 bg-white/10 rounded-full h-2">
-                                    <div 
-                                      className="bg-gradient-to-r from-teal-400 to-blue-400 h-2 rounded-full transition-all duration-300"
-                                      style={{ width: `${usagePercentage}%` }}
-                                    />
-                                  </div>
-                                  <span className="text-white/70 text-xs">{usagePercentage}%</span>
-                                </div>
+                              <td className="px-4 py-3 text-teal-400 font-medium">
+                                {(track.usage * 0.007).toFixed(1)} 토큰
                               </td>
                               <td className="px-4 py-3 text-white/60 text-xs">
                                 {new Date().toLocaleDateString('ko-KR')}
@@ -357,24 +391,6 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
             {/* 리워드 현황 탭 */}
             {activeTab === 'rewards' && (
               <div className="space-y-6">
-                {/* 월별 리워드 적립 차트 */}
-                <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    월별 리워드 적립
-                  </h3>
-                  <div className="h-64">
-                    <SimpleLineChart 
-                      labels={months}
-                      series={[
-                        { label: '현재 기업', data: company.monthlyRewards },
-                        { label: '업계 평균', data: [8000, 9500, 11000, 12500, 14000, 15500, 17000, 16500, 18000, 17500, 19000, 20500] }
-                      ]}
-                      colors={['#14b8a6', '#9ca3af']}
-                    />
-                  </div>
-                </div>
-
                 {/* 월별 리워드 상세 현황 */}
                 <div className="rounded-xl border border-white/10 p-6">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
@@ -409,7 +425,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                               <td className="px-4 py-3 text-white/80">
                                 +{monthlyReward.toLocaleString()}
                               </td>
-                              <td className="px-4 py-3 text-orange-400">
+                              <td className="px-4 py-3 text-teal-400">
                                 -{subscriptionDiscount.toLocaleString()}
                               </td>
                               <td className="px-4 py-3 text-white/80">
@@ -440,7 +456,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                       <div className="text-sm text-white/80">총 적립 리워드</div>
                     </div>
                     <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-orange-400 mb-1">
+                      <div className="text-2xl font-bold text-teal-400 mb-1">
                         {company.monthlyRewards.reduce((sum, reward) => sum + Math.floor(reward * 0.3), 0).toLocaleString()}
                       </div>
                       <div className="text-sm text-white/80">총 할인 사용</div>
