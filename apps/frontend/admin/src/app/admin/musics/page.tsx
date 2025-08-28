@@ -206,15 +206,13 @@ export default function MusicsPage() {
                 <th className="px-6 py-4 text-white/70 font-medium text-center">음원명</th>
                 <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
-                    <div className="flex items-center justify-center gap-1">
+                    <button 
+                      onClick={(e) => toggleDropdown('genre', e)}
+                      className="flex items-center justify-center gap-1 w-full text-center hover:text-white/90 transition-colors"
+                    >
                       <span>장르</span>
-                      <button 
-                        onClick={(e) => toggleDropdown('genre', e)}
-                        className="text-white/50 hover:text-white/70 transition-colors cursor-pointer"
-                      >
-                        ▼
-                      </button>
-                    </div>
+                      <span className="text-white/50">▼</span>
+                    </button>
                     
                     {/* 장르 드롭다운 메뉴 */}
                     {openDropdown === 'genre' && (
@@ -284,19 +282,17 @@ export default function MusicsPage() {
                 <th className="px-6 py-4 text-white/70 font-medium text-center">태그</th>
                 <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
-                    <div className="flex items-center justify-center gap-1">
+                    <button 
+                      onClick={(e) => toggleDropdown('musicType', e)}
+                      className="flex items-center justify-center gap-1 w-full text-center hover:text-white/90 transition-colors"
+                    >
                       <span>음원 유형</span>
-                      <button 
-                        onClick={(e) => toggleDropdown('musicType', e)}
-                        className="text-white/50 hover:text-white/70 transition-colors cursor-pointer"
-                      >
-                        ▼
-                      </button>
-                    </div>
+                      <span className="text-white/50">▼</span>
+                    </button>
                     
                     {/* 음원 유형 드롭다운 메뉴 */}
                     {openDropdown === 'musicType' && (
-                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-xl z-[9999] min-w-[100px]">
                         <div className="py-1">
                           <button 
                             onClick={() => { setMusicTypeFilter('전체'); closeDropdown(); }}
@@ -339,7 +335,7 @@ export default function MusicsPage() {
                     
                     {/* 유효재생 드롭다운 메뉴 */}
                     {openDropdown === 'validPlays' && (
-                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-xl z-[9999] min-w-[100px]">
                         <div className="py-1">
                           <button 
                             onClick={() => { setValidPlaysFilter('전체'); closeDropdown(); }}
@@ -382,7 +378,7 @@ export default function MusicsPage() {
                     
                     {/* 유효재생률 드롭다운 메뉴 */}
                     {openDropdown === 'validRate' && (
-                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-xl z-[9999] min-w-[100px]">
                         <div className="py-1">
                           <button 
                             onClick={() => { setValidRateFilter('전체'); closeDropdown(); }}
@@ -426,7 +422,7 @@ export default function MusicsPage() {
                     
                     {/* 호출당 리워드 드롭다운 메뉴 */}
                     {openDropdown === 'reward' && (
-                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[120px]">
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-xl z-[9999] min-w-[120px]">
                         <div className="py-1">
                           <button 
                             onClick={() => { setRewardFilter('전체'); closeDropdown(); }}
@@ -485,7 +481,7 @@ export default function MusicsPage() {
                     
                     {/* 등록일 드롭다운 메뉴 */}
                     {openDropdown === 'date' && (
-                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-lg z-10 min-w-[100px]">
+                      <div className="absolute top-full left-0 mt-1 bg-black/90 border border-white/20 rounded-lg shadow-xl z-[9999] min-w-[100px]">
                         <div className="py-1">
                           <button 
                             onClick={() => { setDateFilter('전체'); closeDropdown(); }}

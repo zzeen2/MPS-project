@@ -35,7 +35,7 @@ type Company = {
   businessNumber: string
 }
 
-export default function CompaniesPage() {
+export default function CompanyRewardsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTier, setSelectedTier] = useState('all')
   const [sortBy, setSortBy] = useState('name')
@@ -307,8 +307,8 @@ export default function CompaniesPage() {
           <table className="w-full text-sm">
             <thead className="text-center">
               <tr className="border-b border-white/10">
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">기업명</th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">기업명</th>
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('tier', e)}
@@ -359,7 +359,7 @@ export default function CompaniesPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('tokens', e)}
@@ -402,7 +402,7 @@ export default function CompaniesPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('earned', e)}
@@ -445,7 +445,7 @@ export default function CompaniesPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('used', e)}
@@ -488,7 +488,7 @@ export default function CompaniesPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('usageRate', e)}
@@ -531,7 +531,7 @@ export default function CompaniesPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">
+                <th className="px-6 py-4 text-white/70 font-medium text-center">
                   <div className="relative">
                     <button 
                       onClick={(e) => toggleDropdown('activeTracks', e)}
@@ -574,7 +574,7 @@ export default function CompaniesPage() {
                     )}
                   </div>
                 </th>
-                <th className="px-8 py-5 text-white/80 font-semibold text-xs uppercase tracking-wider text-center">액션</th>
+                <th className="px-6 py-4 text-white/70 font-medium text-center">액션</th>
               </tr>
             </thead>
             <tbody>
@@ -589,10 +589,10 @@ export default function CompaniesPage() {
                     setModalOpen(true)
                   }}
                 >
-                  <td className="px-8 py-5 text-center">
+                  <td className="px-6 py-4 text-center">
                     <div className="font-semibold text-white">{company.name}</div>
                   </td>
-                  <td className="px-8 py-5 text-center">
+                  <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
                       company.tier === 'Business' ? 'bg-gradient-to-r from-purple-400/15 to-purple-500/15 text-purple-300 border border-purple-400/25' :
                       company.tier === 'Standard' ? 'bg-gradient-to-r from-blue-400/15 to-blue-500/15 text-blue-300 border border-blue-400/25' :
