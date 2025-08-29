@@ -1,3 +1,4 @@
+
 .DS_Store
 .env*
 node_modules/
@@ -9,3 +10,5 @@ copilot_tests/
 ignition/
 mps-api/
 # -------------- contract branch에서 추가함 -------
+.next
+next-env.d.ts
