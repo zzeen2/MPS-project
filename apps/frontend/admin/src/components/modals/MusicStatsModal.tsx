@@ -3,9 +3,37 @@ import { useState } from 'react'
 import SimpleLineChart from '@/components/charts/SimpleLineChart'
 import Card from '@/components/ui/Card'
 
-type Props = { open: boolean; onClose: () => void; title?: string }
+type Props = { 
+  open: boolean; 
+  onClose: () => void; 
+  title?: string;
+  musicData?: {
+    id?: string;
+    title: string;
+    artist: string;
+    album?: string;
+    category?: string;
+    genre: string;
+    tags: string;
+    releaseYear: number;
+    durationSec: number;
+    musicType?: '일반' | 'Inst' | '가사만';
+    priceMusicOnly?: number;
+    priceLyricsOnly?: number;
+    priceBoth?: number;
+    rewardPerPlay?: number;
+    maxPlayCount?: number;
+    accessTier?: 'all' | 'subscribed';
+    lyricist?: string;
+    composer?: string;
+    arranger?: string;
+    isrc?: string;
+    coverImageUrl?: string;
+    createdAt?: string;
+  }
+}
 
-export default function MusicStatsModal({ open, onClose, title = '음원 상세 통계' }: Props) {
+export default function MusicStatsModal({ open, onClose, title = '음원 상세', musicData }: Props) {
   const [timeTab, setTimeTab] = useState<'daily'|'weekly'|'monthly'>('daily')
   const [selectedMonth, setSelectedMonth] = useState('3월')
   
@@ -17,7 +45,7 @@ export default function MusicStatsModal({ open, onClose, title = '음원 상세 
         <div className="flex items-center justify-between p-6 pb-4 border-b border-white/10">
           <div>
             <h3 className="text-xl font-semibold text-white">{title}</h3>
-            <p className="mt-1 text-sm text-teal-300">유효재생 통계 분석 (60초 이상)</p>
+            <p className="mt-1 text-sm text-teal-300">음원 상세 정보 및 통계</p>
           </div>
           <button 
             onClick={onClose} 
@@ -31,15 +59,150 @@ export default function MusicStatsModal({ open, onClose, title = '음원 상세 
 
         {/* 내용 - 스크롤 가능 */}
         <div className="flex-1 overflow-y-auto p-6 pt-4 scrollbar-thin scrollbar-track-white/5 scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30">
-          {/* 4개 차트 그리드 */}
-          <div className="grid gap-4 md:grid-cols-2 mb-6">
-            {/* 유효재생 추이 */}
+          {/* 음원 상세 정보 */}
+          <div className="grid gap-6 mb-6">
+            {/* 기본 정보 */}
+            <Card>
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="h-4 w-1.5 rounded bg-teal-300" />
+                  <div className="text-lg font-semibold">음원 기본 정보</div>
+                </div>
+                <div className="flex gap-8 items-start">
+                  {/* 음원 커버 이미지 */}
+                  <div className="flex-shrink-0">
+                    <div className="w-64 h-64 rounded-lg border border-white/10 overflow-hidden bg-white/5">
+                      {musicData?.coverImageUrl ? (
+                        <img 
+                          src={musicData.coverImageUrl} 
+                          alt={`${musicData.title} 커버`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            if (target.nextElementSibling) {
+                              target.nextElementSibling.classList.remove('hidden');
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div className={`w-full h-full flex items-center justify-center ${musicData?.coverImageUrl ? 'hidden' : ''}`}>
+                        <div className="text-center">
+                          <svg className="w-20 h-20 mx-auto text-white/30 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                          </svg>
+                          <div className="text-xs text-white/40">음원 커버</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* 음원 정보 */}
+                  <div className="flex-1 min-w-0 pt-1">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <div className="text-white/60 mb-1">음원명</div>
+                        <div className="text-white font-medium">{musicData?.title || title}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">아티스트</div>
+                        <div className="text-white font-medium">{musicData?.artist || 'Unknown'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">앨범</div>
+                        <div className="text-white font-medium">{musicData?.album || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">장르</div>
+                        <div className="text-white font-medium">{musicData?.genre || 'Pop'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">카테고리</div>
+                        <div className="text-white font-medium">{musicData?.category || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">음원 유형</div>
+                        <div className="text-white font-medium">{musicData?.musicType || '일반'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">재생 시간</div>
+                        <div className="text-white font-medium">
+                          {musicData?.durationSec ? 
+                            `${Math.floor(musicData.durationSec / 60)}분 ${musicData.durationSec % 60}초` : 
+                            '3분 30초'
+                          }
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">발매년도</div>
+                        <div className="text-white font-medium">{musicData?.releaseYear || '2024'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">ISRC</div>
+                        <div className="text-white font-medium font-mono text-xs">{musicData?.isrc || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">작사자</div>
+                        <div className="text-white font-medium">{musicData?.lyricist || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">작곡자</div>
+                        <div className="text-white font-medium">{musicData?.composer || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">편곡자</div>
+                        <div className="text-white font-medium">{musicData?.arranger || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">참고가격(음원, 가사, 음원+가사)</div>
+                        <div className="text-white font-medium text-xs">
+                          {musicData?.priceMusicOnly || 5}원, {musicData?.priceLyricsOnly || 3}원, {musicData?.priceBoth || 7}원
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">호출당 리워드</div>
+                        <div className="text-white font-medium">{musicData?.rewardPerPlay ? `${musicData.rewardPerPlay} 토큰` : '0.007 토큰'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">월 최대 한도</div>
+                        <div className="text-white font-medium">{musicData?.maxPlayCount ? `${musicData.maxPlayCount.toLocaleString()} 토큰` : '1,000 토큰'}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">API 접근 권한</div>
+                        <div className="text-white font-medium">
+                          {musicData?.accessTier === 'all' ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30">
+                              모든 기업
+                            </span>
+                          ) : (
+                            <div className="flex gap-1">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                Business
+                              </span>
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                Standard
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-white/60 mb-1">등록일</div>
+                        <div className="text-white font-medium">{musicData?.createdAt || '2024.01.15'}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* 유효재생 추이 차트 */}
             <Card>
               <div className="mb-3">
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="h-4 w-1.5 rounded bg-teal-300" />
-                    <div className="text-sm font-semibold">유효재생 추이</div>
+                    <div className="text-lg font-semibold">유효재생 추이</div>
                   </div>
                   <div className="flex gap-2 text-xs">
                     <button 
@@ -63,7 +226,7 @@ export default function MusicStatsModal({ open, onClose, title = '음원 상세 
                   </div>
                 </div>
               </div>
-              <div className="min-w-0 overflow-hidden h-48">
+              <div className="min-w-0 overflow-hidden h-64">
                 <SimpleLineChart 
                   labels={timeTab === 'daily' ? [...Array(31)].map((_,i)=>`${i+1}일`) : 
                           timeTab === 'weekly' ? ['1주', '2주', '3주', '4주'] : 
@@ -86,127 +249,9 @@ export default function MusicStatsModal({ open, onClose, title = '음원 상세 
                 />
               </div>
             </Card>
-
-            {/* 시간대별 유효재생 패턴 */}
-            <Card>
-              <div className="mb-2 flex items-center gap-2">
-                <span className="h-4 w-1.5 rounded bg-teal-300" />
-                <div className="text-sm font-semibold">시간대별 유효재생 패턴</div>
-              </div>
-              <div className="min-w-0 overflow-hidden h-48">
-                <SimpleLineChart 
-                  labels={[...Array(24)].map((_,i)=>`${i}시`)}
-                  series={[
-                    {label: '금일 유효재생', data: [20,18,17,15,14,12,16,22,30,40,45,48,50,52,49,46,42,38,35,30,28,25,22,20]},
-                    {label: '전일 유효재생', data: [18,16,15,13,12,10,14,20,28,38,43,46,48,50,47,44,40,36,33,28,26,23,20,18]},
-                    {label: '금일 총재생', data: [23,21,20,17,16,14,18,25,35,46,52,55,58,60,56,53,48,44,40,35,32,29,25,23]}
-                  ]}
-                  colors={['#14b8a6', '#9ca3af', '#4b5563']}
-                />
-              </div>
-            </Card>
-
-            {/* 요일별 유효재생 패턴 */}
-            <Card>
-              <div className="mb-2 flex items-center gap-2">
-                <span className="h-4 w-1.5 rounded bg-teal-300" />
-                <div className="text-sm font-semibold">요일별 유효재생 패턴</div>
-              </div>
-              <div className="min-w-0 overflow-hidden h-48">
-                <SimpleLineChart 
-                  labels={['월', '화', '수', '목', '금', '토', '일']}
-                  series={[
-                    {label: '이번주 유효재생', data: [180, 190, 200, 220, 240, 210, 200]},
-                    {label: '지난주 유효재생', data: [170, 180, 190, 210, 230, 200, 190]},
-                    {label: '이번주 총재생', data: [207, 219, 230, 253, 276, 242, 230]}
-                  ]}
-                  colors={['#14b8a6', '#9ca3af', '#4b5563']}
-                />
-              </div>
-            </Card>
-
-            {/* 유효재생률 추이 */}
-            <Card>
-              <div className="mb-2 flex items-center gap-2">
-                <span className="h-4 w-1.5 rounded bg-teal-300" />
-                <div className="text-sm font-semibold">유효재생률 추이</div>
-              </div>
-              <div className="min-w-0 overflow-hidden h-48">
-                <SimpleLineChart 
-                  labels={['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']}
-                  series={[{
-                    label: '유효재생률(%)',
-                    data: [85, 87, 89, 88, 90, 91, 89, 92, 93, 91, 88, 90]
-                  }]}
-                  colors={['#14b8a6']}
-                />
-              </div>
-            </Card>
           </div>
 
-          {/* 기업별 유효재생 순위 */}
-          <Card>
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-4 w-1.5 rounded bg-teal-300" />
-                <div className="text-sm font-semibold">기업별 유효재생 순위</div>
-              </div>
-              <select 
-                value={selectedMonth} 
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="rounded bg-white/10 px-2 py-1 text-xs text-white border border-white/20"
-              >
-                <option>1월</option>
-                <option>2월</option>
-                <option>3월</option>
-                <option>4월</option>
-                <option>5월</option>
-                <option>6월</option>
-              </select>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="text-left text-white/60">
-                  <tr>
-                    <th className="py-2 pr-4">순위</th>
-                    <th className="py-2 pr-4">기업명</th>
-                    <th className="py-2 pr-4">등급</th>
-                    <th className="py-2 pr-4">{selectedMonth} 유효재생</th>
-                    <th className="py-2 pr-4">유효재생률</th>
-                    <th className="py-2 pr-4">전월 대비</th>
-                    <th className="py-2 pr-0 text-right">누적 유효재생</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({length:10}).map((_,i)=> {
-                    const validPlays = 3000 - i * 120
-                    const totalPlays = Math.floor(validPlays * (1 + Math.random() * 0.3 + 0.1)) // 10-40% 추가
-                    const validRate = Math.round((validPlays / totalPlays) * 100)
-                    
-                    return (
-                      <tr key={i} className="border-t border-white/5">
-                        <td className="py-2 pr-4 text-white/80">{i+1}</td>
-                        <td className="py-2 pr-4 text-white">Company {i+1}</td>
-                        <td className="py-2 pr-4">
-                          <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                            i < 3 ? 'bg-gradient-to-r from-blue-400/15 to-blue-400/15 text-blue-300 border border-blue-400/25' :
-                            i < 6 ? 'bg-gradient-to-r from-teal-400/15 to-blue-400/15 text-teal-300 border border-teal-400/25' :
-                            'bg-gradient-to-r from-gray-400/15 to-gray-400/15 text-gray-300 border border-gray-400/25'
-                          }`}>
-                            {i < 3 ? 'Business' : i < 6 ? 'Standard' : 'Free'}
-                          </span>
-                        </td>
-                        <td className="py-2 pr-4 text-white/80">{validPlays.toLocaleString()}회</td>
-                        <td className="py-2 pr-4 text-teal-300 font-medium">{validRate}%</td>
-                        <td className="py-2 pr-4 text-teal-400">+{(15.0-i*1.2).toFixed(1)}%</td>
-                        <td className="py-2 pr-0 text-right text-white/80">{(15000-i*600).toLocaleString()}회</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </Card>
+
         </div>
       </div>
     </div>

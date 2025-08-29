@@ -92,7 +92,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
             {[
               { id: 'info', label: '기업 기본 정보' },
               { id: 'usage', label: '음원 사용 현황' },
-              { id: 'rewards', label: '리워드 현황' }
+              { id: 'rewards', label: '사용 기업 현황' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -112,32 +112,12 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
             {/* 기업 기본 정보 탭 */}
             {activeTab === 'info' && (
               <div className="space-y-6">
-                {/* 기업 개요 카드 */}
+                {/* 기업 기본 정보 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    기업 개요
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">기업명</span>
-                        <span className="text-white font-medium">{company.name}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">등급</span>
-                        <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r ${getTierColor(company.tier)}`}>
-                          {company.tier}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">가입일</span>
-                        <span className="text-white">{company.joinedDate}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5">
-                        <span className="text-white/60 text-sm">사업자 번호</span>
-                        <span className="text-white">{company.businessNumber}</span>
-                      </div>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="h-4 w-1.5 rounded bg-teal-300" />
+                      <div className="text-lg font-semibold">기업 기본 정보</div>
                     </div>
 
                     <div className="space-y-3">
@@ -161,47 +141,17 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                   </div>
                 </div>
 
-                {/* 핵심 지표 카드 */}
+                {/* 핵심 지표 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    핵심 지표
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">{company.totalTokens.toLocaleString()}</div>
-                      <div className="text-sm text-white/80">보유 토큰</div>
-                      <div className="text-xs text-white/50 mt-1">현재 잔액</div>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="h-4 w-1.5 rounded bg-teal-300" />
+                      <div className="text-lg font-semibold">핵심 지표</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">+{company.monthlyEarned.toLocaleString()}</div>
-                      <div className="text-sm text-white/80">이번 달 적립</div>
-                      <div className="text-xs text-white/50 mt-1">신규 적립</div>
-                    </div>
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">{company.monthlyUsed.toLocaleString()}</div>
-                      <div className="text-sm text-white/80">이번 달 사용</div>
-                      <div className="text-xs text-white/50 mt-1">소모량</div>
-                    </div>
-                    <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-teal-400 mb-1">{company.activeTracks}</div>
-                      <div className="text-sm text-white/80">활성 음원</div>
-                      <div className="text-xs text-white/50 mt-1">사용 중</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 사용률 및 활동 현황 */}
-                <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    사용률 및 활동 현황
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white/60 text-sm">토큰 사용률</span>
-                        <span className="text-white font-medium">{company.usageRate}%</span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <div className="text-white/60 mb-1">보유 토큰</div>
+                        <div className="text-teal-400 font-medium">{company.totalTokens.toLocaleString()}</div>
                       </div>
                       <div className="w-full bg-white/10 rounded-full h-2">
                         <div
@@ -209,8 +159,9 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                           style={{ width: `${company.usageRate}%` }}
                         />
                       </div>
-                      <div className="text-xs text-white/50">
-                        월 한도 대비 {company.usageRate}% 사용 중
+                      <div>
+                        <div className="text-white/60 mb-1">이번 달 사용</div>
+                        <div className="text-white font-medium">{company.monthlyUsed.toLocaleString()}</div>
                       </div>
                     </div>
 
@@ -232,7 +183,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                 <div className="rounded-xl border border-white/10 p-6">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    월별 API 사용량
+                    월별 리워드 발생 API호출 추이
                   </h3>
                   <div className="h-64">
                     <SimpleLineChart
@@ -281,8 +232,8 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                           <th className="px-4 py-3 text-white/80 font-medium">순위</th>
                           <th className="px-4 py-3 text-white/80 font-medium">음원명</th>
                           <th className="px-4 py-3 text-white/80 font-medium">카테고리</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용 횟수</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용률</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">리워드 발생 횟수(유효재생)</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">적립 리워드</th>
                           <th className="px-4 py-3 text-white/80 font-medium">최근 사용</th>
                         </tr>
                       </thead>
@@ -386,7 +337,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                               <td className="px-4 py-3 text-white/80">
                                 +{monthlyReward.toLocaleString()}
                               </td>
-                              <td className="px-4 py-3 text-orange-400">
+                              <td className="px-4 py-3 text-teal-400">
                                 -{subscriptionDiscount.toLocaleString()}
                               </td>
                               <td className="px-4 py-3 text-white/80">
@@ -417,7 +368,7 @@ export default function CompanyDetailModal({ open, onClose, company }: Props) {
                       <div className="text-sm text-white/80">총 적립 리워드</div>
                     </div>
                     <div className="text-center p-4 rounded-lg border border-white/10">
-                      <div className="text-2xl font-bold text-orange-400 mb-1">
+                      <div className="text-2xl font-bold text-teal-400 mb-1">
                         {company.monthlyRewards.reduce((sum, reward) => sum + Math.floor(reward * 0.3), 0).toLocaleString()}
                       </div>
                       <div className="text-sm text-white/80">총 할인 사용</div>

@@ -40,7 +40,7 @@ export default function ApiManagementPage() {
 
   const rows = Array.from({length:10}).map((_,i)=> ({
     company: `Company ${String.fromCharCode(65+i)}`,
-    key: `sk_live_${Math.random().toString(36).slice(2,8)}...`,
+    key: `sk_live_${(i+1).toString().padStart(6, '0')}...`,
     created: `2024.${String(((i*2)%12)+1).padStart(2,'0')}.${String(((i*5)%28)+1).padStart(2,'0')}`,
     lastUsed: `${(i+1)*2}분 전`,
     callsPerHour: (1200 - i*53),
@@ -60,9 +60,6 @@ export default function ApiManagementPage() {
                 <div className="text-3xl font-bold text-white">45개</div>
                 <div className="space-y-0.5">
                   <div className="text-sm text-teal-300">+3 신규</div>
-                  <div className="mt-2">
-                    <div className="text-xs text-white/60">활성: 42개 · 비활성: 3개</div>
-                  </div>
                 </div>
               </div>
             </Card>
@@ -72,10 +69,7 @@ export default function ApiManagementPage() {
                 <Title variant="card">시간당 평균 호출</Title>
                 <div className="text-3xl font-bold text-white">12,345회</div>
                 <div className="space-y-0.5">
-                  <div className="text-sm text-teal-400">+8.2% 증가</div>
-                  <div className="mt-2">
-                    <div className="text-xs text-white/60">전일 대비</div>
-                  </div>
+                  <div className="text-sm text-teal-400">전월 대비 +8%</div>
                 </div>
               </div>
             </Card>
@@ -84,12 +78,6 @@ export default function ApiManagementPage() {
               <div className="space-y-1">
                 <Title variant="card">성공률</Title>
                 <div className="text-3xl font-bold text-white">99.8%</div>
-                <div className="space-y-0.5">
-                  <div className="text-sm text-teal-400">+0.1% 개선</div>
-                  <div className="mt-2">
-                    <div className="text-xs text-white/60">전일 대비</div>
-                  </div>
-                </div>
               </div>
             </Card>
 
@@ -97,12 +85,6 @@ export default function ApiManagementPage() {
               <div className="space-y-1">
                 <Title variant="card">평균 응답시간</Title>
                 <div className="text-3xl font-bold text-white">125ms</div>
-                <div className="space-y-0.5">
-                  <div className="text-sm text-teal-400">+5ms 증가</div>
-                  <div className="mt-2">
-                    <div className="text-xs text-white/60">전일 대비</div>
-                  </div>
-                </div>
               </div>
             </Card>
           </div>

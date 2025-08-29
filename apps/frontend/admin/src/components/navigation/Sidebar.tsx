@@ -10,7 +10,6 @@ const MUSIC_GROUP = {
   label: '음원 관리',
   items: [
     { href: '/admin/musics', label: '음원 목록' },
-    { href: '/admin/musics/new', label: '음원 등록' },
     { href: '/admin/musics/categories', label: '카테고리 관리' },
   ],
 }
@@ -23,12 +22,7 @@ const REWARD_GROUP = {
   ],
 }
 
-const COMPANY_GROUP = {
-  label: '기업 관리',
-  items: [
-    { href: '/admin/companies', label: '기업 목록' },
-  ],
-}
+
 
 const REVENUE_GROUP = {
   label: '매출 관리',
@@ -40,7 +34,6 @@ const REVENUE_GROUP = {
 const SYSTEM_GROUP = {
   label: '시스템 관리',
   items: [
-    { href: '/admin/system/tiers', label: '구독제 등급 관리' },
     { href: '/admin/system/api', label: 'API 관리' },
     { href: '/admin/system/tokens', label: '토큰/온체인' },
   ],
@@ -50,7 +43,6 @@ export default function Sidebar() {
   const pathname = usePathname()
   const [openMusic, setOpenMusic] = useState(true)
   const [openReward, setOpenReward] = useState(true)
-  const [openCompany, setOpenCompany] = useState(true)
   const [openRevenue, setOpenRevenue] = useState(true)
   const [openSystem, setOpenSystem] = useState(true)
 
@@ -63,9 +55,6 @@ export default function Sidebar() {
   const isActive = (href: string) => {
     if (href === '/admin/musics') {
       return pathname === '/admin/musics'
-    }
-    if (href === '/admin/musics/new') {
-      return pathname === '/admin/musics/new'
     }
     if (href === '/admin/musics/categories') {
       return pathname === '/admin/musics/categories'
@@ -148,29 +137,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        <div>
-          <button
-            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/70 hover:text-white hover:bg-white/5"
-            onClick={() => setOpenCompany((v) => !v)}
-            aria-expanded={openCompany}
-          >
-            <span>{COMPANY_GROUP.label}</span>
-            <span className="text-xs">{openCompany ? '▾' : '▸'}</span>
-          </button>
-          {openCompany && (
-            <div className="mt-1 space-y-1 pl-3">
-              {COMPANY_GROUP.items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`block rounded px-3 py-2 ${isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+
 
         <div>
           <button

@@ -30,7 +30,7 @@ type Props = {
 }
 
 export default function MusicDetailModal({ open, onClose, music }: Props) {
-  const [activeTab, setActiveTab] = useState<'info' | 'usage' | 'rewards'>('info')
+  const [activeTab, setActiveTab] = useState<'usage' | 'rewards'>('usage')
 
   if (!open || !music) return null
 
@@ -127,11 +127,10 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
 
           {/* 탭 네비게이션 */}
           <div className="flex border-b border-white/10 flex-shrink-0">
-            {[
-              { id: 'info', label: '음원 기본 정보' },
-              { id: 'usage', label: '사용 현황' },
-              { id: 'rewards', label: '리워드 현황' }
-            ].map((tab) => (
+                          {[
+                { id: 'usage', label: '리워드 발생 현황' },
+                { id: 'rewards', label: '사용 기업 현황' }
+              ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
@@ -148,71 +147,15 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
 
           {/* 콘텐츠 영역 */}
           <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-            {/* 음원 기본 정보 탭 */}
-            {activeTab === 'info' && (
-              <div className="space-y-6">
-                {/* 음원 개요 카드 */}
-                <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
-                    음원 개요
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">음원명</span>
-                        <span className="text-white font-medium">{music.title}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">아티스트</span>
-                        <span className="text-white">{music.artist}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">카테고리</span>
-                        <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r ${getCategoryColor(music.category).bg} ${getCategoryColor(music.category).text} border ${getCategoryColor(music.category).border}`}>
-                          {music.category}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5">
-                        <span className="text-white/60 text-sm">상태</span>
-                        <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${getStatusColor(music.status)}`}></div>
-                          <span className="text-white">
-                            {music.status === 'active' ? '활성' : '비활성'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">출시일</span>
-                        <span className="text-white">{music.releaseDate}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">재생 시간</span>
-                        <span className="text-white">{music.duration}</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                        <span className="text-white/60 text-sm">호출당 리워드</span>
-                        <span className="text-white">{music.rewardPerPlay.toFixed(3)} 토큰</span>
-                      </div>
-                      <div className="flex items-center justify-between py-2.5">
-                        <span className="text-white/60 text-sm">평균 평점</span>
-                        <span className="text-white">{music.averageRating.toFixed(1)}/5.0</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* 사용 현황 탭 */}
             {activeTab === 'usage' && (
               <div className="space-y-6">
                 {/* 월별 API 사용량 차트 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">월별 API 사용량</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    월별 리워드 발생 API호출 추이
+                  </h3>
                   <div className="h-64">
                     <SimpleLineChart 
                       labels={months}
@@ -224,32 +167,35 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
 
                 {/* 월별 사용 상세 현황 */}
                 <div className="rounded-xl border border-white/10 p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">월별 사용 상세 현황</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    월별 리워드 발생 현황
+                  </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="text-left">
+                      <thead className="text-center">
                         <tr className="border-b border-white/10">
                           <th className="px-4 py-3 text-white/80 font-medium">월</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용 횟수</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">리워드 발생 횟수(유효재생)</th>
                           <th className="px-4 py-3 text-white/80 font-medium">사용 기업</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용률</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">트렌드</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">리워드 발생률</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">월별 리워드 지급액</th>
                         </tr>
                       </thead>
                       <tbody>
                         {months.map((month, index) => {
                           const usage = music.monthlyUsage[index]
                           const usageRate = music.monthlyLimit ? Math.round((usage / music.monthlyLimit) * 100) : null
-                          const trend = index > 0 ? usage - music.monthlyUsage[index - 1] : 0
+                          const monthlyReward = usage * music.rewardPerPlay
                           
                           return (
-                            <tr key={month} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                              <td className="px-4 py-3 font-medium text-white">{month}</td>
-                              <td className="px-4 py-3 text-teal-400 font-medium">{usage.toLocaleString()}</td>
-                              <td className="px-4 py-3 text-white/80">{Math.floor(usage / 100)}개</td>
-                              <td className="px-4 py-3">
+                            <tr key={month} className="border-b border-white/5">
+                              <td className="px-4 py-3 font-medium text-white text-center">{month}</td>
+                              <td className="px-4 py-3 text-teal-400 font-medium text-center">{usage.toLocaleString()}</td>
+                              <td className="px-4 py-3 text-white/80 text-center">{Math.floor(usage / 100)}개</td>
+                              <td className="px-4 py-3 text-center">
                                 {usageRate !== null ? (
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center justify-center gap-3">
                                     <div className="w-20 bg-white/10 rounded-full h-1.5">
                                       <div
                                         className="bg-gradient-to-r from-teal-400 to-blue-400 h-1.5 rounded-full transition-all duration-300"
@@ -262,12 +208,8 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
                                   <span className="text-white/50 text-xs">-</span>
                                 )}
                               </td>
-                              <td className="px-4 py-3">
-                                <span className={`text-xs font-medium ${
-                                  trend > 0 ? 'text-green-400' : trend < 0 ? 'text-red-400' : 'text-white/60'
-                                }`}>
-                                  {trend > 0 ? '+' : ''}{trend.toLocaleString()}
-                                </span>
+                              <td className="px-4 py-3 text-teal-400 font-medium text-center">
+                                {monthlyReward.toLocaleString()} 토큰
                               </td>
                             </tr>
                           )
@@ -279,7 +221,7 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
               </div>
             )}
 
-            {/* 리워드 현황 탭 */}
+            {/* 기업별 리워드 적립 현황 탭 */}
             {activeTab === 'rewards' && (
               <div className="space-y-6">
                 {/* 사용 기업 현황 */}
@@ -305,28 +247,33 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
                   {/* 선택된 월의 모든 사용 기업 테이블 */}
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="text-left">
+                      <thead className="text-center">
                         <tr className="border-b border-white/10">
-                          <th className="px-4 py-3 text-white/80 font-medium">순위</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">기업명</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">등급</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">월 사용량</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">전월 대비</th>
-                          <th className="px-4 py-3 text-white/80 font-medium">사용률</th>
+                          <th className="px-4 py-3 text-white/80 font-medium text-center">순위</th>
+                          <th className="px-4 py-3 text-white/80 font-medium text-center">기업명</th>
+                          <th className="px-4 py-3 text-white/80 font-medium text-center">등급</th>
+                          <th className="px-4 py-3 text-white/80 font-medium text-center">월 리워드 적립</th>
+                          <th className="px-4 py-3 text-white/80 font-medium text-center">전월 대비</th>
+                          <th className="px-4 py-3 text-white/80 font-medium text-center">전체 리워드 대비</th>
                         </tr>
                       </thead>
                       <tbody>
                         {music.topCompanies.map((company, index) => {
-                          // 더미 월별 데이터 생성
-                          const monthlyUsage = Math.floor(company.usage / 12) + Math.floor(Math.random() * 200) + 100
-                          const prevMonthUsage = Math.floor(company.usage / 12) + Math.floor(Math.random() * 200) + 80
-                          const change = monthlyUsage - prevMonthUsage
-                          const changePercent = Math.round((change / prevMonthUsage) * 100)
-                          const usageRate = Math.round((monthlyUsage / Math.max(...music.topCompanies.map(c => Math.floor(c.usage / 12) + 200))) * 100)
+                          // 리워드 기반 데이터 생성
+                          const monthlyReward = Math.floor(company.usage * music.rewardPerPlay * 1000) / 1000 // 소수점 3자리
+                          const prevMonthReward = Math.floor(company.usage * music.rewardPerPlay * 0.8 * 1000) / 1000 // 전월은 80% 가정
+                          const rewardChange = monthlyReward - prevMonthReward
+                          const rewardChangePercent = Math.round((rewardChange / prevMonthReward) * 100)
+                          
+                          // 전체 리워드 대비 비율 계산
+                          const totalMonthlyReward = music.topCompanies.reduce((sum, c) => 
+                            sum + Math.floor(c.usage * music.rewardPerPlay * 1000) / 1000, 0
+                          )
+                          const rewardShare = Math.round((monthlyReward / totalMonthlyReward) * 100)
                           
                           return (
                             <tr key={company.name} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                              <td className="px-4 py-3">
+                              <td className="px-4 py-3 text-center">
                                 <span className={`text-sm font-bold ${
                                   index === 0 ? 'text-teal-400' :
                                   index === 1 ? 'text-teal-400' :
@@ -336,8 +283,8 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
                                   {index + 1}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 font-medium text-white">{company.name}</td>
-                              <td className="px-4 py-3">
+                              <td className="px-4 py-3 font-medium text-white text-center">{company.name}</td>
+                              <td className="px-4 py-3 text-center">
                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                   company.tier === 'Business' ? 'bg-gradient-to-r from-purple-400/15 to-purple-500/15 text-purple-300 border border-purple-400/25' :
                                   company.tier === 'Standard' ? 'bg-gradient-to-r from-blue-400/15 to-blue-500/15 text-blue-300 border border-blue-400/25' :
@@ -346,23 +293,21 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
                                   {company.tier}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-teal-400 font-medium">{monthlyUsage.toLocaleString()}</td>
-                              <td className="px-4 py-3">
-                                <span className={`text-xs font-medium ${
-                                  change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-white/60'
-                                }`}>
-                                  {change > 0 ? '+' : ''}{change.toLocaleString()} ({changePercent > 0 ? '+' : ''}{changePercent}%)
+                              <td className="px-4 py-3 text-teal-400 font-medium text-center">{monthlyReward.toFixed(3)} 토큰</td>
+                              <td className="px-4 py-3 text-center">
+                                <span className="text-xs font-medium text-teal-400">
+                                  {rewardChange > 0 ? '+' : ''}{rewardChange.toFixed(3)} ({rewardChangePercent > 0 ? '+' : ''}{rewardChangePercent}%)
                                 </span>
                               </td>
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-2">
+                              <td className="px-4 py-3 text-center">
+                                <div className="flex items-center justify-center gap-2">
                                   <div className="w-16 bg-white/10 rounded-full h-1.5">
                                     <div 
                                       className="bg-gradient-to-r from-teal-400 to-blue-400 h-1.5 rounded-full transition-all duration-300"
-                                      style={{ width: `${Math.min(usageRate, 100)}%` }}
+                                      style={{ width: `${Math.min(rewardShare, 100)}%` }}
                                     />
                                   </div>
-                                  <span className="text-white/70 text-xs">{usageRate}%</span>
+                                  <span className="text-white/70 text-xs">{rewardShare}%</span>
                                 </div>
                               </td>
                             </tr>
@@ -372,31 +317,7 @@ export default function MusicDetailModal({ open, onClose, music }: Props) {
                     </table>
                   </div>
 
-                  {/* 요약 통계 */}
-                  <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="text-center p-3 rounded-lg border border-white/10">
-                      <div className="text-lg font-bold text-teal-400">{music.companies}</div>
-                      <div className="text-xs text-white/60">총 사용 기업</div>
-                    </div>
-                    <div className="text-center p-3 rounded-lg border border-white/10">
-                      <div className="text-lg font-bold text-white">
-                        {Math.round(music.totalPlays / music.companies).toLocaleString()}
-                      </div>
-                      <div className="text-xs text-white/60">기업당 평균</div>
-                    </div>
-                    <div className="text-center p-3 rounded-lg border border-white/10">
-                      <div className="text-lg font-bold text-teal-400">
-                        {Math.round(music.totalRewards / music.companies).toLocaleString()}
-                      </div>
-                      <div className="text-xs text-white/60">기업당 리워드</div>
-                    </div>
-                    <div className="text-center p-3 rounded-lg border border-white/10">
-                      <div className="text-lg font-bold text-white">
-                        {Math.round(music.topCompanies[0]?.usage / Math.max(...music.topCompanies.map(c => c.usage)) * 100)}%
-                      </div>
-                      <div className="text-xs text-white/60">1위 점유율</div>
-                    </div>
-                  </div>
+
                 </div>
               </div>
             )}

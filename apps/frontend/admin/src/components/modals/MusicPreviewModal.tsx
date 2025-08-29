@@ -13,7 +13,11 @@ type Props = {
     tags: string;
     releaseYear: number;
     durationSec: number;
-    priceRef: number;
+    musicType?: '일반' | 'Inst';
+    priceMusicOnly?: number;
+    priceLyricsOnly?: number;
+    priceBoth?: number;
+    priceRef?: number;
     rewardPerPlay: number;
     maxPlayCount: number;
     accessTier: 'all' | 'subscribed';
@@ -101,6 +105,10 @@ export default function MusicPreviewModal({ open, onClose, musicData }: Props) {
                     <span className="text-sm font-medium text-white">{musicData?.genre || '-'}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
+                    <span className="text-sm text-white/60">음원 유형</span>
+                    <span className="text-sm font-medium text-white">{musicData?.musicType || '-'}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
                     <span className="text-sm text-white/60">태그</span>
                     <span className="text-sm font-medium text-white">{musicData?.tags || '-'}</span>
                   </div>
@@ -131,8 +139,16 @@ export default function MusicPreviewModal({ open, onClose, musicData }: Props) {
               <Title variant="section">가격 및 리워드 설정</Title>
               <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
-                  <span className="text-sm text-white/60">참고 가격</span>
-                  <span className="text-sm font-medium text-white">{musicData?.priceRef ? `${musicData.priceRef}원` : '-'}</span>
+                  <span className="text-sm text-white/60">음원만 이용시</span>
+                  <span className="text-sm font-medium text-white">{musicData?.priceMusicOnly ? `${musicData.priceMusicOnly}원` : '-'}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
+                  <span className="text-sm text-white/60">가사만 이용시</span>
+                  <span className="text-sm font-medium text-white">{musicData?.priceLyricsOnly ? `${musicData.priceLyricsOnly}원` : '-'}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
+                  <span className="text-sm text-white/60">둘다 이용시</span>
+                  <span className="text-sm font-medium text-white">{musicData?.priceBoth ? `${musicData.priceBoth}원` : '-'}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
                   <span className="text-sm text-white/60">1회 재생당 리워드</span>
