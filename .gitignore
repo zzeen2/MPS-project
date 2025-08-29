@@ -1,4 +1,14 @@
-node_modules
+
+.DS_Store
+.env*
+node_modules/
+
+# -------------- contract branch에서 추가함 -------
+artifacts/
+cache/
+copilot_tests/
+ignition/
+mps-api/
+# -------------- contract branch에서 추가함 -------
 .next
-.env
 next-env.d.ts
