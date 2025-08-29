@@ -34,7 +34,6 @@ const REVENUE_GROUP = {
 const SYSTEM_GROUP = {
   label: '시스템 관리',
   items: [
-    { href: '/admin/system/tiers', label: '구독제 등급 관리' },
     { href: '/admin/system/api', label: 'API 관리' },
     { href: '/admin/system/tokens', label: '토큰/온체인' },
   ],
