@@ -70,6 +70,10 @@ export default function RewardsMusicsPage() {
   const [selectedMusics, setSelectedMusics] = useState<string[]>([])
   const [bulkEditModalOpen, setBulkEditModalOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 3
 
   const musics: Music[] = [
     { 
@@ -202,6 +206,17 @@ export default function RewardsMusicsPage() {
       }
     })
 
+  // 페이지네이션 계산
+  const totalPages = Math.ceil(filteredMusics.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentMusics = filteredMusics.slice(startIndex, endIndex)
+
+  // 페이지 변경 함수
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
   // 체크박스 관련 함수들
   const handleSelectAll = () => {
     if (selectedMusics.length === filteredMusics.length) {
@@ -242,6 +257,11 @@ export default function RewardsMusicsPage() {
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
+
+  // 검색어나 필터 변경 시 페이지 리셋
+  React.useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, statusFilter, categoryFilter, limitFilter, usageFilter, companyFilter, rewardFilter])
 
   return (
     <div className="space-y-4">
@@ -594,7 +614,7 @@ export default function RewardsMusicsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredMusics.map((music, index) => {
+              {currentMusics.map((music, index) => {
                 const usageRate = music.monthlyLimit ? Math.round((music.monthlyUsed / music.monthlyLimit) * 100) : null
                 const categoryColor = getCategoryColor(music.category)
                 
@@ -680,6 +700,41 @@ export default function RewardsMusicsPage() {
           </table>
         </div>
       </div>
+
+      {/* 페이지네이션 */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-2 rounded-md bg-white/10 text-white/80 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          >
+            이전
+          </button>
+          
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                currentPage === page
+                  ? 'bg-teal-500 text-white'
+                  : 'bg-white/10 text-white/80 hover:bg-white/20'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-2 rounded-md bg-white/10 text-white/80 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          >
+            다음
+          </button>
+        </div>
+      )}
 
       {/* 음원 상세 모달 */}
       {selectedMusic && (
