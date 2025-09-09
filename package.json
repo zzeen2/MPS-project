@@ -10,6 +10,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+<<<<<<< HEAD
     "dotenv": "^17.2.1"
+=======
+    "@tanstack/react-query": "^5.84.2",
+    "@tanstack/react-query-devtools": "^5.84.2",
+    "ethers": "^6.15.0"
+>>>>>>> client
   }
 }
