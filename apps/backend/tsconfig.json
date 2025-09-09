@@ -23,6 +23,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
+<<<<<<< HEAD
   "types" : ["node"],
   "include": ["src/**/*", "test/**/*", "drizzle.config.ts"]
 }
@@ -57,3 +58,15 @@
   "include": ["src/**/*", "test/**/*", "drizzle.config.ts", "scripts/**/*"]
 }
 >>>>>>> client
+=======
+  "types": [
+    "node"
+  ],
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "drizzle.config.ts",
+    "src/music/api-key.service.old.ts"
+  ]
+}
+>>>>>>> contract

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { pgTable, bigint } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 =======
@@ -6,11 +7,18 @@ import { pgTable, bigint, bigserial, date, unique } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { sql } from 'drizzle-orm'
 >>>>>>> client
+=======
+import { pgTable, bigint } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+>>>>>>> contract
 import { companies } from './companies'
 import { musics } from './musics'
 
 export const company_musics = pgTable('company_musics', {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> contract
 	company_id: bigint('company_id', { mode: 'number' })
 		.notNull()
 		.references(() => companies.id, { onDelete: 'cascade' }),
@@ -30,6 +38,7 @@ export const company_musicsRelations = relations(company_musics, ({ one }) => ({
 		fields: [company_musics.music_id],
 		references: [musics.id],
 	}),
+<<<<<<< HEAD
 })) 
 =======
   id: bigserial('id', { mode: 'number' }).primaryKey(),
@@ -59,3 +68,6 @@ export const company_musicsRelations = relations(company_musics, ({ one }) => ({
   }),
 }))
 >>>>>>> client
+=======
+})) 
+>>>>>>> contract

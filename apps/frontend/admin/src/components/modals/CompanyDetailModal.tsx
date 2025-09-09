@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import SimpleLineChart from '@/components/charts/SimpleLineChart'
+<<<<<<< HEAD
 
 // 상세 타입 정의 추가
 type CompanyRewardsDetail = {
@@ -43,6 +44,9 @@ type Company = {
   createdAt: string
   updatedAt: string
 }
+=======
+import { Company } from '@/lib/types'
+>>>>>>> contract
 
 type Props = {
   open: boolean
@@ -65,7 +69,7 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
   const info = (detail?.company as any) || company
 
   const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
-  
+
   const usageData = {
     labels: months,
     series: [
@@ -146,11 +150,10 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 ${
-                  activeTab === tab.id
+                className={`px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 ${activeTab === tab.id
                     ? 'text-teal-400 border-teal-400'
                     : 'text-white/60 border-transparent hover:text-white/80 hover:border-white/20'
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -168,6 +171,7 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                       <span className="h-4 w-1.5 rounded bg-teal-300" />
                       <div className="text-lg font-semibold">기업 기본 정보</div>
                     </div>
+<<<<<<< HEAD
                     <div className="flex gap-8 items-start">
                       {/* 회사 이미지 */}
                       <div className="flex-shrink-0">
@@ -268,6 +272,25 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                             <div className="text-white font-medium">{info.subscriptionEnd || '-'}</div>
                           </div>
                         </div>
+=======
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
+                        <span className="text-white/60 text-sm">이메일</span>
+                        <span className="text-white">{company.contactEmail}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-2.5 border-b border-white/10">
+                        <span className="text-white/60 text-sm">전화번호</span>
+                        <span className="text-white">{company.contactPhone}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-2.5">
+                        <span className="text-white/60 text-sm">구독 시작일</span>
+                        <span className="text-white">{company.subscriptionStart}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-2.5">
+                        <span className="text-white/60 text-sm">구독 종료일</span>
+                        <span className="text-white">{company.subscriptionEnd}</span>
+>>>>>>> contract
                       </div>
                     </div>
                   </div>
@@ -331,7 +354,27 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                           )
                         })()}
                       </div>
+<<<<<<< HEAD
                     )}
+=======
+                      <div className="w-full bg-white/10 rounded-full h-2">
+                        <div
+                          className="bg-gradient-to-r from-teal-400 to-blue-400 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${company.usageRate}%` }}
+                        />
+                      </div>
+                      <div className="text-xs text-white/50">
+                        월 한도 대비 {company.usageRate}% 사용 중
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60 text-sm">최근 활동</span>
+                        <span className="text-white">{company.lastActivity}</span>
+                      </div>
+                    </div>
+>>>>>>> contract
                   </div>
                 </div>
               </div>
@@ -371,6 +414,7 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                     </div>
                   </div>
                   <div className="h-64">
+<<<<<<< HEAD
                     {detail ? (
                       chartFilter === 'daily' ? (
                         <SimpleLineChart 
@@ -407,6 +451,16 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                         </div>
                       </div>
                     )}
+=======
+                    <SimpleLineChart
+                      labels={months}
+                      series={[
+                        { label: '현재 기업', data: company.monthlyUsage },
+                        { label: '업계 평균', data: [1200, 1350, 1100, 1400, 1600, 1800, 2000, 1900, 2100, 1950, 2200, 2400] }
+                      ]}
+                      colors={['#14b8a6', '#9ca3af']}
+                    />
+>>>>>>> contract
                   </div>
                 </div>
 
@@ -417,7 +471,7 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                       <span className="h-4 w-1.5 rounded bg-teal-300"></span>
                       전체 음원 사용 현황
                     </h3>
-                    <select 
+                    <select
                       className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-teal-400/50 transition-colors"
                       value={(() => {
                         const ym = currentYearMonth || detail?.summary.yearMonth
@@ -452,6 +506,7 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                         </tr>
                       </thead>
                       <tbody>
+<<<<<<< HEAD
                         {(detail?.byMusic || []).map((row, index) => (
                           <tr key={row.musicId} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                             <td className="px-4 py-3 text-center">
@@ -479,12 +534,162 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                             <td colSpan={7} className="px-4 py-8 text-center text-white/50">데이터가 없습니다</td>
                           </tr>
                         )}
+=======
+                        {company.topTracks.map((track, index) => {
+                          const usagePercentage = Math.round((track.usage / Math.max(...company.topTracks.map(t => t.usage))) * 100)
+                          return (
+                            <tr key={track.title} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                              <td className="px-4 py-3">
+                                <span className={`text-sm font-bold ${index === 0 ? 'text-teal-400' :
+                                    index === 1 ? 'text-teal-400' :
+                                      index === 2 ? 'text-teal-400' :
+                                        'text-white'
+                                  }`}>
+                                  {index + 1}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 font-medium text-white">{track.title}</td>
+                              <td className="px-4 py-3">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80 border border-white/20">
+                                  {track.category}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-teal-400 font-medium">{track.usage.toLocaleString()}</td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-20 bg-white/10 rounded-full h-2">
+                                    <div
+                                      className="bg-gradient-to-r from-teal-400 to-blue-400 h-2 rounded-full transition-all duration-300"
+                                      style={{ width: `${usagePercentage}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-white/70 text-xs">{usagePercentage}%</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-white/60 text-xs">
+                                {new Date().toLocaleDateString('ko-KR')}
+                              </td>
+                            </tr>
+                          )
+                        })}
+>>>>>>> contract
                       </tbody>
                     </table>
                   </div>
                 </div>
               </div>
             )}
+<<<<<<< HEAD
+=======
+
+            {/* 리워드 현황 탭 */}
+            {activeTab === 'rewards' && (
+              <div className="space-y-6">
+                {/* 월별 리워드 적립 차트 */}
+                <div className="rounded-xl border border-white/10 p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    월별 리워드 적립
+                  </h3>
+                  <div className="h-64">
+                    <SimpleLineChart
+                      labels={months}
+                      series={[
+                        { label: '현재 기업', data: company.monthlyRewards },
+                        { label: '업계 평균', data: [8000, 9500, 11000, 12500, 14000, 15500, 17000, 16500, 18000, 17500, 19000, 20500] }
+                      ]}
+                      colors={['#14b8a6', '#9ca3af']}
+                    />
+                  </div>
+                </div>
+
+                {/* 월별 리워드 상세 현황 */}
+                <div className="rounded-xl border border-white/10 p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    월별 리워드 상세 현황
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="text-left">
+                        <tr className="border-b border-white/10">
+                          <th className="px-4 py-3 text-white/80 font-medium">월</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">총 적립</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">월별 적립</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">구독제 할인 사용</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">남은 리워드</th>
+                          <th className="px-4 py-3 text-white/80 font-medium">누적 잔액</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {months.map((month, index) => {
+                          const monthlyReward = company.monthlyRewards[index]
+                          const subscriptionDiscount = Math.floor(monthlyReward * 0.3) // 30% 할인 사용 가정
+                          const remainingReward = monthlyReward - subscriptionDiscount
+                          const cumulativeBalance = company.monthlyRewards.slice(0, index + 1).reduce((sum, reward) => sum + reward, 0)
+
+                          return (
+                            <tr key={month} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                              <td className="px-4 py-3 font-medium text-white">{month}</td>
+                              <td className="px-4 py-3 text-teal-400 font-medium">
+                                {monthlyReward.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-3 text-white/80">
+                                +{monthlyReward.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-3 text-orange-400">
+                                -{subscriptionDiscount.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-3 text-white/80">
+                                {remainingReward.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-3 text-teal-400 font-medium">
+                                {cumulativeBalance.toLocaleString()}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* 연간 요약 */}
+                <div className="rounded-xl border border-white/10 p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-teal-400 rounded-full"></div>
+                    연간 리워드 요약
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 rounded-lg border border-white/10">
+                      <div className="text-2xl font-bold text-teal-400 mb-1">
+                        {company.monthlyRewards.reduce((sum, reward) => sum + reward, 0).toLocaleString()}
+                      </div>
+                      <div className="text-sm text-white/80">총 적립 리워드</div>
+                    </div>
+                    <div className="text-center p-4 rounded-lg border border-white/10">
+                      <div className="text-2xl font-bold text-orange-400 mb-1">
+                        {company.monthlyRewards.reduce((sum, reward) => sum + Math.floor(reward * 0.3), 0).toLocaleString()}
+                      </div>
+                      <div className="text-sm text-white/80">총 할인 사용</div>
+                    </div>
+                    <div className="text-center p-4 rounded-lg border border-white/10">
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {company.monthlyRewards.reduce((sum, reward) => sum + (reward - Math.floor(reward * 0.3)), 0).toLocaleString()}
+                      </div>
+                      <div className="text-sm text-white/80">총 남은 리워드</div>
+                    </div>
+                    <div className="text-center p-4 rounded-lg border border-white/10">
+                      <div className="text-2xl font-bold text-teal-400 mb-1">
+                        {Math.round(company.monthlyRewards.reduce((sum, reward) => sum + reward, 0) / 12).toLocaleString()}
+                      </div>
+                      <div className="text-sm text-white/80">월 평균 적립</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+>>>>>>> contract
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DbModule } from './db/db.module';
+<<<<<<< HEAD
 import { AuthModule } from './admin/auth/auth.module';
 import { MusicsModule } from './admin/musics/musics.module';
 import { CompanyModule } from './admin/company/company.module';
@@ -80,3 +81,16 @@ import { ExploreModule } from './client/explore/explore.module';
 })
 export class AppModule {}
 >>>>>>> client
+=======
+import { MusicModule } from './music/music.module';
+import { RecordModule } from './record/record.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { TestModule } from './test/test.module';
+
+@Module({
+  imports: [DbModule, MusicModule, RecordModule, SchedulerModule, TestModule],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule { }
+>>>>>>> contract
