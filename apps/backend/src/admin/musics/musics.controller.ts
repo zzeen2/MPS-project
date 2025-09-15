@@ -86,10 +86,6 @@ export class MusicsController {
     return this.musicsService.getRewardsFilledStats(query);
   }
 
-  @Get('stats/category-top5')
-  async getCategoryTop5(@Query(new ValidationPipe({ transform: true })) query: CategoryTop5QueryDto) {
-    return this.musicsService.getCategoryTop5(query);
-  }
 
   @Get('realtime/api-status')
   async getRealtimeApiStatus(@Query(new ValidationPipe({ transform: true })) query: RealtimeApiStatusQueryDto) {
@@ -99,6 +95,11 @@ export class MusicsController {
   @Get('realtime/api-calls')
   async getRealtimeApiCalls(@Query(new ValidationPipe({ transform: true })) query: RealtimeApiStatusQueryDto) {
     return this.musicsService.getRealtimeApiCalls(query);
+  }
+
+  @Get('stats/category-top5')
+  async getCategoryTop5(@Query(new ValidationPipe({ transform: true })) query: CategoryTop5QueryDto) {
+    return this.musicsService.getCategoryTop5(query);
   }
 
   @Get('realtime/top-tracks')
