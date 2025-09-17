@@ -1,8 +1,0 @@
-.DS_Store
-.env
-/images/
-/lyrics/
-/musics/
-node_modules
-# ignore external admin repo and monorepo apps
-MPS-project-frontend-admin-/
