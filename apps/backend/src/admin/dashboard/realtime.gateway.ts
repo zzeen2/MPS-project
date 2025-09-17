@@ -10,6 +10,7 @@ import { RealtimeService } from './realtime.service'
       'http://localhost:3000',
       'http://localhost:4001', 
       'https://admin.klk1.store',
+      'https://mps-project-frontend-admin-.vercel.app',
       process.env.FRONTEND_URL
     ].filter(Boolean),
     credentials: true
