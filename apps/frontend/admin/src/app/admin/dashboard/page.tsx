@@ -53,6 +53,67 @@ export default function DashboardPage() {
   }>>([])
   const [socket, setSocket] = useState<Socket | null>(null)
   const [isConnected, setIsConnected] = useState(false)
+  const [httpPollingInterval, setHttpPollingInterval] = useState<NodeJS.Timeout | null>(null)
+
+  const startHttpPolling = () => {
+    if (httpPollingInterval) return
+    const interval = setInterval(async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'
+        const response = await fetch(`${baseUrl}/admin/dashboard/realtime`)
+        if (response.ok) {
+          const data = await response.json()
+          const parsed = (data.apiCalls || []).map((item: any) => {
+            const endpoint = item.endpoint || '/api/unknown'
+            const m = (endpoint as string).match(/musics\/(\d+)/)
+            const midFromEndpoint = m ? Number(m[1]) : undefined
+            const midFromPayload = (item.musicId ?? item.music_id) !== undefined ? Number(item.musicId ?? item.music_id) : undefined
+            const mid = midFromPayload ?? midFromEndpoint
+            return ({
+              id: item.id || Math.random(),
+              status: item.status || 'error',
+              endpoint,
+              callType: item.callType || (endpoint.includes('lyrics') ? '가사 호출' : '음원 호출'),
+              validity: item.validity || '유효재생',
+              company: item.company || 'Unknown',
+              musicTitle: item.musicTitle || item.music_title || item.trackTitle || item.title || undefined,
+              musicId: mid,
+              timestamp: (() => {
+                if (item.timestamp && !isNaN(new Date(item.timestamp).getTime())) {
+                  return new Date(item.timestamp).toLocaleString('ko-KR', {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit', 
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Seoul'
+                  }).replace(/\./g, '-').replace(/- /g, ' ').replace(/(\d{2}) (\d{2}) (\d{2})/, '$1-$2-$3').trim()
+                } else {
+                  return new Date().toLocaleString('ko-KR', {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit', 
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Seoul'
+                  }).replace(/\./g, '-').replace(/- /g, ' ').replace(/(\d{2}) (\d{2}) (\d{2})/, '$1-$2-$3').trim()
+                }
+              })()
+            })
+          })
+          setRealtimeApiStatus(parsed)
+          setRealtimeTopTracks(data.topTracks || [])
+        }
+      } catch (error) {
+        // HTTP 폴링 에러 무시
+      }
+    }, 5000)
+    setHttpPollingInterval(interval)
+  }
 
   // WebSocket 연결
   useEffect(() => {
@@ -77,10 +138,6 @@ export default function DashboardPage() {
     })
 
     newSocket.on('realtime-update', (data) => {
-      console.log('🔍 WebSocket 실시간 데이터 업데이트:', data)
-      console.log('🔍 WebSocket apiCalls length:', data.apiCalls?.length || 0)
-      console.log('🔍 WebSocket topTracks length:', data.topTracks?.length || 0)
-
       const parsed = (data.apiCalls || []).map((item: any) => {
         const endpoint: string = item.endpoint || ''
         const m = endpoint.match(/musics\/(\d+)/)
@@ -109,7 +166,8 @@ export default function DashboardPage() {
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        timeZone: 'Asia/Seoul'
       })
       setLastUpdated(s)
     })
@@ -121,6 +179,10 @@ export default function DashboardPage() {
     newSocket.on('connect_error', (error) => {
       console.error('WebSocket 연결 에러:', error)
       setIsConnected(false)
+      // WebSocket 연결 실패 시 HTTP 폴링으로 fallback
+      setTimeout(() => {
+        startHttpPolling()
+      }, 1000)
     })
 
     newSocket.on('reconnect', (attemptNumber) => {
@@ -137,6 +199,10 @@ export default function DashboardPage() {
 
     return () => {
       newSocket.close()
+      if (httpPollingInterval) {
+        clearInterval(httpPollingInterval)
+        setHttpPollingInterval(null)
+      }
     }
   }, [])
 
@@ -149,7 +215,8 @@ export default function DashboardPage() {
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        timeZone: 'Asia/Seoul'
       })
       setLastUpdated(s)
     }
@@ -158,7 +225,7 @@ export default function DashboardPage() {
         setHourlyLoading(true)
         setHourlyError(null)
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
-        console.log('🔍 Environment check:', {
+        console.log('Environment check:', {
           NODE_ENV: process.env.NODE_ENV,
           NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
           baseUrl: baseUrl,
@@ -183,13 +250,12 @@ export default function DashboardPage() {
       }
     }
 
-
     const fetchRealtimeData = async () => {
       // WebSocket이 연결되지 않은 경우에만 HTTP API 사용
       if (!isConnected) {
         try {
           console.log('⚠️ WebSocket 연결되지 않음, HTTP API로 실시간 데이터 조회...')
-          const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
+          const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'
           
           const [apiRes, tracksRes] = await Promise.all([
             fetch(`${baseUrl}/admin/musics/realtime/api-status`),
@@ -203,9 +269,6 @@ export default function DashboardPage() {
           
           if (apiRes.ok) {
             const apiData = await apiRes.json()
-            console.log('🔍 API Status Data:', apiData)
-            console.log('🔍 API Status items length:', apiData.items?.length || 0)
-            // HTTP API 응답 구조에 맞게 수정 + musicId 파싱
             const items = (apiData.items || []).map((item: any) => {
               const endpoint = item.endpoint || '/api/unknown'
               const m = (endpoint as string).match(/musics\/(\d+)/)
@@ -221,21 +284,36 @@ export default function DashboardPage() {
                 company: item.company || 'Unknown',
                 musicTitle: item.musicTitle || item.music_title || item.trackTitle || item.title || undefined,
                 musicId: mid,
-                timestamp: item.timestamp || new Date().toLocaleString('ko-KR', {
-                  year: '2-digit',
-                  month: '2-digit',
-                  day: '2-digit', 
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: false
-                }).replace(/\./g, '-').replace(/- /g, ' ').replace(/(\d{2}) (\d{2}) (\d{2})/, '$1-$2-$3').trim()
+                timestamp: (() => {
+                  if (item.timestamp && !isNaN(new Date(item.timestamp).getTime())) {
+                    return new Date(item.timestamp).toLocaleString('ko-KR', {
+                      year: '2-digit',
+                      month: '2-digit',
+                      day: '2-digit', 
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: false,
+                      timeZone: 'Asia/Seoul'
+                    }).replace(/\./g, '-').replace(/- /g, ' ').replace(/(\d{2}) (\d{2}) (\d{2})/, '$1-$2-$3').trim()
+                  } else {
+                    return new Date().toLocaleString('ko-KR', {
+                      year: '2-digit',
+                      month: '2-digit',
+                      day: '2-digit', 
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: false,
+                      timeZone: 'Asia/Seoul'
+                    }).replace(/\./g, '-').replace(/- /g, ' ').replace(/(\d{2}) (\d{2}) (\d{2})/, '$1-$2-$3').trim()
+                  }
+                })()
               })
             })
-            console.log('🔍 Processed API Status items:', items)
             setRealtimeApiStatus(items)
           } else {
-            console.error('❌ API Status failed:', apiRes.status, await apiRes.text())
+            console.error(apiRes.status, await apiRes.text())
           }
           
           if (tracksRes.ok) {
@@ -276,7 +354,7 @@ export default function DashboardPage() {
         ))
         const missing = ids.filter(id => !musicTitleById[id])
         if (missing.length === 0) return
-        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'
         const results = await Promise.allSettled(
           missing.map(id => fetch(`${baseUrl}/admin/musics/${id}`).then(r => r.ok ? r.json() : null))
         )
@@ -363,12 +441,6 @@ export default function DashboardPage() {
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <Title variant="section">실시간 모니터링</Title>
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
-            <span className="text-sm text-white/60">
-              {isConnected ? '실시간 연결됨' : '연결 끊김'}
-            </span>
-          </div>
         </div>
         <div className="grid gap-5 [grid-template-columns:2fr_1fr] max-[1200px]:grid-cols-1">
           {/* 실시간 API 호출 */}
@@ -408,7 +480,7 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto min-h-96">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -422,8 +494,6 @@ export default function DashboardPage() {
                 </thead>
                 <tbody className="text-sm">
                   {(() => {
-                    console.log('🔍 렌더링 시 realtimeApiStatus:', realtimeApiStatus)
-                    console.log('🔍 렌더링 시 realtimeApiStatus.length:', realtimeApiStatus.length)
                     return realtimeApiStatus.length > 0 ? (
                       realtimeApiStatus
                         .filter(item => {
@@ -478,7 +548,7 @@ export default function DashboardPage() {
             <div className="mb-4">
               <Title variant="card">인기 음원 TOP 10</Title>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto min-h-96">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">

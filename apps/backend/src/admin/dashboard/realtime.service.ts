@@ -35,7 +35,7 @@ export class RealtimeService {
       validity: row.validity,
       company: row.company || '알 수 없음',
       musicTitle: row.music_title || undefined,
-      timestamp: row.created_at ? new Date(row.created_at).toLocaleTimeString('ko-KR') : '00:00:00'
+      timestamp: row.created_at ? new Date(row.created_at).toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul' }) : '00:00:00'
     }))
   }
 

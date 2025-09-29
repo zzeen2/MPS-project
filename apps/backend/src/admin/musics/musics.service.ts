@@ -693,7 +693,8 @@ export class MusicsService implements OnModuleInit {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false
+        hour12: false,
+        timeZone: 'Asia/Seoul'
       }).replace(/\./g, '-').replace(/- /g, ' ').replace(/(\d{2}) (\d{2}) (\d{2})/, '$1-$2-$3').trim() : '00-00-00 00:00:00',
     }))
 

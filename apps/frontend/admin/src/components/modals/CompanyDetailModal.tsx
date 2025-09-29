@@ -174,10 +174,17 @@ export default function CompanyDetailModal({ open, onClose, company, detail, loa
                         <div className="w-64 h-64 rounded-lg border border-white/10 overflow-hidden bg-white/5">
                           {info.profileImageUrl ? (
                             <img 
-                              src={info.profileImageUrl} 
+                              src={(() => {
+                                const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+                                const fullUrl = info.profileImageUrl.startsWith('http') 
+                                  ? info.profileImageUrl 
+                                  : `${baseUrl}${info.profileImageUrl}`;
+                                return fullUrl;
+                              })()}
                               alt={`${info.name} 로고`}
                               className="w-full h-full object-cover"
                               onError={(e) => {
+                                console.error('❌ 이미지 로드 실패:', e);
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
                                 if (target.nextElementSibling) {

@@ -104,15 +104,8 @@ export class MusicsService implements OnModuleInit {
       limit: l,
       offset,
     });
-
-    console.log('🔍 Query parameters:', { search, category, musicType, currentMonth, limit: l, offset });
-    console.log('🔍 Raw query:', rawQuery);
     
     const results = await this.db.execute(rawQuery);
-    
-    console.log('🔍 Query results:', results.rows.length, 'rows found');
-    console.log('🔍 First result:', results.rows[0]);
-
     return {
       musics: results.rows,
       page: p,
@@ -545,14 +538,6 @@ export class MusicsService implements OnModuleInit {
 
     const listSql = buildMusicCompanyUsageListQuery({ musicId, year: y, month: m, search, limit: l, offset })
     const countSql = buildMusicCompanyUsageCountQuery({ musicId, year: y, month: m, search })
-
-    // 디버깅 로그
-    try {
-      console.log('🔍 [CompanyUsage] params:', { musicId, year: y, month: m, page, limit: l, offset, search: search ?? null })
-      console.log('🔍 [CompanyUsage] listSql:', listSql)
-      console.log('🔍 [CompanyUsage] countSql:', countSql)
-    } catch {}
-
     const [listRes, countRes] = await Promise.all([this.db.execute(listSql), this.db.execute(countSql)])
     const items = (listRes.rows || []).map((r: any, idx: number) => ({
       rank: offset + idx + 1,
@@ -563,13 +548,6 @@ export class MusicsService implements OnModuleInit {
       monthlyPlays: Number(r.monthly_plays || 0),
     }))
     const total = Number((countRes.rows?.[0] as any)?.total || 0)
-
-    try {
-      console.log('🔍 [CompanyUsage] result: items=', items.length, 'total=', total)
-      if (items.length > 0) {
-        console.log('🔍 [CompanyUsage] sample:', items.slice(0, Math.min(3, items.length)))
-      }
-    } catch {}
     return { yearMonth: ym, total, page: p, limit: l, items }
   }
 
@@ -793,9 +771,6 @@ export class MusicsService implements OnModuleInit {
     const res = await this.db.execute(q)
     const rows = (res.rows || []) as any[]
 
-    console.log('🔍 [RealtimeApiStatus] Query executed, rows count:', rows.length)
-    console.log('🔍 [RealtimeApiStatus] Sample data:', rows.slice(0, 3))
-
     const items: RealtimeApiStatusItemDto[] = rows.map((r: any) => ({
       id: r.id || Math.random(),
       status: r.status === 'success' ? 'success' : 'error',
@@ -868,10 +843,6 @@ export class MusicsService implements OnModuleInit {
     const q = buildRealtimeTopTracksQuery(limit)
     const res = await this.db.execute(q)
     const rows = (res.rows || []) as any[]
-
-    // console.log(`[TopTracks] Fetching top ${limit} tracks based on 24h valid plays`)
-    // console.log(`[TopTracks] Found ${rows.length} tracks`)
-
     const items: RealtimeTopTracksItemDto[] = rows.map((r: any) => ({
       rank: Number(r.rank || 0),
       title: r.title || 'Unknown Track',
@@ -880,7 +851,6 @@ export class MusicsService implements OnModuleInit {
       validRate: Number(r.valid_rate || 0),
     }))
 
-    //console.log(`[TopTracks] Top track: ${items[0]?.title} with ${items[0]?.validPlays} valid plays`)
     return { items }
   }
 
@@ -1160,10 +1130,6 @@ export class MusicsService implements OnModuleInit {
     const remainingCurrent = Number(mmrRowRes[0]?.remaining ?? 0)
     const usedByMmr = Math.max(totalCurrent - remainingCurrent, 0)
     const usedBaseline = Math.max(rewardedCnt, usedByMmr)
-
-    // 로그
-    console.log('🔧 [RewardsUpdate] input:', { musicId, ym, dto })
-    console.log('🔧 [RewardsUpdate] usedBaseline:', { rewardedCnt, usedByMmr, usedBaseline })
 
     // 트랜잭션: grade/월레코드 동시 갱신
     await this.db.transaction(async (tx) => {

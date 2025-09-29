@@ -328,10 +328,6 @@ export default function RewardsTokensPage() {
         }
         const hasTokenDist = !!data?.tokenDistribution && (data?.tokenDistribution?.recipientCount ?? 0) > 0
         const inferredType: TransactionType = data?.type || (hasTokenDist ? 'token-distribution' : 'api-recording')
-        console.log('🔍 TransactionDetail 데이터:', data)
-        console.log('🔍 tokenDistribution:', data.tokenDistribution)
-        console.log('🔍 recipients:', data.tokenDistribution?.recipients)
-        
         setTransactionDetail({
           id: String(data.id ?? id),
           type: inferredType,

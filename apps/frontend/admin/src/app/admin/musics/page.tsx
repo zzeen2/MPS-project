@@ -51,16 +51,9 @@ export default function MusicsPage() {
     setLoading(true)
     try {
       const url = `/admin/musics?page=${currentPage}&limit=10&search=${encodeURIComponent(searchQuery)}&category=${encodeURIComponent(genreFilter)}&musicType=${encodeURIComponent(musicTypeFilter)}&idSortFilter=${encodeURIComponent(idSortFilter)}&releaseDateSortFilter=${encodeURIComponent(releaseDateSortFilter)}&rewardLimitFilter=${encodeURIComponent(rewardLimitFilter)}`
-      console.log('🔍 Frontend API URL:', url)
-      console.log('🔍 Frontend params:', { currentPage, searchQuery, genreFilter, musicTypeFilter, idSortFilter, releaseDateSortFilter, rewardLimitFilter })
-      
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
       const response = await fetch(`${baseUrl}${url}`)
-      console.log('🔍 Frontend response status:', response.status)
-      
       const data = await response.json()
-      console.log('🔍 Frontend response data:', data)
-      
       setMusics(data.musics || [])
       setTotalCount(data.totalCount || (data.musics ? data.musics.length : 0))
     } catch (error) {

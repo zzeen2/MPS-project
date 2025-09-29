@@ -76,10 +76,11 @@ export class CompanyService {
       ${tier ? sql`AND c.grade = ${tier}` : sql``}
     `;
 
+    // 페이지네이션
     const totalResult = await this.db.execute(sql`SELECT COUNT(*) as count FROM (${filtered}) t`);
     const totalRows = (totalResult as any).rows ?? [];
     const total = Number(totalRows[0]?.count ?? 0);
-
+    
     const pageResult = await this.db.execute(sql`${filtered} ORDER BY ${sql.raw(sortBy)} ${sql.raw(order)} LIMIT ${limit} OFFSET ${offset}`);
     const rows = (pageResult as any).rows ?? [];
 
@@ -260,9 +261,7 @@ export class CompanyService {
   }
 
   async getRevenueCalendar(query: RevenueCalendarQueryDto): Promise<RevenueCalendarResponseDto> {
-    console.log('🔍 [RevenueCalendar] query.yearMonth:', query.yearMonth)
     const ym = resolveYearMonthKST(query.yearMonth)
-    console.log('🔍 [RevenueCalendar] resolved ym:', ym)
     const [y, m] = ym.split('-').map(Number)
     const tz = 'Asia/Seoul'
 
@@ -344,7 +343,6 @@ export class CompanyService {
       m = now.getMonth() + 1
     }
 
-    // 월 기준 구독+사용 매출 합계 랭킹
     const q = buildRevenueCompaniesQuery(y, m, tz, grade, limit)
     const res = await this.db.execute(q)
     const rows = (res.rows || []) as any[]
@@ -358,7 +356,7 @@ export class CompanyService {
       usageRevenue: Number(r.usage_revenue || 0),
       totalRevenue: Number(r.total_revenue || 0),
       percentage: Number(r.percentage || 0),
-      growth: '+0.0%', // TODO: 전월 대비 계산
+      growth: '+0.0%',
     }))
 
     const ymStr = `${y}-${String(m).padStart(2,'0')}`
