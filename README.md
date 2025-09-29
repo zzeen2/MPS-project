@@ -147,11 +147,7 @@ MPS는 블록체인 기반의 음원 라이브러리 플랫폼으로, 기업이 
 
 ### 관리자 인증
   <div align="center">
-    <video width="600" controls>
-      <source src="assets/readme_imgs/admin/admin_login.mov" type="video/quicktime">
-      <source src="assets/readme_imgs/admin/admin_login.mov" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
+    <img src="assets/readme_imgs/admin/admin_login.gif" width="600" alt="Admin Login Demo"/>
     <br><b>관리자 로그인</b>
   </div>
 
@@ -167,11 +163,7 @@ MPS는 블록체인 기반의 음원 라이브러리 플랫폼으로, 기업이 
 </div>
 
 <div align="center">
-  <video width="800" controls>
-    <source src="assets/readme_imgs/admin/mps-dashboard_test.mov" type="video/quicktime">
-    <source src="assets/readme_imgs/admin/mps-dashboard_test.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <img src="assets/readme_imgs/admin/mps-dashboard_test.gif" width="800" alt="Dashboard Demo"/>
   <br/><b>대시보드 실시간 시연 영상 (MPS 테스트 페이지 음원/가사 호출)</b>
 </div>
 
@@ -197,12 +189,28 @@ MPS는 블록체인 기반의 음원 라이브러리 플랫폼으로, 기업이 
 
 #### 음원 관리 기능
 <div align="center">
-  <video width="800" controls>
-    <source src="assets/readme_imgs/admin/mps_music_list.mov" type="video/quicktime">
-    <source src="assets/readme_imgs/admin/mps_music_list.mov.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <br/><b>음원 관리 전체 시연 영상(음원 등록, 싱세, 수정, 삭제)</b>
+  <table>
+    <tr>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/add_music.gif" width="400"/><br/>
+        <b>음원 등록</b>
+      </td>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/detail_music.gif" width="400"/><br/>
+        <b>음원 상세</b>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/edit_music.gif" width="400"/><br/>
+        <b>음원 수정</b>
+      </td>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/delete_music.gif" width="400"/><br/>
+        <b>음원 삭제</b>
+      </td>
+    </tr>
+  </table>
 </div>
 
 **주요 기능**:
@@ -222,13 +230,20 @@ MPS는 블록체인 기반의 음원 라이브러리 플랫폼으로, 기업이 
 </div>
 
 #### 리워드 관리 시연
+#### 리워드 관리 기능
 <div align="center">
-  <video width="800" controls>
-    <source src="assets/readme_imgs/admin/reward_list_musics.mov" type="video/quicktime">
-    <source src="assets/readme_imgs/admin/reward_list_musics.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <br/><b>리워드 관리 시연 영상 (음원 상세, 일괄 수정)</b>
+  <table>
+    <tr>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/reward_detail_music.gif" width="400"/><br/>
+        <b>음원 상세 모달</b>
+      </td>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/reward_edit_music.gif" width="400"/><br/>
+        <b>일괄 리워드 수정</b>
+      </td>
+    </tr>
+  </table>
 </div>
 
 **음원 리워드 관리 기능**:
@@ -245,14 +260,11 @@ MPS는 블록체인 기반의 음원 라이브러리 플랫폼으로, 기업이 
   <br/><b>기업별 리워드 현황</b>
 </div>
 
-#### 기업 관리 시연
+
+#### 기업 관리 기능
 <div align="center">
-  <video width="800" controls>
-    <source src="assets/readme_imgs/admin/reward_list_company.mov" type="video/quicktime">
-    <source src="assets/readme_imgs/admin/reward_list_company.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <br/><b>기업 관리 시연 영상 (기업 목록, 상세 정보, 통계)</b>
+  <img src="assets/readme_imgs/admin/reward_list_company.gif" width="600"/><br/>
+  <b>기업 상세 정보 및 통계</b>
 </div>
 
 
@@ -298,14 +310,21 @@ MPS는 블록체인 기반의 음원 라이브러리 플랫폼으로, 기업이 
   <br/><b>온체인 관리</b>
 </div>
 
-#### 온체인 관리 시연
+
+#### 온체인 관리 기능
 <div align="center">
-  <video width="800" controls>
-    <source src="assets/readme_imgs/admin/transaction.mov" type="video/quicktime">
-    <source src="assets/readme_imgs/admin/transaction.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <br/><b>온체인 관리 시연 영상 (수동 트랜잭션, 트랜잭션 상세)</b>
+  <table>
+    <tr>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/transaction.gif" width="400"/><br/>
+        <b>수동 트랜잭션</b>
+      </td>
+      <td align="center">
+        <img src="assets/readme_imgs/admin/transaction_detail.gif" width="400"/><br/>
+        <b>트랜잭션 상세</b>
+      </td>
+    </tr>
+  </table>
 </div>
 
 **주요 기능**:
